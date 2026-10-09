@@ -1,27 +1,26 @@
-# Team Chat – Clean-room UI Starter
+# DABubble
 
-Dieses Projekt ist eine eigenständige Angular-22-UI-Struktur für ein Chat-Gruppenprojekt.
+DABubble ist eine moderne Chat-Anwendung auf Basis von Angular.
 
-## Wichtig
-- Kein Code aus einem fremden Projekt wurde übernommen.
-- Ordner-, Komponenten- und Klassennamen sind eigenständig.
-- Das UI ist absichtlich nur statisch vorbereitet.
-- Die TypeScript-Geschäftslogik (Auth, Datenbank, Nachrichten, Channels, Threads) ist als TODO offen.
+## Features
 
-## Start
+- Benutzeranmeldung
+- Registrierung
+- Channels
+- Direktnachrichten
+- Nachrichten
+- Threads
+- Benutzerprofile
+- Responsive Benutzeroberfläche
+
+## Technologien
+
+- Angular 22
+- TypeScript
+- SCSS
+
+## Installation
+
 ```bash
 npm install
 npm start
-```
-
-## Routen
-- `/login`
-- `/register`
-- `/workspace`
-
-## Nächste Schritte
-1. Auth-Formulare mit Reactive Forms verbinden.
-2. Datenmodelle definieren.
-3. Backend/Datenbank anbinden.
-4. Channels und Nachrichten dynamisch laden.
-5. Threads und Direct Messages ergänzen.
