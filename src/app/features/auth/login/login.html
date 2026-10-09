@@ -1,20 +1,27 @@
-<main class="auth-page">
-  <section class="auth-card" aria-labelledby="login-title">
-    <div class="brand-mark">TC</div>
-    <p class="eyebrow">Team Chat</p>
-    <h1 id="login-title">Willkommen zurück</h1>
-    <p class="intro">Melde dich an, um deine Channels und Nachrichten zu öffnen.</p>
+<form class="auth-form" (ngSubmit)="login()">
+  <label for="login-email">E-Mail</label>
+  <input
+    id="login-email"
+    name="email"
+    type="email"
+    autocomplete="email"
+    placeholder="name@beispiel.ch"
+    [(ngModel)]="email"
+  >
 
-    <form class="auth-form">
-      <label for="login-email">E-Mail</label>
-      <input id="login-email" name="email" type="email" autocomplete="email" placeholder="name@beispiel.ch">
+  <label for="login-password">Passwort</label>
+  <input
+    id="login-password"
+    name="password"
+    type="password"
+    autocomplete="current-password"
+    placeholder="Dein Passwort"
+    [(ngModel)]="password"
+  >
 
-      <label for="login-password">Passwort</label>
-      <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Dein Passwort">
+  <button type="submit" class="primary-button">Anmelden</button>
 
-      <button type="submit" class="primary-button">Anmelden</button>
-    </form>
-
-    <p class="switch-copy">Noch kein Konto? <a routerLink="/register">Registrieren</a></p>
-  </section>
-</main>
+  @if (errorMessage) {
+    <p class="error-message">{{ errorMessage }}</p>
+  }
+</form>
