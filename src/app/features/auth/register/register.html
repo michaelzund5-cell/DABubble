@@ -1,0 +1,23 @@
+<main class="auth-page">
+  <section class="auth-card" aria-labelledby="register-title">
+    <div class="brand-mark">TC</div>
+    <p class="eyebrow">Neues Konto</p>
+    <h1 id="register-title">Account erstellen</h1>
+    <p class="intro">Lege dein Profil an und starte danach direkt im Workspace.</p>
+
+    <form class="auth-form">
+      <label for="register-name">Anzeigename</label>
+      <input id="register-name" name="displayName" type="text" autocomplete="name" placeholder="Dein Name">
+
+      <label for="register-email">E-Mail</label>
+      <input id="register-email" name="email" type="email" autocomplete="email" placeholder="name@beispiel.ch">
+
+      <label for="register-password">Passwort</label>
+      <input id="register-password" name="password" type="password" autocomplete="new-password" placeholder="Mindestens 8 Zeichen">
+
+      <button type="submit" class="primary-button">Konto erstellen</button>
+    </form>
+
+    <p class="switch-copy">Schon registriert? <a routerLink="/login">Zum Login</a></p>
+  </section>
+</main>

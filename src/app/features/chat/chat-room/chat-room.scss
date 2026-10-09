@@ -1,0 +1,7 @@
+.chat { min-width:0; height:100dvh; display:grid; grid-template-rows:auto 1fr auto; background:var(--surface); }
+.chat-head { display:flex; justify-content:space-between; gap:16px; padding:22px 28px; border-bottom:1px solid var(--line); }
+.chat-head h1{margin:2px 0 4px;font-size:1.35rem}.chat-head span{color:var(--muted);font-size:.9rem}.eyebrow{margin:0;color:var(--brand);font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.head-actions{display:flex;gap:8px}.head-actions button{width:40px;height:40px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer}
+.message-list { overflow:auto; padding:20px 28px 8px; display:flex; flex-direction:column; gap:20px; }
+.message{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start}.avatar{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:#ded8ff;color:var(--brand-strong);font-weight:800}.avatar.alt{background:#d8f0e8;color:#28765a}.avatar.me{background:#ffe0c9;color:#9a531f}
+.message-body{min-width:0}.meta{display:flex;align-items:center;gap:10px}.meta time{color:var(--muted);font-size:.78rem}.message p{margin:6px 0 0;line-height:1.55}.reactions{display:flex;gap:6px;margin-top:9px}.reactions button{border:1px solid var(--line);background:var(--surface-soft);border-radius:999px;padding:5px 9px;cursor:pointer}

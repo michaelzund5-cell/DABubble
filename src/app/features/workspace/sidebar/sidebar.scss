@@ -1,0 +1,14 @@
+.sidebar { height:100dvh; padding:22px 16px; border-right:1px solid var(--line); background:#f0eef8; display:flex; flex-direction:column; gap:22px; }
+.workspace-head,.profile-row { display:flex; align-items:center; gap:12px; }
+.workspace-logo,.avatar { width:42px; height:42px; border-radius:13px; display:grid; place-items:center; background:var(--brand); color:white; font-weight:800; }
+.workspace-head span,.profile-row span { display:block; color:var(--muted); font-size:.78rem; margin-top:2px; }
+.compose { border:0; border-radius:14px; padding:13px 14px; background:var(--brand); color:white; font-weight:800; text-align:left; cursor:pointer; }
+.section { display:grid; gap:6px; }
+.section-title { display:flex; justify-content:space-between; align-items:center; padding:0 8px; color:var(--muted); font-size:.78rem; text-transform:uppercase; font-weight:800; letter-spacing:.05em; }
+.section-title button,.profile-row button { border:0; background:transparent; cursor:pointer; color:var(--muted); }
+.nav-item { text-decoration:none; color:var(--ink); padding:10px 12px; border-radius:12px; }
+.nav-item:hover,.nav-item.active { background:var(--surface); }
+.nav-item.user { display:flex; align-items:center; gap:8px; }
+.presence { width:9px; height:9px; border-radius:50%; background:#aaa; }.presence.online{background:var(--success);}
+.profile-row { margin-top:auto; padding:12px; border-radius:16px; background:rgba(255,255,255,.72); }
+.profile-row button { margin-left:auto; }
