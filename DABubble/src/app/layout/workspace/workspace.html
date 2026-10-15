@@ -1,0 +1,71 @@
+<div class="workspace">
+  <!-- Top bar: mobile menu button, logo, search, profile -->
+  <header class="topbar">
+    <button class="mobile-menu-button" type="button" (click)="mobileNavOpen.set(!mobileNavOpen())" [attr.aria-expanded]="mobileNavOpen()" aria-label="Navigation öffnen">☰</button>
+    <div class="brand"><span class="logo">DB</span><strong>DABubble</strong></div>
+
+    <div class="search">
+      <input type="search" placeholder="DABubble durchsuchen" aria-label="DABubble durchsuchen" [value]="search.term()" (input)="onSearchInput($event)">
+      <span aria-hidden="true">⌕</span>
+      @if (search.results().length) {
+        <div class="search-results">
+          @for (result of search.results(); track result.type + result.id) {
+            <button type="button" (click)="openSearchResult(result)">{{ result.label }}</button>
+          }
+        </div>
+      }
+    </div>
+
+    @if (userService.currentUser(); as user) {
+      <button class="profile-button" type="button" (click)="profileMenuOpen.set(!profileMenuOpen())" [attr.aria-expanded]="profileMenuOpen()">
+        <span class="profile-avatar">{{ user.initials }}</span>
+        <span class="profile-name">{{ user.name }}</span>
+        <span class="status-dot" aria-hidden="true"></span>
+      </button>
+
+      @if (profileMenuOpen()) {
+        <div class="profile-menu">
+          <strong>{{ user.name }}</strong>
+          <span>{{ user.email }}</span>
+          <button type="button" (click)="logout()">Abmelden</button>
+        </div>
+      }
+    }
+  </header>
+
+  <!-- Main area: sidebar | chat | thread (only when a thread is open) -->
+  <main class="content">
+    <aside class="navigation" [class.mobile-open]="mobileNavOpen()">
+      <app-sidebar (navigationSelected)="mobileNavOpen.set(false)"></app-sidebar>
+    </aside>
+
+    <section class="chat-column"><app-channel-view></app-channel-view></section>
+
+    @if (state.openThreadId()) {
+      <aside class="thread-column"><app-thread-panel></app-thread-panel></aside>
+    }
+  </main>
+</div>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Das HTML des Arbeitsbereichs in zwei Teilen:
+
+  1. Kopfzeile:
+     - Menü-Button (nur auf dem Handy sichtbar) öffnet die Navigation.
+     - Suche: [value] zeigt den Suchtext, (input) meldet jede Eingabe.
+       Die Trefferliste erscheint nur, wenn es Treffer gibt.
+       track result.type + result.id: Ein Channel und eine Person
+       könnten dieselbe ID haben, deshalb wird der Typ mit verwendet.
+     - Profil: @if (userService.currentUser(); as user) zeigt das
+       Profil nur, wenn ein Benutzer eingeloggt ist. So gibt es keinen
+       Fehler, falls currentUser einmal undefined ist.
+
+  2. Hauptbereich mit drei Spalten:
+     - Seitenleiste: (navigationSelected)="..." hört auf das Ereignis
+       der Seitenleiste und schließt dann das mobile Menü.
+     - Chat-Ansicht.
+     - Thread-Panel: nur sichtbar, wenn ein Thread offen ist.
+-->

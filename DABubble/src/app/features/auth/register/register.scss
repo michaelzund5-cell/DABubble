@@ -1,0 +1,42 @@
+@use '../auth-shared' as *;
+
+// Register page. Spacing values measured from Figma.
+
+.card { height: 669px; margin-top: 222px; padding-top: 36px; }
+
+// In Figma title and intro sit 7-8 px right of the card center.
+h1 { padding-left: 16px; }
+.intro { padding-left: 14px; }
+
+.intro { margin-top: 29px; }
+
+form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 40px;
+}
+
+.field + .field { margin-top: 40px; }
+
+.consent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 36px;
+  font-family: 'Open Sans', sans-serif; // only used here in Figma
+  font-size: 16px;
+  color: #42526e;
+  cursor: pointer;
+}
+
+.consent input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.consent:has(input:focus-visible) img { outline: 2px solid var(--purple-1); }
+
+.consent .link { font-size: 18px; }
+
+.next { align-self: flex-end; width: 107px; margin-top: 44px; padding: 0; }

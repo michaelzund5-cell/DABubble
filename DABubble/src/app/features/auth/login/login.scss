@@ -1,0 +1,78 @@
+@use '../auth-shared' as *;
+
+// Login-specific layout. Spacing values measured from Figma.
+
+.signup-hint {
+  position: absolute;
+  top: 75px;
+  right: 75px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 21px;
+  font-size: 18px;
+}
+
+.signup-hint .link { margin-right: 7px; }
+
+.card { height: 769px; margin-top: 156px; padding-top: 46px; }
+
+.intro { margin-top: 27px; }
+
+form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 45px;
+}
+
+.field + .field { margin-top: 40px; }
+
+.forgot { align-self: center; margin: 45px 0 0 30px; }
+
+.divider {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: 39px;
+  font-size: 18px;
+}
+
+// One line across the full width, the label covers the middle part.
+.divider::before {
+  content: '';
+  position: absolute;
+  inset: 15px 0 auto;
+  height: 1px;
+  background: var(--purple-3);
+}
+
+.divider span {
+  position: relative;
+  width: 80px;
+  margin-left: 10px;
+  background: var(--white);
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 23px;
+  height: 60px;
+  margin-top: 48px;
+  background: var(--bg);
+  border: 1px solid transparent;
+  border-radius: 100px;
+  color: var(--purple-1);
+  font-size: 18px;
+}
+
+.btn-google:hover { border-color: var(--purple-1); }
+
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 29px;
+  margin: 42px 0 0 1px;
+}

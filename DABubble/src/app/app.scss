@@ -1,0 +1,10 @@
+:host { display: block; min-height: 100vh; }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * :host meint das Element der Component selbst (<app-root>). Es wird
+ * zum Block-Element und ist mindestens so hoch wie das Browserfenster
+ * (100vh = 100 % der Fensterhöhe).
+ */

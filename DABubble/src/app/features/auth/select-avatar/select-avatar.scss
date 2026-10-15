@@ -1,0 +1,55 @@
+@use '../auth-shared' as *;
+
+// Avatar page. Spacing values measured from Figma.
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 669px;
+  margin-top: 222px;
+  padding-top: 36px;
+}
+
+h1 { padding-left: 14px; }
+
+.preview {
+  width: 168px;
+  height: 168px;
+  margin-top: 52px;
+  border-radius: 50%;
+}
+
+.user-name {
+  margin: 33px 0 0;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.choose-label {
+  align-self: flex-start;
+  margin: 8px 0 0 14px;
+  font-size: 20px;
+}
+
+.avatar-list {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.avatar-option {
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border-radius: 50%;
+  background: none;
+  outline: 3px solid transparent;
+  transition: outline-color 120ms;
+}
+
+.avatar-option img { display: block; width: 100%; }
+.avatar-option:hover { outline-color: var(--purple-3); }
+.avatar-option.selected { outline-color: var(--purple-1); }
+
+.next { align-self: flex-end; width: 107px; margin: auto 0 40px; padding: 0; }

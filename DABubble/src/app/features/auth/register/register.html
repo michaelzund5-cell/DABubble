@@ -1,0 +1,53 @@
+<main class="auth-page">
+  <img class="logo" src="img/logo.svg" alt="DABubble">
+
+  <section class="card" aria-labelledby="register-title">
+    <a class="back-btn" routerLink="/login" aria-label="Zurück zur Anmeldung">
+      <img src="img/icons/arrow-back.svg" alt="">
+    </a>
+    <h1 id="register-title">Konto erstellen</h1>
+    <p class="intro">Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</p>
+
+    <form (ngSubmit)="next()" novalidate>
+      <div class="field">
+        <img src="img/icons/person.svg" alt="">
+        <input name="name" type="text" [(ngModel)]="name" (blur)="touched.name = true"
+          placeholder="Name und Nachname" autocomplete="name" aria-label="Name und Nachname">
+        @if (touched.name && getNameError()) {
+          <p class="field-error" role="alert">{{ getNameError() }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <img src="img/icons/mail.svg" alt="">
+        <input name="email" type="email" [(ngModel)]="email" (blur)="touched.email = true"
+          placeholder="beispielname@email.com" autocomplete="email" aria-label="E-Mail-Adresse">
+        @if (touched.email && getEmailError()) {
+          <p class="field-error" role="alert">{{ getEmailError() }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <img src="img/icons/lock.svg" alt="">
+        <input name="password" type="password" [(ngModel)]="password" (blur)="touched.password = true"
+          placeholder="Passwort" autocomplete="new-password" aria-label="Passwort">
+        @if (touched.password && getPasswordError()) {
+          <p class="field-error" role="alert">{{ getPasswordError() }}</p>
+        }
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" name="privacy" [(ngModel)]="privacyAccepted">
+        <img [src]="privacyAccepted ? 'img/icons/checkbox-checked.svg' : 'img/icons/checkbox.svg'" alt="">
+        <span>Ich stimme der <a class="link" routerLink="/privacy">Datenschutzerklärung</a> zu.</span>
+      </label>
+
+      <button class="btn-primary next" type="submit" [disabled]="!isValid()">Weiter</button>
+    </form>
+  </section>
+
+  <nav class="legal-links">
+    <a class="link" routerLink="/imprint">Impressum</a>
+    <a class="link" routerLink="/privacy">Datenschutz</a>
+  </nav>
+</main>

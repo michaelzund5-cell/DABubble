@@ -1,0 +1,114 @@
+<section class="chat">
+  <!-- Header: title, member avatars, info card -->
+  <header class="chat-header">
+    <button type="button" class="title" (click)="infoOpen.set(!infoOpen())" [attr.aria-expanded]="infoOpen()">
+      {{ state.activeTitle() }} <span aria-hidden="true">⌄</span>
+    </button>
+
+    <div class="header-actions">
+      <div class="mini-avatars">
+        @for (member of visibleMembers(); track member.id) {
+          <span [title]="member.name">{{ member.initials }}</span>
+        }
+        @if (hiddenMemberCount() > 0) {
+          <span>+{{ hiddenMemberCount() }}</span>
+        }
+      </div>
+      <!-- Placeholder: adding members is not implemented yet -->
+      <button type="button" title="Mitglieder hinzufügen" aria-label="Mitglieder hinzufügen">＋</button>
+    </div>
+
+    @if (infoOpen()) {
+      <div class="info-card"><strong>{{ state.activeTitle() }}</strong><p>{{ description() }}</p></div>
+    }
+  </header>
+
+  <!-- Message list -->
+  <div class="message-list">
+    @for (message of messages(); track message.id) {
+      <article class="message" [class.own]="messageService.isOwnMessage(message.id)">
+        <div class="avatar-large">{{ userService.getById(message.senderId)?.initials }}</div>
+
+        <div class="message-content">
+          <div class="meta">
+            <strong>{{ userService.getById(message.senderId)?.name }}</strong>
+            <!-- DatePipe turns the timestamp into a readable time, e.g. 09:10 -->
+            <span>{{ message.createdAt | date: 'HH:mm' }}</span>
+            @if (message.edited) { <em>bearbeitet</em> }
+          </div>
+
+          <!-- Either edit mode (textarea) or the normal speech bubble -->
+          @if (editingId() === message.id) {
+            <div class="edit-box">
+              <textarea [(ngModel)]="editText" aria-label="Nachricht bearbeiten"></textarea>
+              <button type="button" (click)="saveEdit(message.id)">Speichern</button>
+              <button type="button" (click)="cancelEdit()">Abbrechen</button>
+            </div>
+          } @else {
+            <p class="bubble">{{ message.text }}</p>
+          }
+
+          <div class="reactions">
+            @for (reaction of message.reactions; track reaction.emoji) {
+              <!-- "mine" highlights reactions of the current user -->
+              <button type="button" [class.mine]="messageService.hasReacted(reaction)" (click)="messageService.toggleReaction(message.id, reaction.emoji)">
+                {{ reaction.emoji }} {{ reaction.userIds.length }}
+              </button>
+            }
+            <button type="button" (click)="messageService.toggleReaction(message.id, '👍')" aria-label="Mit Daumen hoch reagieren">＋ 👍</button>
+            <button type="button" (click)="state.openThread(message.id)" aria-label="Thread öffnen">💬 {{ messageService.repliesOf(message.id).length }}</button>
+          </div>
+        </div>
+
+        <!-- Hover menu. Edit and delete only for own messages (the service checks again). -->
+        <div class="message-menu">
+          <button type="button" (click)="messageService.toggleReaction(message.id, '✅')" title="Reagieren" aria-label="Reagieren">☺</button>
+          <button type="button" (click)="state.openThread(message.id)" title="Im Thread antworten" aria-label="Im Thread antworten">↩</button>
+          @if (messageService.isOwnMessage(message.id)) {
+            <button type="button" (click)="startEditing(message.id, message.text)" title="Bearbeiten" aria-label="Bearbeiten">✎</button>
+            <button type="button" (click)="deleteMessage(message.id)" title="Löschen" aria-label="Löschen">×</button>
+          }
+        </div>
+      </article>
+    } @empty {
+      <!-- @empty is shown when the list has no entries -->
+      <div class="empty-state">
+        <div aria-hidden="true">#</div>
+        <h2>Noch keine Nachrichten</h2>
+        <p>Starte die Unterhaltung in diesem Bereich.</p>
+      </div>
+    }
+  </div>
+
+  <app-message-input></app-message-input>
+</section>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Das HTML der Chat-Ansicht in drei Teilen:
+
+  1. Kopfzeile: Klick auf den Titel öffnet die Info-Karte. Die Avatare
+     kommen per @for aus den echten Mitgliedern. [attr.aria-expanded]
+     sagt Screenreadern, ob die Info-Karte offen ist.
+
+  2. Nachrichtenliste (@for über messages()):
+     - [class.own]: Eigene Nachrichten werden rechts und lila angezeigt.
+     - Die Uhrzeit kommt über die DatePipe: | date: 'HH:mm' wandelt den
+       Zeitstempel in "09:10" um. Das | heißt Pipe (Umwandlung nur für
+       die Anzeige).
+     - @if / @else: Entweder Bearbeitungsmodus (Textfeld) oder normale
+       Sprechblase.
+     - Reaktionen: Die Zahl ist jetzt reaction.userIds.length.
+       [class.mine] hebt meine eigenen Reaktionen hervor. Erneuter Klick
+       entfernt die Reaktion wieder.
+     - Die Zahl am Sprechblasen-Symbol zählt die Thread-Antworten über
+       den Service.
+     - Bearbeiten und Löschen erscheinen nur bei eigenen Nachrichten.
+       Der Service prüft das zusätzlich noch einmal.
+     - @empty: Neuer Control Flow. Wird angezeigt, wenn die Liste leer
+       ist. Ersetzt das frühere separate @if mit length === 0.
+
+  3. <app-message-input>: das Eingabefeld als eigene Component.
+-->

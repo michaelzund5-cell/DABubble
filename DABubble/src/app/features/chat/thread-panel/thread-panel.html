@@ -1,0 +1,52 @@
+<section class="thread">
+  <header>
+    <div><strong>Thread</strong><span>{{ state.activeTitle() }}</span></div>
+    <button type="button" (click)="state.closeThread()" aria-label="Thread schließen">×</button>
+  </header>
+
+  @if (rootMessage(); as root) {
+    <div class="thread-content">
+      <!-- Root message -->
+      <article>
+        <div class="avatar">{{ userService.getById(root.senderId)?.initials }}</div>
+        <div>
+          <div class="meta"><strong>{{ userService.getById(root.senderId)?.name }}</strong><span>{{ root.createdAt | date: 'HH:mm' }}</span></div>
+          <p>{{ root.text }}</p>
+        </div>
+      </article>
+
+      <div class="separator"><span>{{ replies().length }} {{ replies().length === 1 ? 'Antwort' : 'Antworten' }}</span></div>
+
+      <!-- Replies -->
+      @for (reply of replies(); track reply.id) {
+        <article>
+          <div class="avatar">{{ userService.getById(reply.senderId)?.initials }}</div>
+          <div>
+            <div class="meta"><strong>{{ userService.getById(reply.senderId)?.name }}</strong><span>{{ reply.createdAt | date: 'HH:mm' }}</span></div>
+            <p>{{ reply.text }}</p>
+          </div>
+        </article>
+      }
+    </div>
+
+    <form (ngSubmit)="sendReply()">
+      <textarea name="reply" [(ngModel)]="replyText" placeholder="Antworten ..." aria-label="Antwort schreiben"></textarea>
+      <button type="submit" [disabled]="!replyText.trim()" aria-label="Antwort senden">➤</button>
+    </form>
+  }
+</section>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Das HTML des Thread-Panels.
+  - @if (rootMessage(); as root): Nur wenn es eine Ursprungsnachricht
+    gibt, wird der Inhalt gezeigt. "as root" speichert den Wert in einer
+    kurzen Variable für das HTML darunter.
+  - Oben die Ursprungsnachricht, darunter die Anzahl der Antworten.
+    Neu: "1 Antwort" statt "1 Antworten" (Ternary-Operator).
+  - @for zeigt alle Antworten, die Uhrzeit kommt über die DatePipe.
+  - Unten das Formular für eine neue Antwort. Der Button ist gesperrt,
+    solange das Feld leer ist.
+-->

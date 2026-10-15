@@ -1,0 +1,29 @@
+<div class="composer">
+  <textarea [(ngModel)]="text" (keydown)="onKeydown($event)" [placeholder]="'Nachricht an ' + state.activeTitle()" rows="3" aria-label="Nachricht schreiben"></textarea>
+
+  <div class="toolbar">
+    <!-- Placeholders: attachments, emoji picker and mentions are not implemented yet -->
+    <div>
+      <button type="button" title="Datei anhängen" aria-label="Datei anhängen">＋</button>
+      <button type="button" title="Emoji" aria-label="Emoji einfügen">☺</button>
+      <button type="button" title="Erwähnung" aria-label="Person erwähnen">&#64;</button>
+    </div>
+    <!-- Disabled while the text is empty -->
+    <button class="send" type="button" (click)="send()" [disabled]="!text.trim()" aria-label="Senden">➤</button>
+  </div>
+</div>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Das HTML des Eingabefelds.
+  - [(ngModel)]="text": Textfeld und Variable sind verbunden.
+  - (keydown)="onKeydown($event)": Bei jedem Tastendruck wird die
+    Methode mit dem Tastatur-Ereignis aufgerufen.
+  - [placeholder]: Property Binding. Der Platzhalter zeigt den Namen
+    des aktuellen Chats, z. B. "Nachricht an # allgemein".
+  - [disabled]="!text.trim()": Der Senden-Button ist gesperrt, solange
+    nur Leerzeichen oder nichts eingegeben ist.
+  - Die drei Symbol-Buttons links sind noch Platzhalter ohne Funktion.
+-->

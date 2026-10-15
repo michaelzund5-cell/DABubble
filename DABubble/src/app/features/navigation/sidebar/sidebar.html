@@ -1,0 +1,76 @@
+<div class="sidebar">
+  <div class="sidebar-header">
+    <strong>Arbeitsbereich</strong>
+    <!-- Placeholder: "new message" is not implemented yet -->
+    <button type="button" title="Neue Nachricht" aria-label="Neue Nachricht">✎</button>
+  </div>
+
+  <!-- Channels -->
+  <section>
+    <div class="group-title">
+      <span aria-hidden="true">▾</span><strong>Channels</strong>
+      <button type="button" (click)="openCreateDialog()" title="Channel erstellen" aria-label="Channel erstellen">＋</button>
+    </div>
+    <nav aria-label="Channels">
+      @for (channel of channelService.channels(); track channel.id) {
+        <button type="button" [class.active]="isActive('channel', channel.id)" (click)="open('channel', channel.id)">
+          <span class="channel-symbol" aria-hidden="true">#</span>{{ channel.name }}
+        </button>
+      }
+    </nav>
+  </section>
+
+  <!-- Direct messages: every user except me -->
+  <section>
+    <div class="group-title"><span aria-hidden="true">▾</span><strong>Direktnachrichten</strong></div>
+    <nav aria-label="Direktnachrichten">
+      @for (user of userService.otherUsers(); track user.id) {
+        <button type="button" [class.active]="isActive('direct', user.id)" (click)="open('direct', user.id)">
+          <span class="avatar">{{ user.initials }}<i [class]="user.status"></i></span>{{ user.name }}
+        </button>
+      }
+    </nav>
+  </section>
+
+  <!-- Dialog "create channel". Click on the backdrop closes it; stopPropagation keeps clicks inside open. -->
+  @if (createDialogOpen()) {
+    <div class="dialog-backdrop" (click)="createDialogOpen.set(false)">
+      <form class="dialog" (click)="$event.stopPropagation()" (ngSubmit)="createChannel()">
+        <div>
+          <h3>Channel erstellen</h3>
+          <button type="button" (click)="createDialogOpen.set(false)" aria-label="Schließen">×</button>
+        </div>
+        <p>Lege einen eigenen Bereich für ein Thema oder Team an.</p>
+        <label for="channel-name">Channel-Name</label>
+        <input id="channel-name" name="channelName" [(ngModel)]="newChannelName" placeholder="z. B. frontend">
+        @if (createError) {
+          <p class="error-text" role="alert">{{ createError }}</p>
+        }
+        <button class="btn-primary" type="submit">Erstellen</button>
+      </form>
+    </div>
+  }
+</div>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Das HTML der Seitenleiste.
+  - @for ... track channel.id: Schleife über alle Channels. track sagt
+    Angular, woran es jeden Eintrag erkennt. So muss bei Änderungen nur
+    der geänderte Eintrag neu gezeichnet werden (Performance).
+  - [class.active]="...": Class Binding. Die CSS-Klasse "active" wird
+    gesetzt, wenn der Ausdruck true ist.
+  - (click)="...": Event Binding. Ruft beim Klick eine Methode auf.
+  - Direktnachrichten nutzen jetzt userService.otherUsers(), also alle
+    außer mir. Vorher wurde das mit einem zusätzlichen @if gefiltert.
+  - [class]="user.status": Setzt die Klasse online / away / offline für
+    den farbigen Statuspunkt.
+  - Dialog: Klick auf den grauen Hintergrund schließt ihn.
+    $event.stopPropagation() verhindert, dass ein Klick im Formular bis
+    zum Hintergrund "durchrutscht" (Event Bubbling) und den Dialog
+    ebenfalls schließt.
+  - aria-label: Beschriftung für Buttons, die nur ein Symbol zeigen.
+    aria-hidden="true" blendet reine Deko-Zeichen für Screenreader aus.
+-->

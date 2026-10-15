@@ -1,0 +1,31 @@
+.thread { height: 100%; background: #fff; border-radius: 30px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 35px rgba(0,0,0,.07); }
+.thread header { min-height: 84px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+.thread header > div { display: flex; align-items: baseline; gap: 8px; }
+.thread header strong { font-size: 21px; }
+.thread header span { color: var(--purple-medium); font-size: 13px; }
+.thread header button { border: 0; background: transparent; font-size: 26px; width: 38px; height: 38px; border-radius: 50%; }
+.thread header button:hover { background: var(--background); color: var(--purple-dark); }
+.thread-content { flex: 1; overflow: auto; padding: 18px; }
+.thread article { display: flex; gap: 10px; padding: 10px 0; }
+.avatar { width: 42px; height: 42px; flex: 0 0 auto; border-radius: 50%; display: grid; place-items: center; background: #e1e3ff; color: var(--purple-dark); font-size: 11px; font-weight: 800; }
+.meta { display: flex; gap: 8px; align-items: center; }
+.meta span { color: var(--text-grey); font-size: 12px; }
+.thread article p { margin: 6px 0 0; background: var(--background); padding: 10px 12px; border-radius: 0 18px 18px 18px; line-height: 1.4; }
+.separator { display: flex; align-items: center; gap: 10px; color: var(--purple-medium); font-size: 13px; }
+.separator::after { content: ''; height: 1px; background: var(--purple-light); flex: 1; }
+.thread form { margin: 14px; border: 1px solid var(--purple-light); border-radius: 18px; padding: 10px; display: flex; gap: 8px; align-items: end; }
+.thread textarea { flex: 1; border: 0; outline: none; resize: none; min-height: 58px; }
+.thread form button { border: 0; background: transparent; color: var(--purple-dark); font-size: 22px; }
+.thread form button:disabled { opacity: .35; }
+@media (max-width: 780px) { .thread { border-radius: 0; } }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles des Thread-Panels.
+ * - .thread ist eine Spalte: Kopf oben, Inhalt in der Mitte
+ *   (flex: 1, scrollbar mit overflow: auto), Formular unten.
+ * - .separator::after zeichnet die Linie neben "x Antworten".
+ *   ::after ist ein Pseudo-Element, das per CSS ergänzt wird.
+ */

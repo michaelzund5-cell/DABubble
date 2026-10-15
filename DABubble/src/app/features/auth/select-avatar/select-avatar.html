@@ -1,0 +1,34 @@
+<main class="auth-page">
+  <img class="logo" src="img/logo.svg" alt="DABubble">
+
+  <section class="card" aria-labelledby="avatar-title">
+    <a class="back-btn" routerLink="/register" aria-label="Zurück zur Registrierung">
+      <img src="img/icons/arrow-back.svg" alt="">
+    </a>
+    <h1 id="avatar-title">Wähle deinen Avatar</h1>
+
+    <img class="preview" [src]="selected() ?? defaultAvatar" alt="Ausgewählter Avatar">
+    <p class="user-name">{{ userName }}</p>
+    <p class="choose-label">Aus der Liste wählen</p>
+
+    <div class="avatar-list" role="radiogroup" aria-label="Avatar auswählen">
+      @for (avatar of avatars; track avatar; let i = $index) {
+        <button class="avatar-option" type="button" role="radio" [class.selected]="avatar === selected()"
+          [attr.aria-checked]="avatar === selected()" [attr.aria-label]="'Avatar ' + (i + 1)" (click)="select(avatar)">
+          <img [src]="avatar" alt="">
+        </button>
+      }
+    </div>
+
+    <button class="btn-primary next" type="button" [disabled]="!selected() || finished()" (click)="finish()">Weiter</button>
+  </section>
+
+  <nav class="legal-links">
+    <a class="link" routerLink="/imprint">Impressum</a>
+    <a class="link" routerLink="/privacy">Datenschutz</a>
+  </nav>
+
+  @if (finished()) {
+    <app-toast text="Konto erfolgreich erstellt!" />
+  }
+</main>

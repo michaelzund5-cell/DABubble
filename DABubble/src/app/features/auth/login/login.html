@@ -1,0 +1,52 @@
+<main class="auth-page">
+  <img class="logo" src="img/logo.svg" alt="DABubble">
+
+  <div class="signup-hint">
+    <span>Neu bei DABubble?</span>
+    <a class="link" routerLink="/register">Konto erstellen</a>
+  </div>
+
+  <section class="card" aria-labelledby="login-title">
+    <h1 id="login-title">Anmeldung</h1>
+    <p class="intro">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
+
+    <form (ngSubmit)="login()" novalidate>
+      <div class="field">
+        <img src="img/icons/mail.svg" alt="">
+        <input name="email" type="email" [(ngModel)]="email" placeholder="beispielname@email.com"
+          autocomplete="email" aria-label="E-Mail-Adresse">
+        @if (emailError) {
+          <p class="field-error" role="alert">{{ emailError }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <img src="img/icons/lock.svg" alt="">
+        <input name="password" type="password" [(ngModel)]="password" placeholder="Passwort"
+          autocomplete="current-password" aria-label="Passwort">
+        @if (passwordError) {
+          <p class="field-error" role="alert">{{ passwordError }}</p>
+        }
+      </div>
+
+      <a class="link forgot" routerLink="/password-reset">Passwort vergessen?</a>
+
+      <div class="divider"><span>ODER</span></div>
+
+      <button class="btn-google" type="button" (click)="loginWithGoogle()">
+        <img src="img/icons/google.svg" alt="">
+        Anmelden mit Google
+      </button>
+
+      <div class="actions">
+        <button class="btn-primary" type="submit">Anmelden</button>
+        <button class="btn-secondary" type="button" (click)="loginAsGuest()">Gäste-Login</button>
+      </div>
+    </form>
+  </section>
+
+  <nav class="legal-links">
+    <a class="link" routerLink="/imprint">Impressum</a>
+    <a class="link" routerLink="/privacy">Datenschutz</a>
+  </nav>
+</main>

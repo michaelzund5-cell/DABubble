@@ -1,0 +1,59 @@
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { RegistrationService } from '../../../core/auth/registration.service';
+import { validateEmail, validateName, validatePassword } from '../../../shared/utils/validators';
+
+@Component({
+  selector: 'app-register-page',
+  imports: [FormsModule, RouterLink],
+  templateUrl: './register.html',
+  styleUrl: './register.scss',
+})
+export class RegisterPage {
+  private readonly registration = inject(RegistrationService);
+  private readonly router = inject(Router);
+
+  name = '';
+  email = '';
+  password = '';
+  privacyAccepted = false;
+  // Errors only show after the user has left a field once.
+  readonly touched = { name: false, email: false, password: false };
+
+  constructor() {
+    this.restoreDraft();
+  }
+
+  getNameError(): string {
+    return validateName(this.name);
+  }
+
+  getEmailError(): string {
+    return validateEmail(this.email);
+  }
+
+  getPasswordError(): string {
+    return validatePassword(this.password);
+  }
+
+  isValid(): boolean {
+    return !this.getNameError() && !this.getEmailError() && !this.getPasswordError() && this.privacyAccepted;
+  }
+
+  next(): void {
+    if (!this.isValid()) return;
+    this.registration.saveDraft({ name: this.name.trim(), email: this.email.trim(), password: this.password });
+    void this.router.navigate(['/register/avatar']);
+  }
+
+  // Coming back from the avatar step: fill in what was already typed.
+  private restoreDraft(): void {
+    const draft = this.registration.draft();
+    if (!draft) return;
+    this.name = draft.name;
+    this.email = draft.email;
+    this.password = draft.password;
+    this.privacyAccepted = true;
+  }
+}
