@@ -30,3 +30,17 @@ button, input, textarea { font: inherit; }
 button { cursor: pointer; border: 0; }
 button:disabled { cursor: default; }
 a { text-decoration: none; cursor: pointer; }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Globale Styles für die ganze App.
+ * - Schriften kommen lokal über @fontsource (angular.json), nicht von
+ *   Google. Kein Datenabfluss an Google-Server (DSG / DSGVO).
+ * - :root: Farben und Schriften als CSS-Variablen (Design Tokens) aus
+ *   Figma. Eine Farbe ändern = überall geändert. Aufruf: var(--purple-1).
+ * - --error ist nicht in Figma definiert, bitte mit dem Design klären.
+ * - box-sizing: border-box: Rahmen und Innenabstand zählen zur Breite.
+ * - button { cursor: pointer; border: 0 }: Vorgabe der Checkliste.
+ */

@@ -33,3 +33,15 @@ export class SelectAvatarPage {
     setTimeout(() => void this.router.navigate(['/login']), TOAST_DURATION_MS);
   }
 }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Logik der Avatar-Auswahl, Schritt 2 der Registrierung.
+ * - userName: Name aus Schritt 1, angezeigt unter dem Avatar.
+ * - selected: Signal mit dem gewählten Avatar. null = noch keiner.
+ * - finished: Signal. true nach dem Abschließen, dann erscheint die Bubble.
+ * - finish(): schließt die Registrierung ab (RegistrationService), zeigt
+ *   die Bubble und wechselt nach 2 Sekunden zur Anmeldung.
+ */

@@ -28,3 +28,16 @@ export class RegistrationService {
     return true;
   }
 }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Zwischenspeicher für die Registrierung.
+ * - Schritt 1 (Formular) speichert Name, E-Mail und Passwort hier.
+ * - Schritt 2 (Avatar) schließt mit complete() ab.
+ * - Nur im Arbeitsspeicher, nicht im localStorage: Ein Passwort darf nie im
+ *   Browser-Speicher liegen, dort könnte es ausgelesen werden.
+ * - Demo: legt den Benutzer lokal an. Mit Firebase wird hier das echte
+ *   Konto erstellt.
+ */

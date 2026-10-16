@@ -1,4 +1,4 @@
-// Form checks used by login and register.
+// Form checks used by login, register and password reset.
 // Each function returns an error text, or '' when the value is fine.
 // Browser checks are for quick feedback only. Firebase checks again on the server.
 
@@ -25,3 +25,27 @@ export function validatePassword(value: string): string {
   if (!/[a-zA-Z]/.test(value) || !/\d/.test(value)) return 'Mindestens ein Buchstabe und eine Zahl.';
   return '';
 }
+
+export function validatePasswordRepeat(password: string, repeat: string): string {
+  if (!repeat) return 'Bitte bestätige dein Passwort.';
+  if (repeat !== password) return 'Die Passwörter stimmen nicht überein.';
+  return '';
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Prüfungen für Formulare, gemeinsam genutzt von Login, Registrierung
+ * und Passwort zurücksetzen.
+ * - Jede Funktion gibt einen Fehlertext zurück, oder '' wenn alles
+ *   stimmt. So kann die Seite den Text direkt unter dem Feld anzeigen.
+ * - EMAIL_PATTERN: regulärer Ausdruck. Prüft "etwas@etwas.xx".
+ * - validateName: mindestens zwei Wörter (Vor- und Nachname).
+ * - validatePassword: mindestens 8 Zeichen, ein Buchstabe, eine Zahl.
+ * - validatePasswordRepeat: Bestätigung muss gleich sein.
+ *
+ * Sicherheit: Diese Prüfungen laufen im Browser und können umgangen
+ * werden. Sie sind nur Komfort für den Benutzer. Firebase prüft auf
+ * dem Server noch einmal.
+ */

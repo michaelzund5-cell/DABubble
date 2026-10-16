@@ -57,3 +57,18 @@ export class RegisterPage {
     this.privacyAccepted = true;
   }
 }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Logik der Registrierung, Schritt 1.
+ * - touched: Fehler erscheinen erst, nachdem ein Feld verlassen wurde.
+ * - getNameError() usw.: gemeinsame Prüfungen aus validators.ts.
+ * - isValid(): Alle Felder gültig und Datenschutz akzeptiert. Steuert, ob
+ *   der Weiter-Button aktiv ist.
+ * - next(): speichert die Eingaben im RegistrationService und wechselt zur
+ *   Avatar-Auswahl.
+ * - restoreDraft(): Kommt man mit dem Zurück-Pfeil von der Avatar-Seite,
+ *   sind die Eingaben noch da.
+ */

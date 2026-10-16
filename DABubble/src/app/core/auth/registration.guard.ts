@@ -8,3 +8,13 @@ export const registrationGuard: CanActivateFn = () => {
   const router = inject(Router);
   return registration.draft() ? true : router.createUrlTree(['/register']);
 };
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Guard für die Avatar-Seite.
+ * - Läuft, BEVOR /register/avatar öffnet.
+ * - Ohne ausgefüllten Schritt 1 geht es zurück zu /register.
+ * - createUrlTree: Weiterleitung, die Angular sauber verarbeitet.
+ */

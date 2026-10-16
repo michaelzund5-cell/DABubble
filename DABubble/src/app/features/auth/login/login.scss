@@ -76,3 +76,14 @@ form {
   gap: 29px;
   margin: 42px 0 0 1px;
 }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles der Login-Seite. Alle Abstände sind gegen Figma gemessen.
+ * - .forgot und .divider span: In Figma nicht exakt zentriert, daher
+ *   kleine Verschiebungen (1:1 übernommen).
+ * - .divider::before: eine durchgehende Linie, das Wort ODER liegt mit
+ *   weißem Hintergrund darüber.
+ */

@@ -48,3 +48,15 @@ export class LoginPage {
     void this.router.navigate(['/workspace']);
   }
 }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Logik der Login-Seite.
+ * - login(): prüft die Eingaben, meldet an und öffnet den Arbeitsbereich.
+ * - Bewusst dieselbe Meldung für falsche E-Mail und falsches Passwort.
+ *   So kann niemand herausfinden, welche E-Mails ein Konto haben.
+ * - loginAsGuest(): Gäste-Login (Demo: Demo-Benutzer).
+ * - loginWithGoogle(): folgt mit Firebase.
+ */

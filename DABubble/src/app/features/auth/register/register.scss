@@ -40,3 +40,18 @@ form {
 .consent .link { font-size: 18px; }
 
 .next { align-self: flex-end; width: 107px; margin-top: 44px; padding: 0; }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles der Registrierung (Figma Seite 3).
+ * - Titel und Text sitzen in Figma 7-8 px rechts der Kartenmitte, daher
+ *   padding-left.
+ * - .consent: Zeile mit Checkbox. Die Schrift ist Open Sans, nur hier im
+ *   Design verwendet.
+ * - .consent input: Das echte Kontrollkästchen ist unsichtbar, sichtbar ist
+ *   das Figma-Icon. Mit Tastatur bleibt es bedienbar, :focus-visible zeigt
+ *   dann einen Rahmen.
+ * - .next: Weiter-Button rechtsbündig, Breite 107 px aus Figma.
+ */

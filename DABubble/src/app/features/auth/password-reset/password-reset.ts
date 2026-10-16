@@ -1,22 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { PasswordResetService } from '../../../core/auth/password-reset.service';
+import { Toast } from '../../../shared/components/toast/toast';
+import { validateEmail } from '../../../shared/utils/validators';
+
+const TOAST_DURATION_MS = 2000;
 
 @Component({
   selector: 'app-password-reset-page',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, Toast],
   templateUrl: './password-reset.html',
   styleUrl: './password-reset.scss',
 })
 export class PasswordResetPage {
-  email = '';
-  message = '';
+  private readonly passwordReset = inject(PasswordResetService);
+  private readonly router = inject(Router);
 
-  // DEMO ONLY: the real reset email will be sent by the auth provider / backend.
-  requestReset(): void {
-    this.message = this.email.trim()
-      ? 'Falls ein Konto mit dieser E-Mail existiert, wurde ein Link zum Zurücksetzen gesendet.'
-      : 'Bitte E-Mail eingeben.';
+  email = '';
+  emailTouched = false;
+  readonly sent = signal(false);
+
+  getEmailError(): string {
+    return validateEmail(this.email);
+  }
+
+  async send(): Promise<void> {
+    if (this.getEmailError() || this.sent()) return;
+    await this.passwordReset.sendResetEmail(this.email.trim());
+    this.sent.set(true);
+    setTimeout(() => void this.router.navigate(['/login']), TOAST_DURATION_MS);
   }
 }
 
@@ -24,14 +37,15 @@ export class PasswordResetPage {
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Die Seite "Passwort vergessen" (noch Demo).
- *
- * - requestReset(): Ist eine E-Mail eingegeben, kommt eine
- *   Bestätigung, sonst ein Hinweis. Der Ternary-Operator ? : wählt
- *   zwischen den beiden Texten.
- * - Die Bestätigung lautet bewusst "Falls ein Konto existiert ...".
- *   So verrät die Seite nicht, ob eine E-Mail registriert ist
- *   (gleiche Sicherheitsidee wie beim Login).
- * - Den echten Versand übernimmt später der Auth-Anbieter oder das
- *   Backend, nicht n8n (siehe n8n-Bauplan).
+ * Logik der Seite "Passwort zurücksetzen", Schritt 1.
+ * - email: über [(ngModel)] mit dem Eingabefeld verbunden.
+ * - getEmailError(): nutzt die gemeinsame Prüfung aus validators.ts.
+ * - sent: Signal. true nach dem Senden. Dann erscheint die Bubble und
+ *   der Button wird gesperrt.
+ * - send():
+ *   1. Abbruch, wenn die E-Mail ungültig ist oder schon gesendet wurde.
+ *   2. Mit await auf den Service warten (später Firebase).
+ *   3. Bubble zeigen, nach 2 Sekunden zurück zur Anmeldung.
+ * - TOAST_DURATION_MS: feste Zahl als Konstante mit Namen statt einer
+ *   "magischen" 2000 mitten im Code.
  */

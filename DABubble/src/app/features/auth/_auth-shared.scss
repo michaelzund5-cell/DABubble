@@ -130,3 +130,24 @@ h1 {
   margin-top: auto;
   padding: 24px 2px 58px 0;
 }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Gemeinsamer Rahmen aller Auth-Seiten (Login, Registrierung, Avatar,
+ * Passwort zurücksetzen). Der Unterstrich im Namen heißt "Partial": Die
+ * Datei wird nur per @use in die Seiten eingebunden.
+ * - .auth-page: Seite als Spalte, Karte mittig, Footer unten (margin-top:
+ *   auto bei .legal-links).
+ * - .logo: fest oben links, 75 px vom Rand, wie in Figma.
+ * - .card: weiße Karte. Höhe und Abstand nach oben setzt jede Seite selbst.
+ * - .field: Eingabefeld mit Icon. :hover und :focus-within ändern die
+ *   Randfarbe. focus-within greift, wenn das input darin fokussiert ist.
+ * - .field-error: Fehlertext absolut unter dem Feld. So verrutscht das
+ *   Layout nicht, wenn ein Fehler erscheint.
+ * - .back-btn: Zurück-Pfeil oben links in der Karte.
+ * - .link: Links in der Schrift Figtree (Figma).
+ * - .btn-primary / .btn-secondary: Buttons inkl. hover und disabled.
+ *   Disabled-Farbe #686868 ist durch Figma Seiten 5 und 6 bestätigt.
+ */

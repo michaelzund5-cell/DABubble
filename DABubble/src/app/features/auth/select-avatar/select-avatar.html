@@ -32,3 +32,16 @@
     <app-toast text="Konto erfolgreich erstellt!" />
   }
 </main>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Avatar-Auswahl (Figma Seite 4).
+  - [src]="selected() ?? defaultAvatar": Zeigt den gewählten Avatar, sonst
+    den Platzhalter (?? = "wenn null, dann").
+  - @for ... track avatar: Schleife über alle Avatare. track hilft Angular,
+    die Liste effizient neu zu zeichnen.
+  - role="radiogroup" / role="radio" / aria-checked: Screenreader erkennen
+    die Avatare als Auswahl mit genau einer Option.
+-->
