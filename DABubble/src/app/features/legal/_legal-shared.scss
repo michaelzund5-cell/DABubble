@@ -1,0 +1,49 @@
+// Shared frame for Impressum and Datenschutz (Figma pages 32, 33).
+// Logo here: 50/25 px from the corner and wider spacing than on the auth pages.
+
+.legal-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 0 50px;
+}
+
+.legal-logo {
+  position: absolute;
+  top: 25px;
+  left: 50px;
+  display: block;
+  width: 255px;
+  height: 70px;
+}
+
+.legal-logo img { display: block; width: 100%; }
+
+h1 {
+  margin: 0;
+  color: var(--purple-1);
+  font-size: 46px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+p { margin: 0; font-size: 20px; }
+
+// Mobile (Figma pages 62, 63): white page, 80 px bar with the logo on top.
+$mobile: '(max-width: 999px)';
+
+@media #{$mobile} {
+  .legal-page { padding: 0; background: var(--white); }
+  .legal-logo { position: static; width: 100%; height: 80px; padding: 17.5px 16px; background: var(--bg); }
+  .legal-logo img { width: 162px; height: 45px; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Gemeinsame Styles für Impressum und Datenschutz.
+ * - Das Logo sitzt hier anders als auf den Login-Seiten (50/25 px statt
+ *   75/75 px) und ist eine eigene Variante mit größerem Abstand zwischen
+ *   Symbol und Schriftzug (logo-wide.svg). 1:1 aus Figma.
+ * - .legal-logo ist ein Link zur Anmeldung, damit man von hier zurückkommt.
+ */

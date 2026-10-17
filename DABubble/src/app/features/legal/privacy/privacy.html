@@ -1,0 +1,29 @@
+<main class="legal-page">
+  <a class="legal-logo" routerLink="/login" aria-label="DABubble, zur Anmeldung">
+    <picture>
+      <source media="(max-width: 999px)" srcset="img/logo-mobile.svg">
+      <img src="img/logo-wide.svg" alt="DABubble">
+    </picture>
+  </a>
+
+  <article class="content" aria-labelledby="privacy-title">
+    <h1 id="privacy-title">Datenschutz</h1>
+    @for (section of sections; track $index) {
+      <section>
+        <h2>{{ section.title }}</h2>
+        <p>{{ section.text }}</p>
+      </section>
+    }
+  </article>
+</main>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Datenschutz (Figma Seite 33).
+  - <article>: eigenständiger Inhalt, gut für Screenreader.
+  - @for ... track $index: zeigt jeden Abschnitt aus der Liste an.
+    Die Abschnitte haben keine eigene ID, daher track $index.
+  - Kein Zurück-Pfeil in Figma. Zurück geht es über das Logo.
+-->

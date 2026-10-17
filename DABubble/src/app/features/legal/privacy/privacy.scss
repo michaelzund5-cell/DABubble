@@ -1,0 +1,43 @@
+@use '../legal-shared' as *;
+
+// Datenschutz (Figma page 33). Spacing values measured from Figma.
+
+.content {
+  position: relative;
+  left: 1px; // Figma: text block starts at x 304, 1 px right of center
+  max-width: 1314px;
+  margin: 0 auto;
+  padding: 134px 0 60px;
+}
+
+section { margin-top: 20px; }
+section + section { margin-top: 35px; }
+
+h2 {
+  margin: 0;
+  color: var(--purple-1);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+p { margin-top: 11px; line-height: 27px; }
+
+@media #{$mobile} {
+  .content { left: 0; padding: 38px 15px 40px; }
+  section { margin-top: 20px; }
+  section + section { margin-top: 35px; }
+  p { overflow-wrap: anywhere; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles der Datenschutz-Seite.
+ * - .content: Textbreite 1314 px wie in Figma, mittig (margin auto).
+ *   max-width statt width: Auf kleineren Bildschirmen wird der Text
+ *   schmaler, statt seitlich überzustehen.
+ * - Abstände zwischen Titel, Untertiteln und Absätzen aus Figma.
+ * - line-height 27 px: Zeilenabstand der Absätze in Figma.
+ */

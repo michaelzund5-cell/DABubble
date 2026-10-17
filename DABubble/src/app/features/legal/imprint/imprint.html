@@ -1,0 +1,36 @@
+<main class="legal-page">
+  <a class="legal-logo" routerLink="/login" aria-label="DABubble, zur Anmeldung">
+    <picture>
+      <source media="(max-width: 999px)" srcset="img/logo-mobile.svg">
+      <img src="img/logo-wide.svg" alt="DABubble">
+    </picture>
+  </a>
+
+  <section class="card" aria-labelledby="imprint-title">
+    <button class="back-btn" type="button" (click)="goBack()" aria-label="Zurück">
+      <img src="img/icons/arrow-back.svg" alt="">
+    </button>
+
+    <h1 id="imprint-title">Impressum</h1>
+    <p class="address">
+      [Student Names List]<br>
+      [Address of the DABubble operator - e.g. one of the students]<br>
+      [Postcode and city]
+    </p>
+
+    <h2>Contact:</h2>
+    <p class="contact">Email: [Dein email]</p>
+  </section>
+</main>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Impressum (Figma Seite 32).
+  - Die Texte in [eckigen Klammern] sind Platzhalter aus Figma. Vor der
+    Abgabe mit euren echten Daten ersetzen (Namen, Adresse, E-Mail).
+  - Zurück-Pfeil: geht zur vorherigen Seite (z. B. Login oder
+    Registrierung), nicht fest zu einer Seite.
+  - <br>: Zeilenumbruch innerhalb eines Absatzes, wie in Figma.
+-->
