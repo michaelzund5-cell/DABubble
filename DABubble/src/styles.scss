@@ -6,6 +6,7 @@
   --purple-1: #444df2;
   --purple-2: #797ef3;
   --purple-3: #adb0d9;
+  --purple-link: #5259f0; // active sidebar entry and links in chat texts
   --bg: #eceefe;
   --white: #ffffff;
   --black: #000000;
@@ -31,6 +32,30 @@ button { cursor: pointer; border: 0; }
 button:disabled { cursor: default; }
 a { text-decoration: none; cursor: pointer; }
 
+// Buttons used everywhere (Figma). Disabled color #686868 confirmed by Figma pages 5 and 6.
+.btn-primary,
+.btn-secondary {
+  height: 49px;
+  padding: 0 25.5px;
+  border-radius: 25px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.btn-primary { background: var(--purple-1); color: var(--white); }
+.btn-primary:hover:not(:disabled) { background: var(--purple-2); }
+.btn-primary:disabled { background: var(--text-grey); }
+
+.btn-secondary {
+  background: var(--white);
+  color: var(--purple-1);
+  border: 1px solid var(--purple-2);
+  height: 51px;
+  padding: 0 25px;
+}
+
+.btn-secondary:hover { background: var(--purple-1); color: var(--white); }
+
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
@@ -42,5 +67,7 @@ a { text-decoration: none; cursor: pointer; }
  *   Figma. Eine Farbe ändern = überall geändert. Aufruf: var(--purple-1).
  * - --error ist nicht in Figma definiert, bitte mit dem Design klären.
  * - box-sizing: border-box: Rahmen und Innenabstand zählen zur Breite.
- * - button { cursor: pointer; border: 0 }: Vorgabe der Checkliste.
+ *  - button { cursor: pointer; border: 0 }: Vorgabe der Checkliste.
+ * - .btn-primary / .btn-secondary: die Buttons aus Figma, mit hover
+ *   und disabled. Global, damit Login und Chat dieselben nutzen.
  */

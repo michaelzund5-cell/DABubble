@@ -6,6 +6,10 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#eceefe">
+  <meta name="description" content="DABubble - Chat für Teams">
+  <link rel="icon" type="image/svg+xml" href="img/logo-icon.svg">
+  <link rel="icon" href="favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
   <!-- Angular renders the whole app inside this element -->
@@ -20,6 +24,8 @@
   Die einzige echte HTML-Seite der App (Single Page Application).
   - lang="de": Sprache der Seite, wichtig für Screenreader.
   - base href="/": Grundpfad für das Routing.
+  - Favicon: das DABubble-Symbol als SVG, dazu favicon.ico für ältere
+    Browser und apple-touch-icon.png für den iPhone-Startbildschirm.
   - viewport: Sorgt dafür, dass die Seite auf dem Handy richtig skaliert.
   - <app-root>: Hier setzt Angular die gesamte App ein. Seitenwechsel
     laden keine neue HTML-Datei, Angular tauscht nur den Inhalt aus.
