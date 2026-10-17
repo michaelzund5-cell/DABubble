@@ -1,0 +1,27 @@
+@if (showTitle()) {
+  <h3>Mitglieder</h3>
+}
+<ul class="list">
+  @for (member of members(); track member.id) {
+    <li>
+      <button class="row" type="button" (click)="state.openProfile(member.id)">
+        <app-avatar [user]="member" [size]="50" [showStatus]="true" />
+        {{ member.name }}{{ member.id === currentUserId() ? ' (Du)' : '' }}
+      </button>
+    </li>
+  }
+  <li>
+    <button class="row add" type="button" (click)="state.openDialog('addMembers')">
+      <span class="add-icon"><img src="img/icons/person-add.svg" alt=""></span>
+      Mitglieder hinzufügen
+    </button>
+  </li>
+</ul>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Vorlage der Mitgliederliste: Avatar mit Online-Punkt und Name, am
+  Ende der Button "Mitglieder hinzufügen" mit Personen-Icon.
+-->

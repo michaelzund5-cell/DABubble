@@ -1,0 +1,20 @@
+@if (channelId(); as id) {
+  <app-dialog placement="members" [dim]="false" label="Mitglieder" (closed)="state.closeDialog()">
+    <div class="members-card">
+      <header class="head">
+        <h2>Mitglieder</h2>
+        <button class="close" type="button" (click)="state.closeDialog()" aria-label="Schließen">
+          <img src="img/icons/close.svg" alt="">
+        </button>
+      </header>
+      <app-member-list [channelId]="id" [showTitle]="false" />
+    </div>
+  </app-dialog>
+}
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Vorlage: Titel "Mitglieder", Schliessen-Kreuz, darunter die Liste.
+-->

@@ -1,0 +1,109 @@
+// Channel details (Figma pages 11, 14): card 872 x 616 px, blocks 794 px wide.
+
+.details { display: flex; flex-direction: column; width: 872px; max-width: 100%; padding: 42px 39px 40px; }
+
+.head { display: flex; align-items: center; justify-content: space-between; }
+h2 { display: flex; align-items: center; gap: 15px; margin: 0 0 0 5px; font-size: 24px; font-weight: 700; }
+
+.close { display: flex; margin: 4px 9px 0 0; padding: 0; border-radius: 50%; background: none; }
+.close:hover { background: var(--bg); }
+
+.block { margin-top: 29px; padding: 16px 20px 27px; border: 1px solid var(--purple-3); border-radius: 20px; }
+.block + .block { margin-top: 18px; }
+.block.open { margin-top: 9px; padding: 16px 0 0; border-color: transparent; }
+.block.open .block-head { padding-right: 20px; }
+.block.open + .block.open { margin-top: 10px; }
+.block.open hr { margin-inline: 26px; }
+
+.block-head { display: flex; align-items: center; justify-content: space-between; }
+h3 { margin: 0; font-size: 18px; font-weight: 700; }
+
+.link { padding: 0; background: none; font-size: 18px; color: var(--purple-link); }
+.link:hover { font-weight: 700; }
+.link-icon { display: none; }
+
+.value { display: flex; align-items: center; gap: 11px; margin: 23px 0 0 3px; font-size: 18px; }
+.value img { margin-top: 2px; }
+.text { margin: 21px 0 0; font-size: 18px; line-height: 25px; overflow-wrap: anywhere; white-space: pre-line; }
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 0 20px 0 21px;
+  border: 1px solid var(--purple-3);
+  border-radius: 30px;
+  font-size: 18px;
+}
+
+.field:focus-within, textarea.field:focus { border-color: var(--purple-1); }
+.field.invalid { border-color: var(--error); }
+.field input { flex: 1; height: 60px; padding: 0; border: 0; outline: none; color: var(--text-grey); }
+textarea.field { min-height: 67px; padding: 20px; outline: none; resize: none; line-height: 25px; color: var(--text-grey); field-sizing: content; }
+.field input::placeholder, textarea.field::placeholder { color: var(--text-grey); }
+
+.error { margin: 6px 0 0 20px; font-size: 14px; color: var(--error); }
+.error:empty { display: none; }
+
+hr { margin: 29px 14px 30px 0; border: 0; border-top: 1px solid var(--purple-3); }
+
+.creator { padding: 0; margin-top: 21px; background: none; font-size: 24px; color: var(--purple-link); }
+.creator:hover { text-decoration: underline; }
+
+.leave { align-self: flex-end; margin-top: 13px; }
+
+.mobile-members { display: none; }
+
+// Mobile (Figma pages 60, 61): full screen, header 90 px, blocks 400 px with 15 px margin.
+@media (max-width: 999px) {
+  .details { width: 100%; min-height: 100%; padding: 0 15px 24px; }
+  .head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    height: 90px;
+    margin: 0 -15px;
+    padding: 30px 20px 0 15px;
+    background: var(--white);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  h2 { gap: 7px; margin: 0; font-size: 20px; }
+  .block-head { align-items: flex-start; }
+  .value { margin-top: 22px; }
+  .text { margin-top: 20px; }
+  .block.info-block { padding-bottom: 20px; }
+  .close { margin: 0; }
+  .block { margin-top: 19px; padding: 20px 20px 23px; }
+  .block + .block { margin-top: 23px; }
+  .link-text { display: none; }
+  .link-icon { display: block; width: 30px; height: 30px; padding: 3px; border-radius: 50%; background: var(--bg); }
+  .block.open, .block.open + .block.open { margin-top: 19px; padding: 21px 0 0; border: 0; }
+  .block.open + .block, .block + .block.open, .block.open + .block.open { margin-top: 23px; }
+  .block.open .block-head, .block.open > h3, .block.open .creator { padding: 0 21px 0 22px; }
+  .block.open .link-icon { padding: 2px; }
+  .block.open .field { margin-top: 8px; }
+  .block.open textarea.field { margin-top: 19px; }
+  .block.open hr { margin-inline: 0; }
+  hr { margin-right: 0; }
+  .creator { font-size: 20px; }
+  .mobile-members { display: block; margin-top: 23px; }
+  .leave { margin: 24px 1px 0 0; padding: 0 25px; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * - Handy (Figma 60, 61): ganzer Bildschirm, Kopf 90 px bleibt beim
+ *   Scrollen oben (sticky), Icons statt "Bearbeiten" / "Speichern".
+ * Styles der Channel-Details, Werte aus Figma Seiten 11 und 14.
+ * - Karte 872 px breit, Blöcke mit lila-grauem Rahmen, Radius 20 px.
+ * - .open: Im Bearbeiten-Modus hat der Block keinen Rahmen mehr, dafür
+ *   ein rundes Eingabefeld (Figma Seite 14).
+ * - Fehlertext rosa unter dem Feld, Rahmen wird ebenfalls rosa.
+ * - hr: Trennlinie vor "Erstellt von".
+ * - Unter 1000 px: volle Breite und Mitgliederliste (Figma Handy 60, 61).
+ */

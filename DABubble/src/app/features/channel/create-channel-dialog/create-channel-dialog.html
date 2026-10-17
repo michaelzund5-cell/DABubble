@@ -1,0 +1,61 @@
+<app-dialog placement="sheet" label="Channel erstellen" (closed)="state.closeDialog()">
+  <div class="create">
+    <header class="head">
+      <h2>{{ step() === 1 ? 'Channel erstellen' : 'Leute hinzufügen' }}</h2>
+      <button class="close" type="button" (click)="state.closeDialog()" aria-label="Schließen">
+        <img src="img/icons/close.svg" alt="">
+      </button>
+    </header>
+
+    @if (step() === 1) {
+      <form class="form" (ngSubmit)="next()" novalidate>
+        <p class="intro">
+          Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum
+          Beispiel.
+        </p>
+
+        <label class="label" for="channel-name">Channel-Name</label>
+        <div class="field" [class.invalid]="nameError()">
+          <img src="img/icons/tag-grey.svg" alt="">
+          <input id="channel-name" name="name" [(ngModel)]="name" (ngModelChange)="nameError.set('')"
+            placeholder="z.B. Kooperationsprojekte" maxlength="40" autocomplete="off">
+        </div>
+        <p class="error" role="alert">{{ nameError() }}</p>
+
+        <label class="label" for="channel-description">Beschreibung <span>(optional)</span></label>
+        <textarea id="channel-description" class="field text" name="description" [(ngModel)]="description"
+          placeholder="Dein Text hier" rows="1"></textarea>
+
+        <button class="btn-primary submit" type="submit" [disabled]="!name.trim()">Erstellen</button>
+      </form>
+    } @else {
+      <div class="form">
+        <label class="option">
+          <input type="radio" name="mode" value="all" [checked]="addMode() === 'all'" (change)="addMode.set('all')">
+          <span>Alle Mitglieder von <strong>Devspace</strong> hinzufügen</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="mode" value="some" [checked]="addMode() === 'some'" (change)="addMode.set('some')">
+          <span>Bestimmte Leute hinzufügen</span>
+        </label>
+        @if (addMode() === 'some') {
+          <app-people-picker class="picker" [(selectedIds)]="selectedIds" />
+        }
+        <button class="btn-primary submit" type="button" (click)="create()"
+          [disabled]="addMode() === 'some' && !selectedIds().length">Erstellen</button>
+      </div>
+    }
+  </div>
+</app-dialog>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Vorlage "Channel erstellen".
+  - Schritt 1: Text aus Figma, Feld "Channel-Name" mit #-Icon, Feld
+    "Beschreibung (optional)", Button "Erstellen". novalidate schaltet
+    die Browser-Meldungen aus, unsere eigenen Fehlertexte stehen unter
+    dem Feld (Checkliste: keine HTML5-Meldungen).
+  - Schritt 2: Auswahl alle / bestimmte Personen, dann "Erstellen".
+-->

@@ -1,0 +1,84 @@
+@if (channel(); as current) {
+  <app-dialog placement="channel" label="Channel-Details" (closed)="state.closeDialog()">
+    <div class="details">
+      <header class="head">
+        <h2><img src="img/icons/tag-dialog.svg" alt="">{{ current.name }}</h2>
+        <button class="close" type="button" (click)="state.closeDialog()" aria-label="Schließen">
+          <img src="img/icons/close.svg" alt="">
+        </button>
+      </header>
+
+      <section class="block name-block" [class.open]="editingName()">
+        <div class="block-head">
+          <h3>Channel-Name</h3>
+          @if (editingName()) {
+            <button class="link" type="button" (click)="saveName()" aria-label="Speichern">
+              <span class="link-text">Speichern</span><img class="link-icon" src="img/icons/check-circle.svg" alt="">
+            </button>
+          } @else {
+            <button class="link" type="button" (click)="startName()" aria-label="Bearbeiten">
+              <span class="link-text">Bearbeiten</span><img class="link-icon" src="img/icons/edit-pencil.svg" alt="">
+            </button>
+          }
+        </div>
+        @if (editingName()) {
+          <div class="field" [class.invalid]="nameError()">
+            <img src="img/icons/tag-small.svg" alt="">
+            <input name="name" [(ngModel)]="nameDraft" (keydown.enter)="saveName()" aria-label="Channel-Name"
+              maxlength="40">
+          </div>
+          <p class="error" role="alert">{{ nameError() }}</p>
+        } @else {
+          <p class="value"><img src="img/icons/tag-small.svg" alt="">{{ current.name }}</p>
+        }
+      </section>
+
+      <section class="block info-block" [class.open]="editingDescription()">
+        <div class="block-head">
+          <h3>Beschreibung</h3>
+          @if (editingDescription()) {
+            <button class="link" type="button" (click)="saveDescription()" aria-label="Speichern">
+              <span class="link-text">Speichern</span><img class="link-icon" src="img/icons/check-circle.svg" alt="">
+            </button>
+          } @else {
+            <button class="link" type="button" (click)="startDescription()" aria-label="Bearbeiten">
+              <span class="link-text">Bearbeiten</span><img class="link-icon" src="img/icons/edit-pencil.svg" alt="">
+            </button>
+          }
+        </div>
+        @if (editingDescription()) {
+          <textarea class="field" name="description" [(ngModel)]="descriptionDraft" placeholder="Dein Text hier"
+            aria-label="Beschreibung"></textarea>
+        } @else {
+          <p class="text">{{ current.description || 'Keine Beschreibung' }}</p>
+        }
+
+        <hr>
+        <h3>Erstellt von</h3>
+        @if (creator(); as person) {
+          <button class="creator" type="button" (click)="state.openProfile(person.id)">{{ person.name }}</button>
+        }
+      </section>
+
+      <app-member-list class="mobile-members" [channelId]="current.id" />
+
+      <button class="btn-primary leave" type="button" (click)="leave()">Channel verlassen</button>
+    </div>
+  </app-dialog>
+}
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Vorlage der Channel-Details.
+  - Kopf: # Name und Schliessen-Kreuz.
+  - Block "Channel-Name" und Block "Beschreibung" mit "Erstellt von".
+    Im Bearbeiten-Modus verschwindet der Rahmen und ein Eingabefeld
+    erscheint (Figma Seite 14). Enter speichert den Namen.
+  - Jeder Block hat seinen eigenen Button "Bearbeiten" / "Speichern".
+    Desktop zeigt den Text, das Handy ein Stift- bzw. Haken-Icon (Figma 60, 61).
+  - Ersteller als lila Link, öffnet sein Profil.
+  - Mitgliederliste nur auf dem Handy (Figma 60, 61), auf dem Desktop
+    gibt es dafür das Mitglieder-Fenster.
+-->

@@ -1,0 +1,67 @@
+@if (user(); as person) {
+  <app-dialog [placement]="isOwn() ? 'top-right' : 'center'" label="Profil" (closed)="state.closeDialog()">
+    <div class="profile">
+      <header class="head">
+        <h2>{{ editing() ? 'Dein Profil bearbeiten' : 'Profil' }}</h2>
+        <button class="close" type="button" (click)="state.closeDialog()" aria-label="Schließen">
+          <img src="img/icons/close.svg" alt="">
+        </button>
+      </header>
+
+      @if (editing()) {
+        <form class="edit" (ngSubmit)="save()">
+          <img class="picture" [src]="selectedAvatar()" alt="Ausgewählter Avatar">
+          <div class="avatar-list" role="radiogroup" aria-label="Avatar auswählen">
+            @for (avatar of avatars; track avatar; let i = $index) {
+              <button type="button" role="radio" [class.selected]="avatar === selectedAvatar()"
+                [attr.aria-checked]="avatar === selectedAvatar()" [attr.aria-label]="'Avatar ' + (i + 1)"
+                (click)="selectedAvatar.set(avatar)">
+                <img [src]="avatar" alt="">
+              </button>
+            }
+          </div>
+          <label class="field-label" for="profile-name">Vollständiger Name</label>
+          <input id="profile-name" name="name" [(ngModel)]="editName" [class.invalid]="error()" autocomplete="name">
+          <p class="error" role="alert">{{ error() }}</p>
+          <div class="actions">
+            <button class="btn-secondary" type="button" (click)="editing.set(false)">Abbrechen</button>
+            <button class="btn-primary" type="submit" [disabled]="!editName.trim()">Speichern</button>
+          </div>
+        </form>
+      } @else {
+        <div class="picture"><img [src]="person.avatar ?? defaultAvatar" [alt]="person.name"></div>
+        <div class="name-row">
+          <h3>{{ person.name }}</h3>
+          @if (isOwn()) {
+            <button class="link" type="button" (click)="startEditing()" aria-label="Bearbeiten">
+              <span class="link-text">Bearbeiten</span><img class="link-icon" src="img/icons/edit-pencil.svg" alt="">
+            </button>
+          }
+        </div>
+        <p class="status" [class.online]="person.status === 'online'">
+          <span class="dot"></span>{{ person.status === 'online' ? 'Aktive' : 'Abwesend' }}
+        </p>
+        <div class="mail">
+          <h4><img src="img/icons/mail-black.svg" alt="">E-Mail-Adresse</h4>
+          <a [href]="'mailto:' + person.email">{{ person.email }}</a>
+        </div>
+        @if (!isOwn()) {
+          <button class="btn-primary message" type="button" (click)="writeMessage(person.id)">Nachricht</button>
+        }
+      }
+    </div>
+  </app-dialog>
+}
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Vorlage der Profil-Karte.
+  - Ansicht: Avatar 200 px, Name, Status ("Aktive" wie in Figma, sonst
+    "Abwesend"), E-Mail als mailto-Link.
+  - Eigenes Profil: oben rechts unter dem Header, mit "Bearbeiten".
+  - Fremdes Profil: in der Mitte, mit Button "Nachricht".
+  - Bearbeiten: Avatar-Auswahl (wie bei der Registrierung), Namensfeld,
+    Abbrechen / Speichern. Fehlertext direkt unter dem Feld, kein Alert.
+-->

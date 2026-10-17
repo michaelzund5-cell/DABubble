@@ -1,0 +1,21 @@
+// Members popup (assumed design, same values as the other dialogs).
+
+.members-card { width: 415px; max-width: 100%; padding: 40px 30px 30px; }
+
+.head { display: flex; align-items: center; justify-content: space-between; margin: 0 6px 20px 16px; }
+h2 { margin: 0; font-size: 24px; font-weight: 700; }
+
+.close { display: flex; padding: 0; border-radius: 50%; background: none; }
+.close:hover { background: var(--bg); }
+
+@media (max-width: 999px) {
+  .members-card { width: 100%; padding: 20px 10px; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles des Mitglieder-Fensters: 415 px breit, Titel 24 px fett wie in
+ * den anderen Fenstern. Auf dem Handy volle Breite.
+ */

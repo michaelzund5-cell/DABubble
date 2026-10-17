@@ -1,0 +1,67 @@
+// "Channel erstellen" (Figma mobile page 59, desktop uses the 872 px card of page 11).
+
+.create { width: 872px; max-width: 100%; padding: 38px 40px 40px; }
+
+.head { display: flex; align-items: center; justify-content: space-between; }
+h2 { margin: 0; font-size: 24px; font-weight: 700; }
+
+.close { display: flex; padding: 0; border-radius: 50%; background: none; }
+.close:hover { background: var(--bg); }
+
+.form { display: flex; flex-direction: column; }
+
+.intro { margin: 33px 0 0; font-size: 17px; line-height: 23px; }
+
+.label { margin-top: 26px; font-size: 18px; font-weight: 700; }
+.label span { font-weight: 400; color: var(--text-grey); }
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 0 20px 0 25px;
+  border: 1px solid var(--purple-3);
+  border-radius: 30px;
+  font-size: 18px;
+}
+
+.field:focus-within, .field.text:focus { border-color: var(--purple-1); }
+.field.invalid { border-color: var(--error); }
+.field input { flex: 1; height: 60px; padding: 0; border: 0; outline: none; }
+.field input::placeholder, .field.text::placeholder { color: var(--text-grey); }
+.field.text { min-height: 67px; padding: 20px; outline: none; resize: none; line-height: 25px; field-sizing: content; }
+
+.error { min-height: 20px; margin: 6px 0 0 20px; font-size: 14px; color: var(--error); }
+
+.submit { align-self: flex-end; margin-top: 24px; }
+
+.option { display: flex; align-items: center; gap: 15px; margin-top: 30px; font-size: 18px; cursor: pointer; }
+.option input { width: 20px; height: 20px; margin: 0; accent-color: var(--purple-1); cursor: pointer; }
+.picker { margin-top: 20px; }
+
+// Mobile (Figma page 59): card hangs from the top, 19 px side margin.
+@media (max-width: 999px) {
+  .create { width: 100%; padding: 39px 19px 97px; }
+  .head, .intro, .label { margin-left: 1px; }
+  h2 { margin-top: 1px; }
+  .intro { margin-top: 32px; }
+  .label + .field + .error:empty + .label { margin-top: 24px; }
+  .submit { margin-top: 23px; }
+  .field { gap: 13px; }
+  .error:empty { display: none; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles "Channel erstellen", Werte aus Figma Seite 59 (Handy).
+ * - Felder 60 bzw. 67 px hoch, Radius 30 px, #-Icon grau.
+ * - "(optional)" grau und nicht fett.
+ * - Button "Erstellen" rechts unten.
+ * - Desktop: gleiche Inhalte in einer 872 px breiten Karte wie die
+ *   Channel-Details (Figma zeigt den Dialog nur auf dem Handy).
+ * - Radiobuttons in Lila über accent-color.
+ */

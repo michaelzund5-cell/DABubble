@@ -1,0 +1,38 @@
+<div class="field">
+  @for (user of selected(); track user.id) {
+    <span class="chip">
+      <app-avatar [user]="user" [size]="38" />
+      {{ user.name }}
+      <button type="button" (click)="remove(user.id)" [attr.aria-label]="user.name + ' entfernen'">
+        <img src="img/icons/close.svg" alt="">
+      </button>
+    </span>
+  }
+  <input #field type="text" placeholder="Name eingeben" aria-label="Person suchen" autocomplete="off"
+    (input)="onInput($event)">
+</div>
+
+@if (suggestions().length) {
+  <ul class="suggestions" role="listbox">
+    @for (user of suggestions(); track user.id) {
+      <li>
+        <button type="button" (click)="add(user, field)">
+          <app-avatar [user]="user" [size]="50" [showStatus]="true" />
+          {{ user.name }}
+        </button>
+      </li>
+    }
+  </ul>
+} @else if (query().trim()) {
+  <p class="empty">Keine weitere Person gefunden</p>
+}
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Vorlage der Personen-Auswahl.
+  - Gewählte Personen als Pille mit Avatar, Name und Kreuz im Feld.
+  - #field: Verweis auf das Eingabefeld, damit add() es leeren kann.
+  - Trefferliste unter dem Feld, Klick wählt die Person aus.
+-->

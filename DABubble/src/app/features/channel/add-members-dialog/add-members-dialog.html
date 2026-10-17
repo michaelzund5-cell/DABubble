@@ -1,0 +1,27 @@
+@if (channel(); as current) {
+  <app-dialog placement="members" label="Leute hinzufügen" (closed)="state.closeDialog()">
+    <div class="add-members">
+      <header class="head">
+        <h2>Leute hinzufügen</h2>
+        <button class="close" type="button" (click)="state.closeDialog()" aria-label="Schließen">
+          <img src="img/icons/close.svg" alt="">
+        </button>
+      </header>
+      <p class="channel"><img src="img/icons/tag-active.svg" alt="">{{ current.name }}</p>
+
+      <app-people-picker [excludeIds]="current.memberIds" [(selectedIds)]="selectedIds" />
+
+      <button class="btn-primary submit" type="button" [disabled]="!selectedIds().length" (click)="add()">
+        Hinzufügen
+      </button>
+    </div>
+  </app-dialog>
+}
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Vorlage: Titel, Channel-Name in Lila, Personen-Auswahl, Button
+  "Hinzufügen" (gesperrt, solange niemand gewählt ist).
+-->

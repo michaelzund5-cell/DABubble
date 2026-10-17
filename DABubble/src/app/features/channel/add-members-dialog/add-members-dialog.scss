@@ -1,0 +1,25 @@
+// "Leute hinzufügen" (assumed design, same values as the other dialogs).
+
+.add-members { display: flex; flex-direction: column; width: 514px; max-width: 100%; padding: 40px; }
+
+.head { display: flex; align-items: center; justify-content: space-between; }
+h2 { margin: 0; font-size: 24px; font-weight: 700; }
+
+.close { display: flex; padding: 0; border-radius: 50%; background: none; }
+.close:hover { background: var(--bg); }
+
+.channel { display: flex; align-items: center; gap: 10px; margin: 20px 0 25px; font-size: 18px; color: var(--purple-link); }
+
+.submit { align-self: flex-end; margin-top: 30px; }
+
+@media (max-width: 999px) {
+  .add-members { width: 100%; padding: 20px; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles "Leute hinzufügen": 514 px breit, 40 px Innenabstand, Button
+ * rechts unten wie im Fenster "Channel erstellen" (Figma Seite 59).
+ */
