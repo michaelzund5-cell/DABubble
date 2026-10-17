@@ -1,0 +1,15 @@
+<div class="picker" role="menu" aria-label="Emoji auswählen">
+  @for (emoji of emojis; track emoji.id) {
+    <button type="button" role="menuitem" (click)="picked.emit(emoji)" [attr.aria-label]="emoji.char">
+      <img [src]="emoji.src" alt="">
+    </button>
+  }
+</div>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Liste der Emojis als Buttons. role="menu" / "menuitem": Screenreader
+  erkennen die Liste als Auswahlmenü. aria-label liest das Emoji vor.
+-->

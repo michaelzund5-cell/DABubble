@@ -1,0 +1,51 @@
+// Dialog frame. Card: white, radius 30, shadow as in Figma components (pages 10, 11).
+
+:host { position: fixed; inset: 0; z-index: 100; display: flex; }
+
+.backdrop { position: absolute; inset: 0; }
+:host(.dim) .backdrop { background: rgba(0, 0, 0, 0.2); }
+
+.card {
+  position: relative;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  border-radius: 30px;
+  background: var(--white);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+:host(.center), :host(.sheet) { align-items: center; justify-content: center; }
+:host(.top-right) { align-items: flex-start; justify-content: flex-end; padding: 108px 34px 0 0; }
+:host(.top-right) .card { border-radius: 30px 0 30px 30px; }
+:host(.channel) { align-items: flex-start; justify-content: center; padding-top: 200px; }
+:host(.channel) .card { border-radius: 0 30px 30px 30px; }
+:host(.members) { align-items: flex-start; justify-content: flex-end; padding: 200px 65px 0 0; }
+:host(.members) .card { border-radius: 30px 0 30px 30px; }
+
+// Mobile (Figma pages 43, 59-61): cards centered with 16 px margin,
+// "sheet" hangs from the top edge, channel details fill the screen.
+@media (max-width: 999px) {
+  :host(.top-right), :host(.members) { align-items: center; justify-content: center; padding: 16px; }
+  :host(.top-right) .card, :host(.members) .card { border-radius: 30px; }
+  :host(.sheet) { align-items: flex-start; }
+  :host(.sheet) .backdrop { background: var(--white); } // Figma page 59: white page behind the card
+  :host(.sheet) .card { width: 100%; max-width: 100%; border-radius: 0 0 30px 30px; }
+  :host(.channel) { padding: 0; }
+  :host(.channel) .card { width: 100%; height: 100dvh; max-width: 100%; max-height: 100dvh; border-radius: 0; box-shadow: none; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles des Fensterrahmens.
+ * - position: fixed; inset: 0: liegt über der ganzen Seite.
+ * - Ecken: Bei Fenstern, die an einem Element "hängen", ist die Ecke zum
+ *   Element hin eckig (wie das Menü in Figma).
+ * - max-height mit dvh: Auf dem Handy passt das Fenster immer in den
+ *   Bildschirm, der Inhalt scrollt bei Bedarf.
+ * - Positionen sind Annahmen, Figma zeigt die Fenster nur einzeln.
+ * - Handy: "sheet" (Channel erstellen) hängt oben am Rand, "channel"
+ *   (Channel-Details) füllt den ganzen Bildschirm (Figma 59 bis 61).
+ */

@@ -1,0 +1,14 @@
+<div class="backdrop" (click)="closed.emit()"></div>
+<div class="card" role="dialog" aria-modal="true" [attr.aria-label]="label()">
+  <ng-content />
+</div>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  - .backdrop: unsichtbare (oder dunkle) Fläche über der ganzen Seite.
+    Ein Klick darauf schliesst das Fenster.
+  - .card: das weisse Fenster. ng-content setzt hier den Inhalt der
+    jeweiligen Komponente ein (Profil, Channel-Details usw.).
+-->

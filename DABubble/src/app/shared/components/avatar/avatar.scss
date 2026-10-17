@@ -1,0 +1,42 @@
+// Values from Figma: 50 px avatar has an 18 px dot (14 px color + 2 px white ring),
+// placed 34 px from the top left. Scaled for other sizes.
+
+:host {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  width: var(--size);
+  height: var(--size);
+}
+
+img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.status {
+  position: absolute;
+  top: calc(var(--size) * 0.68);
+  left: calc(var(--size) * 0.68);
+  width: calc(var(--size) * 0.36);
+  height: calc(var(--size) * 0.36);
+  border: calc(var(--size) * 0.04) solid var(--white);
+  border-radius: 50%;
+  background: var(--text-grey);
+}
+
+.status.online { background: var(--online); }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles des Avatars.
+ * - var(--size): kommt aus avatar.ts. Alle Maße sind Anteile davon,
+ *   so passt der Punkt bei 40, 50 oder 70 px.
+ * - Figma (50 px): Punkt 18 px inkl. 2 px weißem Rand bei 34/34 px.
+ *   34 / 50 = 0.68, 18 / 50 = 0.36, 2 / 50 = 0.04.
+ * - flex-shrink: 0: Der Avatar wird in Flex-Zeilen nicht gequetscht.
+ */

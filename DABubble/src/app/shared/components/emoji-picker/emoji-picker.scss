@@ -1,0 +1,37 @@
+// Assumed design: Figma has no emoji picker. Same look as the other popups.
+
+:host { position: absolute; z-index: 20; }
+
+.picker {
+  display: grid;
+  grid-template-columns: repeat(5, 40px);
+  gap: 4px;
+  padding: 10px;
+  border-radius: 20px;
+  background: var(--white);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: none;
+}
+
+button:hover { background: var(--bg); }
+img { width: 28px; height: 28px; }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles der Emoji-Auswahl.
+ * - :host position: absolute: Das Popup liegt über dem Inhalt. Die
+ *   genaue Position legt die Elternkomponente fest.
+ * - Raster mit 5 Spalten (20 Emojis = 4 Zeilen).
+ * - Weißer Hintergrund, runde Ecken und Schatten wie die Popups aus Figma.
+ */

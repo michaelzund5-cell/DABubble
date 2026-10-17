@@ -1,0 +1,14 @@
+<img [src]="user().avatar ?? defaultAvatar" [alt]="user().name">
+@if (showStatus()) {
+  <span class="status" [class.online]="user().status === 'online'"
+    [attr.aria-label]="user().status === 'online' ? 'online' : 'offline'"></span>
+}
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Bild des Benutzers und optional der Status-Punkt.
+  - ?? defaultAvatar: Platzhalter, wenn kein Avatar gewählt ist.
+  - aria-label: Screenreader lesen "online" oder "offline" vor.
+-->
