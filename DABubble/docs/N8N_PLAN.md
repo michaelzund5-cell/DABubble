@@ -1,6 +1,6 @@
 # n8n-Plan
 
-Details und beide Varianten für Workflow 1: siehe `DABubble_n8n_Workflow_Bauplan_v2.docx`.
+Optional, erst nach Firebase. n8n ersetzt nie die App-Logik.
 
 ## Sinnvolle Aufgaben für n8n
 

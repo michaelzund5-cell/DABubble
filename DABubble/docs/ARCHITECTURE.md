@@ -1,36 +1,46 @@
 # Architektur
 
-## Ziel
+## Grundsatz
 
-Die Anwendung trennt Darstellung, Zustand und Datenanbindung klar voneinander.
+Components zeigen an, Services halten Daten und Logik. Components greifen nie direkt auf Daten zu.
+Wird Firebase angebunden, ändern sich nur die Services in `core/`, nicht die Components.
+
+```
+Component  ->  Service (core/data, core/auth)  ->  später Firebase (Auth + Firestore)
+```
 
 ## Ordner
 
-- `core/auth/`: Session (Anmeldestatus) und Guard
-- `core/data/`: Services pro Verantwortung
-  - `user.service.ts`: Benutzer
-  - `channel.service.ts`: Channels und Mitglieder
-  - `message.service.ts`: Nachrichten, Threads, Reaktionen
-  - `workspace-state.service.ts`: Was gerade angezeigt wird (UI-Zustand)
-  - `search.service.ts`: Suche
-  - `demo-seed.ts`: Demo-Daten, wird mit der echten Datenbank gelöscht
-- `shared/models/`: Modelle (Datenformen) für alle
-- `shared/utils/`: kleine Hilfsfunktionen
-- `features/auth/`: Seiten Login, Registrierung, Passwort-Hilfe
-- `features/navigation/`: Seitenleiste
-- `features/chat/`: Chat-Ansicht, Eingabe, Thread-Panel
-- `layout/`: Seitenrahmen (Arbeitsbereich)
+| Ordner | Inhalt |
+|---|---|
+| `core/auth/` | `session.service` (wer ist angemeldet), `registration.service`, `password-reset.service`, Guards |
+| `core/data/` | `user`, `channel`, `message`, `search`, `workspace-state` (was gerade offen ist), `demo-seed` (Demo-Daten) |
+| `core/layout/` | `viewport.service`: Handy-Ansicht ja/nein (unter 1000 px) |
+| `features/auth/` | Start-Animation, Login, Registrierung, Avatar, Passwort zurücksetzen |
+| `features/chat/` | Chat-Ansicht, Nachricht, Eingabe, @/#-Liste, Thread, Neue Nachricht, leerer Chat |
+| `features/channel/` | Channel-Details, Mitglieder, Leute hinzufügen, Channel erstellen |
+| `features/navigation/` | Header, Suche, Sidebar |
+| `features/profile/` | Profil ansehen und bearbeiten |
+| `features/legal/` | Impressum, Datenschutz |
+| `layout/workspace/` | Rahmen nach dem Login: Header, Sidebar, Chat, Thread, Dialoge |
+| `shared/` | Avatar, Dialog-Rahmen, Emoji-Auswahl, Toast, Modelle, Pipes, Validatoren |
 
-## Datenfluss
+## Zustand
 
-Component -> Service -> später API/Backend -> Datenbank
+- Signals überall (`signal`, `computed`). Kein RxJS im eigenen Code.
+- `WorkspaceStateService`: offener Chat, offener Thread, offener Dialog, Handy-Navigation.
+- Daten-Services geben nur lesbare Signals nach aussen (`asReadonly()`), Änderungen nur über Methoden.
 
-Components greifen nie direkt auf Daten zu, sondern immer über Services.
-Wird die Demo-Datenquelle durch die echte Datenbank ersetzt, ändern sich nur die Services.
+## Sicherheit (gilt auch nach Firebase)
 
-## Regeln
+- Prüfungen im Browser sind nur Komfort. Echte Regeln gehören in die Firestore-Regeln.
+- Login: gleiche Fehlermeldung bei falscher E-Mail und falschem Passwort (keine Konto-Prüfung von aussen).
+- Passwörter werden nie in localStorage gespeichert.
+- Nur der Absender darf eigene Nachrichten bearbeiten (Service prüft das zusätzlich).
+- Suche zeigt nur Channels, in denen man Mitglied ist, und nur eigene Direktnachrichten.
 
-- Code, Dateien und CSS-Klassen auf Englisch, kebab-case für Dateinamen
-- Abhängigkeiten per `inject()`
-- Daten nur über Methoden der Services ändern (Signals sind nach außen schreibgeschützt)
-- Prüfungen im Browser sind Komfort, keine Sicherheit. Sicherheit kommt über Auth-Anbieter und Zugriffsregeln der Datenbank.
+## Code-Regeln (DoD)
+
+- Funktionen höchstens 14 Zeilen, Dateien höchstens 400 Zeilen, camelCase, strict mode
+- `button { cursor: pointer; border: 0 }` global
+- Breakpoint Handy: 999 px (SCSS und `viewport.service` gleich)
