@@ -1,4 +1,5 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { DEFAULT_QUICK_EMOJIS } from '../../shared/models/emojis';
 import { Message, Reaction } from '../../shared/models/message.model';
 import { ActiveView } from '../../shared/models/view.model';
 import { directChatId } from '../../shared/utils/direct-chat-id';
@@ -12,6 +13,11 @@ export class MessageService {
 
   private readonly messagesState = signal<Message[]>(DEMO_MESSAGES);
   readonly messages = this.messagesState.asReadonly();
+
+  // The two emojis used last (user story 2). Defaults until the user has reacted.
+  private readonly recentEmojis = signal<string[]>([]);
+  readonly quickEmojis = computed(() =>
+    [...this.recentEmojis(), ...DEFAULT_QUICK_EMOJIS.filter((id) => !this.recentEmojis().includes(id))].slice(0, 2));
 
   getById(id: string): Message | undefined {
     return this.messages().find((message) => message.id === id);
@@ -73,6 +79,7 @@ export class MessageService {
   toggleReaction(id: string, emoji: string): void {
     const userId = this.session.currentUserId();
     if (!userId) return;
+    this.rememberEmoji(emoji);
     this.messagesState.update((list) => list.map((message) => {
       if (message.id !== id) return message;
       return { ...message, reactions: this.toggledReactions(message.reactions, emoji, userId) };
@@ -87,6 +94,10 @@ export class MessageService {
   isOwnMessage(id: string): boolean {
     const message = this.getById(id);
     return !!message && message.senderId === this.session.currentUserId();
+  }
+
+  private rememberEmoji(emoji: string): void {
+    this.recentEmojis.update((list) => [emoji, ...list.filter((id) => id !== emoji)].slice(0, 2));
   }
 
   private toggledReactions(reactions: Reaction[], emoji: string, userId: string): Reaction[] {
@@ -108,6 +119,7 @@ export class MessageService {
   // Translates the active view into the fields stored on a message.
   private locationOf(view: ActiveView): { channelId?: string; directChatId?: string } | null {
     if (view.type === 'channel') return { channelId: view.id };
+    if (view.type === 'new') return null;
     const userId = this.session.currentUserId();
     return userId ? { directChatId: directChatId(userId, view.id) } : null;
   }
@@ -162,4 +174,11 @@ export class MessageService {
  * - !! wandelt einen Wert in true/false um.
  * - { ...message, text } kopiert ein Objekt und überschreibt einzelne
  *   Felder. So bleibt das Original unverändert (Immutability).
+ *
+ * Ergänzt (Block 6):
+ * - quickEmojis: die zwei zuletzt genutzten Emojis für die Schnellleiste
+ *   beim Hover. Solange keine genutzt wurden: die Standard-Emojis
+ *   aus emojis.ts (Vorgabe der Checkliste).
+ * - rememberEmoji(): setzt das genutzte Emoji an den Anfang der Liste,
+ *   doppelte werden entfernt, höchstens zwei bleiben.
  */

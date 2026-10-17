@@ -8,6 +8,8 @@ import { computed, Injectable, signal } from '@angular/core';
 export class SessionService {
   private readonly storageKey = 'dabubble-demo-user-id';
   private readonly demoUser = { id: 'u1', email: 'test@test.ch', password: '123456' };
+  // Accounts registered in this tab (memory only, gone after reload). Firebase replaces this.
+  private readonly registeredAccounts: { id: string; email: string; password: string }[] = [];
 
   // ID of the logged-in user, or null if nobody is logged in.
   readonly currentUserId = signal<string | null>(this.readStoredUserId());
@@ -16,11 +18,19 @@ export class SessionService {
   readonly isLoggedIn = computed(() => this.currentUserId() !== null);
 
   login(email: string, password: string): boolean {
-    const valid = email.trim().toLowerCase() === this.demoUser.email && password === this.demoUser.password;
-    if (!valid) return false;
-    this.currentUserId.set(this.demoUser.id);
-    this.writeStoredUserId(this.demoUser.id);
+    const cleanEmail = email.trim().toLowerCase();
+    const account = [this.demoUser, ...this.registeredAccounts]
+      .find((entry) => entry.email === cleanEmail && entry.password === password);
+    if (!account) return false;
+    this.currentUserId.set(account.id);
+    // Only the demo user is remembered: registered demo accounts do not survive a reload.
+    if (account.id === this.demoUser.id) this.writeStoredUserId(account.id);
     return true;
+  }
+
+  // Demo: makes a freshly registered account usable for login in this tab.
+  registerDemoAccount(id: string, email: string, password: string): void {
+    this.registeredAccounts.push({ id, email: email.trim().toLowerCase(), password });
   }
 
   // Demo: guest uses the demo user. With Firebase this becomes an anonymous login.
@@ -78,4 +88,7 @@ export class SessionService {
  * entsteht erst durch den Auth-Anbieter und die Zugriffsregeln der
  * Datenbank. Vorher wurde nur 'ja' gespeichert, jetzt die echte
  * Benutzer-ID, damit die App weiß, WER eingeloggt ist.
+ * - registerDemoAccount(): Nach der Registrierung kann man sich mit dem
+ *   neuen Konto anmelden, solange der Tab offen ist (nur im Speicher).
+ *   Mit Firebase fällt das weg.
  */

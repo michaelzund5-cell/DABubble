@@ -1,5 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { UserService } from '../data/user.service';
+import { SessionService } from './session.service';
 
 export interface RegistrationDraft {
   name: string;
@@ -12,6 +13,7 @@ export interface RegistrationDraft {
 @Injectable({ providedIn: 'root' })
 export class RegistrationService {
   private readonly userService = inject(UserService);
+  private readonly session = inject(SessionService);
   private readonly draftState = signal<RegistrationDraft | null>(null);
   readonly draft = this.draftState.asReadonly();
 
@@ -23,7 +25,8 @@ export class RegistrationService {
   complete(avatar: string): boolean {
     const draft = this.draftState();
     if (!draft) return false;
-    this.userService.addUser(draft.name, draft.email, avatar);
+    const id = this.userService.addUser(draft.name, draft.email, avatar);
+    this.session.registerDemoAccount(id, draft.email, draft.password);
     this.draftState.set(null);
     return true;
   }

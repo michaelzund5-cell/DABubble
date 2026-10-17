@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { User } from '../../shared/models/user.model';
+import { validateName } from '../../shared/utils/validators';
 import { SessionService } from '../auth/session.service';
 import { DEMO_USERS } from './demo-seed';
 
@@ -24,9 +25,26 @@ export class UserService {
   }
 
   // Demo: adds a user locally. With Firebase the user document is stored in Firestore.
-  addUser(name: string, email: string, avatar: string): void {
-    const user: User = { id: crypto.randomUUID(), name, email, avatar, initials: toInitials(name), status: 'offline' };
+  addUser(name: string, email: string, avatar: string): string {
+    const user: User = { id: crypto.randomUUID(), name, email, avatar, initials: toInitials(name), status: 'online' };
     this.usersState.update((users) => [...users, user]);
+    return user.id;
+  }
+
+  emailExists(email: string): boolean {
+    const clean = email.trim().toLowerCase();
+    return this.users().some((user) => user.email.toLowerCase() === clean);
+  }
+
+  // User story 4: change own name and avatar. Returns an error text, or '' when saved.
+  updateProfile(name: string, avatar: string): string {
+    const error = validateName(name);
+    const id = this.session.currentUserId();
+    if (error || !id) return error || 'Bitte melde dich erneut an.';
+    const cleanName = name.trim().replace(/\s+/g, ' ');
+    this.usersState.update((users) => users.map((user) =>
+      user.id === id ? { ...user, name: cleanName, avatar, initials: toInitials(cleanName) } : user));
+    return '';
   }
 }
 
@@ -52,6 +70,12 @@ function toInitials(name: string): string {
  *   Direktnachrichten.
  * - getById(): Sucht einen Benutzer anhand der ID. find() gibt das
  *   erste passende Element zurück oder undefined.
+ * - addUser(): legt einen Benutzer an (Demo) und gibt die neue ID zurück.
+ * - emailExists(): Prüft, ob die E-Mail schon vergeben ist
+ *   (Registrierung, Gross-/Kleinschreibung egal).
+ * - updateProfile(): ändert Name und Avatar des eingeloggten Benutzers
+ *   (User Story 4). Der Name wird wie bei der Registrierung geprüft.
+ *   Nur der eigene Eintrag kann geändert werden.
  *
  * Später lädt dieser Service die Benutzer aus der Datenbank. Die
  * Components merken davon nichts, weil sie nur den Service benutzen.
