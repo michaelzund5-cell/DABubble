@@ -3,6 +3,7 @@ import { DEFAULT_QUICK_EMOJIS } from '../../shared/models/emojis';
 import { Message, Reaction } from '../../shared/models/message.model';
 import { ActiveView } from '../../shared/models/view.model';
 import { directChatId } from '../../shared/utils/direct-chat-id';
+import { MAX_MESSAGE_LENGTH } from '../../shared/utils/limits';
 import { SessionService } from '../auth/session.service';
 import { DEMO_MESSAGES } from './demo-seed';
 
@@ -43,7 +44,7 @@ export class MessageService {
   }
 
   send(text: string, view: ActiveView): void {
-    const cleanText = text.trim();
+    const cleanText = cleanMessage(text);
     const senderId = this.session.currentUserId();
     const location = this.locationOf(view);
     if (!cleanText || !senderId || !location) return;
@@ -51,7 +52,7 @@ export class MessageService {
   }
 
   reply(rootId: string, text: string): void {
-    const cleanText = text.trim();
+    const cleanText = cleanMessage(text);
     const senderId = this.session.currentUserId();
     const root = this.getById(rootId);
     if (!cleanText || !senderId || !root) return;
@@ -61,7 +62,7 @@ export class MessageService {
 
   // Returns false if the message does not exist or belongs to someone else.
   edit(id: string, text: string): boolean {
-    const cleanText = text.trim();
+    const cleanText = cleanMessage(text);
     if (!cleanText || !this.isOwnMessage(id)) return false;
     this.messagesState.update((list) =>
       list.map((message) => message.id === id ? { ...message, text: cleanText, edited: true } : message));
@@ -130,6 +131,12 @@ export class MessageService {
   }
 }
 
+// Trimmed text, or '' when it is empty or longer than allowed (the caller then does nothing).
+function cleanMessage(text: string): string {
+  const clean = text.trim();
+  return clean.length <= MAX_MESSAGE_LENGTH ? clean : '';
+}
+
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
@@ -181,4 +188,7 @@ export class MessageService {
  *   aus emojis.ts (Vorgabe der Checkliste).
  * - rememberEmoji(): setzt das genutzte Emoji an den Anfang der Liste,
  *   doppelte werden entfernt, höchstens zwei bleiben.
+ * - cleanMessage(): entfernt Leerzeichen am Rand und lehnt Texte über
+ *   4000 Zeichen ab (MAX_MESSAGE_LENGTH). Gilt für Senden, Antworten
+ *   und Bearbeiten.
  */

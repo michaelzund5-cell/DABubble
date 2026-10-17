@@ -1,6 +1,6 @@
 <form class="composer" (ngSubmit)="send()">
   <textarea #field name="text" [(ngModel)]="text" (ngModelChange)="onTextChange()" (keydown)="onKeydown($event)"
-    [placeholder]="placeholder()" aria-label="Nachricht schreiben"></textarea>
+    [placeholder]="placeholder()" aria-label="Nachricht schreiben" [maxlength]="maxLength"></textarea>
 
   <div class="toolbar">
     <button class="icon-btn" type="button" (click)="pickerOpen.set(!pickerOpen())" aria-label="Emoji einfügen">

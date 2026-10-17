@@ -1,3 +1,5 @@
+import { MAX_NAME_LENGTH } from './limits';
+
 // Form checks used by login, register and password reset.
 // Each function returns an error text, or '' when the value is fine.
 // Browser checks are for quick feedback only. Firebase checks again on the server.
@@ -16,6 +18,7 @@ export function validateName(value: string): string {
   const parts = value.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return 'Bitte gib deinen Namen ein.';
   if (parts.length < 2) return 'Bitte gib Vor- und Nachnamen ein.';
+  if (value.trim().length > MAX_NAME_LENGTH) return `Der Name darf höchstens ${MAX_NAME_LENGTH} Zeichen lang sein.`;
   return '';
 }
 
@@ -41,7 +44,8 @@ export function validatePasswordRepeat(password: string, repeat: string): string
  * - Jede Funktion gibt einen Fehlertext zurück, oder '' wenn alles
  *   stimmt. So kann die Seite den Text direkt unter dem Feld anzeigen.
  * - EMAIL_PATTERN: regulärer Ausdruck. Prüft "etwas@etwas.xx".
- * - validateName: mindestens zwei Wörter (Vor- und Nachname).
+ * - validateName: mindestens zwei Wörter (Vor- und Nachname), höchstens
+ *   60 Zeichen (MAX_NAME_LENGTH).
  * - validatePassword: mindestens 8 Zeichen, ein Buchstabe, eine Zahl.
  * - validatePasswordRepeat: Bestätigung muss gleich sein.
  *

@@ -14,7 +14,7 @@
     <form (ngSubmit)="next()" novalidate>
       <div class="field">
         <img src="img/icons/person.svg" alt="">
-        <input name="name" type="text" [(ngModel)]="name" (blur)="touched.name = true"
+        <input name="name" type="text" maxlength="60" [(ngModel)]="name" (blur)="touched.name = true"
           placeholder="Name und Nachname" autocomplete="name" aria-label="Name und Nachname">
         @if (touched.name && getNameError()) {
           <p class="field-error" role="alert">{{ getNameError() }}</p>

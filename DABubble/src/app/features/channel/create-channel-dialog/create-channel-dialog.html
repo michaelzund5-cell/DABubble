@@ -24,7 +24,7 @@
 
         <label class="label" for="channel-description">Beschreibung <span>(optional)</span></label>
         <textarea id="channel-description" class="field text" name="description" [(ngModel)]="description"
-          placeholder="Dein Text hier" rows="1"></textarea>
+          placeholder="Dein Text hier" rows="1" maxlength="500"></textarea>
 
         <button class="btn-primary submit" type="submit" [disabled]="!name.trim()">Erstellen</button>
       </form>

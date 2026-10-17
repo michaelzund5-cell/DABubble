@@ -21,7 +21,8 @@
             }
           </div>
           <label class="field-label" for="profile-name">Vollständiger Name</label>
-          <input id="profile-name" name="name" [(ngModel)]="editName" [class.invalid]="error()" autocomplete="name">
+          <input id="profile-name" name="name" [(ngModel)]="editName" [class.invalid]="error()" autocomplete="name"
+            maxlength="60">
           <p class="error" role="alert">{{ error() }}</p>
           <div class="actions">
             <button class="btn-secondary" type="button" (click)="editing.set(false)">Abbrechen</button>

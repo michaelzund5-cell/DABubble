@@ -7,6 +7,7 @@ import { WorkspaceStateService } from '../../../core/data/workspace-state.servic
 import { EmojiPicker } from '../../../shared/components/emoji-picker/emoji-picker';
 import { Emoji } from '../../../shared/models/emojis';
 import { ActiveView } from '../../../shared/models/view.model';
+import { MAX_MESSAGE_LENGTH } from '../../../shared/utils/limits';
 import { MentionList } from '../mention-list/mention-list';
 import { MentionInput } from './mention-input';
 
@@ -18,6 +19,7 @@ import { MentionInput } from './mention-input';
   host: { '[class.narrow]': 'narrow()', '[class.thread]': '!!threadId()' },
 })
 export class MessageInput extends MentionInput {
+  readonly maxLength = MAX_MESSAGE_LENGTH;
   private readonly messageService = inject(MessageService);
   private readonly channelService = inject(ChannelService);
   private readonly userService = inject(UserService);
@@ -90,4 +92,5 @@ export class MessageInput extends MentionInput {
  *   springt der Cursor ins Feld (Checkliste: Fokus beim Wechsel). Bei
  *   "Neue Nachricht" bekommt zuerst das Empfänger-Feld den Fokus.
  * - insertEmoji(): hängt das Emoji-Zeichen an den Text an.
+ * - maxLength: höchstens 4000 Zeichen pro Nachricht (shared/utils/limits.ts).
  */

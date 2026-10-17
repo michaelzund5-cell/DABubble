@@ -3,7 +3,7 @@
 
   @if (editing()) {
     <form class="edit-box" (ngSubmit)="saveEdit()">
-      <textarea name="editText" [(ngModel)]="editText" aria-label="Nachricht bearbeiten"></textarea>
+      <textarea name="editText" [(ngModel)]="editText" aria-label="Nachricht bearbeiten" [maxlength]="maxLength"></textarea>
       <div class="edit-actions">
         <button class="icon-btn" type="button" (click)="pickerOpen.set(!pickerOpen())" aria-label="Emoji einfügen">
           <img src="img/icons/emoji.svg" alt="">

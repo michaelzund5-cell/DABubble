@@ -48,7 +48,7 @@
         </div>
         @if (editingDescription()) {
           <textarea class="field" name="description" [(ngModel)]="descriptionDraft" placeholder="Dein Text hier"
-            aria-label="Beschreibung"></textarea>
+            aria-label="Beschreibung" maxlength="500"></textarea>
         } @else {
           <p class="text">{{ current.description || 'Keine Beschreibung' }}</p>
         }

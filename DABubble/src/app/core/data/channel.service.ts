@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Channel } from '../../shared/models/channel.model';
 import { User } from '../../shared/models/user.model';
+import { MAX_DESCRIPTION_LENGTH } from '../../shared/utils/limits';
 import { SessionService } from '../auth/session.service';
 import { DEMO_CHANNELS } from './demo-seed';
 import { UserService } from './user.service';
@@ -51,7 +52,7 @@ export class ChannelService {
     const channel: Channel = {
       id: crypto.randomUUID(),
       name: toChannelName(name),
-      description: description.trim(),
+      description: description.trim().slice(0, MAX_DESCRIPTION_LENGTH),
       memberIds: [userId],
       createdBy: userId,
       createdAt: Date.now(),
@@ -69,7 +70,7 @@ export class ChannelService {
 
   updateDescription(id: string, description: string): string {
     if (!this.isMember(id)) return 'Nur Mitglieder können den Channel ändern.';
-    this.patch(id, { description: description.trim() });
+    this.patch(id, { description: description.trim().slice(0, MAX_DESCRIPTION_LENGTH) });
     return '';
   }
 
@@ -133,4 +134,6 @@ export function toChannelName(name: string): string {
  * - toChannelName(): "Office team" wird zu "Office-team".
  * Wichtig: Diese Prüfungen sind nur für die Oberfläche. Mit Firebase
  * müssen die Firestore-Regeln dasselbe auf dem Server prüfen.
+ * - Beschreibung: höchstens 500 Zeichen (MAX_DESCRIPTION_LENGTH), längerer
+ *   Text wird abgeschnitten.
  */

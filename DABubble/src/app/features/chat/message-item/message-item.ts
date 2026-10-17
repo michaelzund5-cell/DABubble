@@ -10,6 +10,7 @@ import { EmojiPicker } from '../../../shared/components/emoji-picker/emoji-picke
 import { Emoji } from '../../../shared/models/emojis';
 import { Message, Reaction } from '../../../shared/models/message.model';
 import { EmojiSrcPipe } from '../../../shared/pipes/emoji-src.pipe';
+import { MAX_MESSAGE_LENGTH } from '../../../shared/utils/limits';
 
 // One chat message: avatar, name, time, bubble, reactions, thread link, hover menu, edit mode.
 @Component({
@@ -26,6 +27,7 @@ import { EmojiSrcPipe } from '../../../shared/pipes/emoji-src.pipe';
   },
 })
 export class MessageItem {
+  readonly maxLength = MAX_MESSAGE_LENGTH;
   readonly messageService = inject(MessageService);
   private readonly userService = inject(UserService);
   readonly state = inject(WorkspaceStateService);
@@ -111,4 +113,5 @@ export class MessageItem {
  *   aufgeklappt gibt es "Weniger anzeigen" (Figma Seiten 12, 13).
  * - reactedBy(): Text für das Hover-Feld, z. B. "Sofia Müller und Du
  *   haben reagiert".
+ * - maxLength: höchstens 4000 Zeichen pro Nachricht (shared/utils/limits.ts).
  */
