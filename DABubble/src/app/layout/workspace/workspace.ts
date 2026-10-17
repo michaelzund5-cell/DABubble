@@ -1,64 +1,40 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { SessionService } from '../../core/auth/session.service';
-import { SearchResult, SearchService } from '../../core/data/search.service';
-import { UserService } from '../../core/data/user.service';
 import { WorkspaceStateService } from '../../core/data/workspace-state.service';
+import { AddMembersDialog } from '../../features/channel/add-members-dialog/add-members-dialog';
+import { ChannelDetails } from '../../features/channel/channel-details/channel-details';
+import { CreateChannelDialog } from '../../features/channel/create-channel-dialog/create-channel-dialog';
+import { MembersDialog } from '../../features/channel/members-dialog/members-dialog';
 import { ChannelView } from '../../features/chat/channel-view/channel-view';
+import { NewMessage } from '../../features/chat/new-message/new-message';
 import { ThreadPanel } from '../../features/chat/thread-panel/thread-panel';
+import { Header } from '../../features/navigation/header/header';
 import { Sidebar } from '../../features/navigation/sidebar/sidebar';
+import { ProfileDialog } from '../../features/profile/profile-dialog/profile-dialog';
 
-// Page layout after login: top bar + sidebar + chat + optional thread panel.
+// Page layout after login: header + sidebar + chat + optional thread panel.
 @Component({
   selector: 'app-workspace',
-  imports: [Sidebar, ChannelView, ThreadPanel],
+  imports: [
+    Header, Sidebar, ChannelView, NewMessage, ThreadPanel,
+    ProfileDialog, ChannelDetails, MembersDialog, AddMembersDialog, CreateChannelDialog,
+  ],
   templateUrl: './workspace.html',
   styleUrl: './workspace.scss',
 })
 export class Workspace {
-  private readonly session = inject(SessionService);
-  private readonly router = inject(Router);
-  readonly userService = inject(UserService);
-  readonly search = inject(SearchService);
   readonly state = inject(WorkspaceStateService);
-
-  readonly profileMenuOpen = signal(false);
-  readonly mobileNavOpen = signal(false);
-
-  onSearchInput(event: Event): void {
-    this.search.term.set((event.target as HTMLInputElement).value);
-  }
-
-  openSearchResult(result: SearchResult): void {
-    this.state.openView(result.type, result.id);
-    this.search.clear();
-    this.mobileNavOpen.set(false);
-  }
-
-  logout(): void {
-    this.session.logout();
-    void this.router.navigate(['/login']);
-  }
+  readonly sidebarOpen = signal(true);
 }
 
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Der Arbeitsbereich nach dem Login (Layout).
- * Er setzt die Bausteine zusammen: Kopfzeile mit Suche und Profil,
- * Seitenleiste, Chat und optional das Thread-Panel.
- *
- * - profileMenuOpen, mobileNavOpen: Signals für das Profil-Menü und
- *   das mobile Navigationsmenü (offen oder zu).
- * - onSearchInput(): Schreibt den Suchtext in den SearchService.
- *   "as HTMLInputElement" ist eine Typ-Zusicherung (Type Assertion):
- *   Wir sagen TypeScript, dass das Ereignis von einem Eingabefeld
- *   kommt. Vorher stand im HTML $any(...), das schaltet die
- *   Typprüfung komplett ab.
- * - openSearchResult(): Öffnet den gefundenen Channel bzw. Chat, leert
- *   die Suche und schließt das mobile Menü. Weil der Treffer jetzt
- *   direkt type 'channel' oder 'direct' hat, entfällt die frühere
- *   Umwandlung von 'person' in 'direkt'.
- * - logout(): Abmelden und zurück zur Login-Seite.
+ * Logik des Seitenrahmens.
+ * - Die Kopfzeile ist jetzt eine eigene Komponente (Header) mit Suche
+ *   und Profilmenü. Der Workspace setzt nur noch die Teile zusammen.
+ * - sidebarOpen: Signal für das Ein- und Ausklappen der Sidebar.
+ * - state.openThreadId(): Ist ein Thread offen, kommt die dritte Spalte.
+ * - Die Fenster (Dialoge) werden hier eingebunden, damit sie über allen
+ *   Spalten liegen.
  */

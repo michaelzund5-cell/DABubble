@@ -1,71 +1,56 @@
 <div class="workspace">
-  <!-- Top bar: mobile menu button, logo, search, profile -->
-  <header class="topbar">
-    <button class="mobile-menu-button" type="button" (click)="mobileNavOpen.set(!mobileNavOpen())" [attr.aria-expanded]="mobileNavOpen()" aria-label="Navigation öffnen">☰</button>
-    <div class="brand"><span class="logo">DB</span><strong>DABubble</strong></div>
+  <app-header />
 
-    <div class="search">
-      <input type="search" placeholder="DABubble durchsuchen" aria-label="DABubble durchsuchen" [value]="search.term()" (input)="onSearchInput($event)">
-      <span aria-hidden="true">⌕</span>
-      @if (search.results().length) {
-        <div class="search-results">
-          @for (result of search.results(); track result.type + result.id) {
-            <button type="button" (click)="openSearchResult(result)">{{ result.label }}</button>
-          }
-        </div>
-      }
-    </div>
-
-    @if (userService.currentUser(); as user) {
-      <button class="profile-button" type="button" (click)="profileMenuOpen.set(!profileMenuOpen())" [attr.aria-expanded]="profileMenuOpen()">
-        <span class="profile-avatar">{{ user.initials }}</span>
-        <span class="profile-name">{{ user.name }}</span>
-        <span class="status-dot" aria-hidden="true"></span>
-      </button>
-
-      @if (profileMenuOpen()) {
-        <div class="profile-menu">
-          <strong>{{ user.name }}</strong>
-          <span>{{ user.email }}</span>
-          <button type="button" (click)="logout()">Abmelden</button>
-        </div>
-      }
-    }
-  </header>
-
-  <!-- Main area: sidebar | chat | thread (only when a thread is open) -->
-  <main class="content">
-    <aside class="navigation" [class.mobile-open]="mobileNavOpen()">
-      <app-sidebar (navigationSelected)="mobileNavOpen.set(false)"></app-sidebar>
+  <main class="content" [class.collapsed]="!sidebarOpen()" [class.with-thread]="!!state.openThreadId()"
+    [class.mobile-chat]="state.mobileChatOpen()">
+    <aside class="sidebar-column" [attr.aria-hidden]="!sidebarOpen()">
+      <app-sidebar />
     </aside>
 
-    <section class="chat-column"><app-channel-view></app-channel-view></section>
+    <section class="chat-column">
+      @if (state.activeView().type === 'new') {
+        <app-new-message />
+      } @else {
+        <app-channel-view />
+      }
+    </section>
 
     @if (state.openThreadId()) {
-      <aside class="thread-column"><app-thread-panel></app-thread-panel></aside>
+      <aside class="thread-column"><app-thread-panel /></aside>
     }
   </main>
+
+  @switch (state.dialog()) {
+    @case ('profile') { <app-profile-dialog /> }
+    @case ('ownProfile') { <app-profile-dialog /> }
+    @case ('channelDetails') { <app-channel-details /> }
+    @case ('members') { <app-members-dialog /> }
+    @case ('addMembers') { <app-add-members-dialog /> }
+    @case ('createChannel') { <app-create-channel-dialog /> }
+  }
+
+  <button class="menu-toggle" type="button" [class.collapsed]="!sidebarOpen()" (click)="sidebarOpen.set(!sidebarOpen())"
+    [attr.aria-expanded]="sidebarOpen()">
+    <img [src]="sidebarOpen() ? 'img/icons/menu-close.svg' : 'img/icons/menu-open.svg'" alt="">
+    <span>{{ sidebarOpen() ? 'Workspace-Menü schließen' : 'Workspace-Menu öffnen' }}</span>
+  </button>
 </div>
 
 <!--
   =====================================================================
   ZUSAMMENFASSUNG (Deutsch)
   =====================================================================
-  Das HTML des Arbeitsbereichs in zwei Teilen:
-
-  1. Kopfzeile:
-     - Menü-Button (nur auf dem Handy sichtbar) öffnet die Navigation.
-     - Suche: [value] zeigt den Suchtext, (input) meldet jede Eingabe.
-       Die Trefferliste erscheint nur, wenn es Treffer gibt.
-       track result.type + result.id: Ein Channel und eine Person
-       könnten dieselbe ID haben, deshalb wird der Typ mit verwendet.
-     - Profil: @if (userService.currentUser(); as user) zeigt das
-       Profil nur, wenn ein Benutzer eingeloggt ist. So gibt es keinen
-       Fehler, falls currentUser einmal undefined ist.
-
-  2. Hauptbereich mit drei Spalten:
-     - Seitenleiste: (navigationSelected)="..." hört auf das Ereignis
-       der Seitenleiste und schließt dann das mobile Menü.
-     - Chat-Ansicht.
-     - Thread-Panel: nur sichtbar, wenn ein Thread offen ist.
+  Seitenrahmen nach dem Login (Figma Seiten 17 und 18).
+  - Header oben, darunter drei Spalten: Sidebar, Chat, optional Thread.
+  - Mittlere Spalte: Chat oder "Neue Nachricht" (Figma Seite 20).
+  - [class.collapsed]: Sidebar ist eingeklappt, der Chat wird breiter.
+  - Button am linken Rand: klappt die Sidebar ein und aus (User Story 5).
+    Der Text lautet in Figma "Workspace-Menü schließen" bzw.
+    "Workspace-Menu öffnen" (ohne ü, 1:1 übernommen).
+  - @switch (state.dialog()): zeigt das offene Fenster (Profil, Channel-
+    Details, Mitglieder, Leute hinzufügen, Channel erstellen). Das Menü
+    oben rechts liegt im Header.
+  - mobile-chat: Auf dem Handy ist immer nur eine Ansicht sichtbar: Menü,
+    Chat oder Thread (CSS in workspace.scss, User Story 5).
+  - aria-hidden: Eingeklappte Sidebar wird von Screenreadern ignoriert.
 -->

@@ -1,51 +1,104 @@
-.workspace { min-height: 100vh; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
-.topbar { min-height: 78px; display: grid; grid-template-columns: 280px minmax(280px, 1fr) auto; align-items: center; gap: 26px; padding: 0 12px; position: relative; }
-.brand { display: flex; align-items: center; gap: 12px; font-size: 22px; }
-.logo { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; color: #fff; font-weight: 800; background: linear-gradient(135deg, var(--purple-dark), var(--purple-medium)); }
-.search { position: relative; }
-.search input { width: 100%; height: 54px; border: 0; border-radius: 999px; background: #fff; padding: 0 54px 0 24px; outline: 1px solid transparent; font-size: 17px; }
-.search input:focus { outline-color: var(--purple-medium); }
-.search > span { position: absolute; right: 22px; top: 12px; font-size: 28px; }
-.search-results { position: absolute; z-index: 20; top: 62px; left: 0; right: 0; background: #fff; border-radius: 18px; box-shadow: var(--shadow); padding: 8px; }
-.search-results button { width: 100%; border: 0; background: transparent; text-align: left; padding: 12px 14px; border-radius: 12px; }
-.search-results button:hover { background: var(--background); color: var(--purple-dark); }
-.profile-button { position: relative; border: 0; background: transparent; display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
-.profile-avatar { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: #d9dcff; color: var(--purple-dark); font-weight: 800; }
-.status-dot { width: 13px; height: 13px; border-radius: 50%; background: var(--online); border: 2px solid #fff; position: absolute; left: 36px; bottom: 2px; }
-.profile-menu { position: absolute; z-index: 30; right: 14px; top: 70px; width: 220px; padding: 18px; display: grid; gap: 8px; background: #fff; border-radius: 24px 0 24px 24px; box-shadow: var(--shadow); }
-.profile-menu span { color: var(--text-grey); font-size: 14px; }
-.profile-menu button { border: 0; background: var(--background); border-radius: 999px; padding: 10px 16px; font-weight: 700; }
-.content { flex: 1; min-height: 0; display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 18px; }
-.content:has(.thread-column) { grid-template-columns: 300px minmax(0, 1fr) minmax(300px, 420px); }
-.navigation, .chat-column, .thread-column { min-height: 0; }
-.mobile-menu-button { display: none; }
-@media (max-width: 1100px) { .content:has(.thread-column) { grid-template-columns: 270px minmax(0, 1fr); } .thread-column { position: fixed; inset: 100px 18px 18px auto; width: min(420px, calc(100vw - 36px)); z-index: 25; } }
-@media (max-width: 780px) {
-  .workspace { padding: 0; gap: 0; }
-  .topbar { grid-template-columns: auto 1fr auto; min-height: 74px; padding: 10px 14px; background: #fff; }
-  .brand strong, .profile-name { display: none; }
-  .search { grid-column: 1 / -1; grid-row: 2; padding-bottom: 10px; }
-  .mobile-menu-button { display: inline-grid; place-items: center; border: 0; background: transparent; font-size: 24px; }
-  .content { display: block; }
-  .navigation { display: none; position: fixed; inset: 74px 0 0 0; z-index: 40; background: rgba(0,0,0,.15); padding: 12px; }
-  .navigation.mobile-open { display: block; }
-  .chat-column { height: calc(100vh - 142px); }
-  .thread-column { inset: 142px 0 0 0; width: 100%; }
+// Workspace frame (Figma pages 17, 18). Cards start 20 px below the header.
+
+.workspace {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
+
+.content {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 366px minmax(0, 1fr);
+  column-gap: 20px;
+  min-height: 0;
+  padding: 20px 20px 25px;
+  transition: grid-template-columns 250ms ease, column-gap 250ms ease;
+}
+
+// Figma page 18: the chat card starts at x 21 when the menu is closed.
+.content.collapsed { grid-template-columns: 0 minmax(0, 1fr); column-gap: 1px; }
+.content.with-thread { grid-template-columns: 366px minmax(0, 1fr) 485px; }
+.content.collapsed.with-thread { grid-template-columns: 0 minmax(0, 1fr) 485px; }
+
+.sidebar-column, .chat-column, .thread-column { min-width: 0; min-height: 0; }
+.sidebar-column { overflow: hidden; }
+
+.menu-toggle {
+  position: absolute;
+  top: 585px;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 56px;
+  height: 339px;
+  padding-top: 27px;
+  border-radius: 0 30px 30px 0;
+  background: var(--white);
+  box-shadow: 4px 4px 7px rgba(0, 0, 0, 0.2);
+  font-size: 20px;
+}
+
+.menu-toggle.collapsed { top: 599px; height: 310px; }
+
+// Lower screens: keep the toggle inside the window (Figma: 585 px at 1080 px height).
+@media (max-height: 1000px) {
+  .menu-toggle { top: calc(100vh - 495px); }
+  .menu-toggle.collapsed { top: calc(100vh - 481px); }
+}
+
+// Narrow desktops: the thread lies over the chat instead of taking its own column.
+@media (min-width: 1000px) and (max-width: 1499px) {
+  .content.with-thread { grid-template-columns: 366px minmax(0, 1fr); }
+  .content.collapsed.with-thread { grid-template-columns: 0 minmax(0, 1fr); }
+  .thread-column {
+    position: absolute;
+    top: 115px;
+    right: 20px;
+    bottom: 25px;
+    z-index: 4;
+    width: min(485px, calc(100vw - 40px));
+    border-radius: 30px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// Mobile (Figma pages 44-61): one view at a time, header bar 80 px, white page.
+@media (max-width: 999px) {
+  .workspace { height: 100dvh; }
+  .content { display: flex; padding: 0; background: var(--white); }
+  .sidebar-column, .chat-column, .thread-column { display: none; flex: 1; }
+  .content:not(.mobile-chat) .sidebar-column { display: block; }
+  .content.mobile-chat:not(.with-thread) .chat-column { display: block; }
+  .content.mobile-chat.with-thread .thread-column { display: block; }
+  .menu-toggle { display: none; }
+}
+.menu-toggle span { writing-mode: vertical-rl; rotate: 180deg; }
+.menu-toggle:hover { color: var(--purple-1); }
 
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Styles des Arbeitsbereichs.
- * - .topbar: CSS Grid mit drei Spalten (Logo | Suche | Profil).
- * - .content: Grid mit zwei Spalten (Seitenleiste | Chat).
- *   .content:has(.thread-column): Ist das Thread-Panel da, gibt es eine
- *   dritte Spalte. :has() prüft, ob ein bestimmtes Kind-Element
- *   existiert.
- * - minmax(0, 1fr): Die Spalte nimmt den restlichen Platz, darf aber
- *   auch schmaler werden, ohne das Layout zu sprengen.
- * - @media (max-width: 1100px): Das Thread-Panel schwebt über dem Chat.
- * - @media (max-width: 780px): Handy-Ansicht. Die Navigation wird zum
- *   ausklappbaren Menü (.navigation.mobile-open).
+ * Styles des Seitenrahmens.
+ * - height: 100vh + overflow: hidden: Die Seite selbst scrollt nicht,
+ *   nur die Nachrichtenliste und die Sidebar.
+ * - .content: CSS Grid mit festen Spalten aus Figma: Sidebar 366 px,
+ *   Chat nimmt den Rest (minmax(0, 1fr)).
+ * - transition: Ein- und Ausklappen ist animiert.
+ * - .menu-toggle: Button am linken Rand, Position und Höhe aus Figma
+ *   (offen: y 585, 339 px hoch; eingeklappt: y 599, 310 px).
+ *   writing-mode: vertical-rl stellt den Text senkrecht, rotate: 180deg
+ *   dreht ihn, sodass er von unten nach oben gelesen wird (wie Figma).
+ *   Bei niedrigen Fenstern rutscht er mit nach oben.
+ * - Thread-Spalte 485 px (Figma Seite 15). Zwischen 1000 und 1500 px
+ *   Breite liegt der Thread über dem Chat, sonst wäre der Chat zu schmal.
+ * - Handy (unter 1000 px): immer nur eine Ansicht (Menü, Chat oder
+ *   Thread), gesteuert über die Klasse mobile-chat. 100dvh passt sich
+ *   der echten Höhe im Handy-Browser an (Adressleiste).
  */
