@@ -1,0 +1,82 @@
+// Header (Figma page 17: height 70 px, 25 px from the top; mobile page 44/48: 80 px bar).
+
+.header {
+  display: flex;
+  align-items: center;
+  height: 70px;
+  margin: 25px 37px 0 50px;
+}
+
+.logo { width: 242px; height: 70px; flex-shrink: 0; }
+.logo img { display: block; width: 100%; height: 100%; }
+
+.search { flex: 0 1 989px; min-width: 0; margin: 0 24px 0 114px; }
+
+.profile {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding: 0;
+  background: none;
+}
+
+.name { margin-right: 20px; font-size: 32px; font-weight: 700; white-space: nowrap; }
+.profile:hover .name { color: var(--purple-1); }
+.arrow { margin-left: 23px; }
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 30px;
+}
+
+.menu button {
+  padding: 10px 45px;
+  border-radius: 100px;
+  background: none;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.menu button:hover { background: var(--bg); color: var(--purple-1); }
+
+.back, .devspace-logo, .devspace { display: none; }
+
+// Smaller desktops: the search gets narrower before anything overlaps.
+@media (max-width: 1500px) {
+  .search { margin-left: 40px; }
+  .name { display: none; }
+}
+
+// Mobile (Figma pages 44, 48): 80 px bar, logo 160 px, avatar 50 px, no search.
+@media (max-width: 999px) {
+  .header { height: 80px; margin: 0; padding: 0 16px; }
+  .logo { width: 162px; height: 45px; margin-top: 0; }
+  .search, .arrow { display: none; }
+
+  .back { display: flex; margin-left: -4px; padding: 4px; border-radius: 50%; background: none; }
+  .back:hover { background: var(--white); }
+  .devspace-logo { display: block; width: 50px; height: 50px; margin-left: 3px; border-radius: 50%; }
+  .devspace { display: block; margin-left: 10px; font-size: 20px; font-weight: 700; }
+
+  .menu { padding: 20px; }
+  .menu button { padding: 10px 30px; font-size: 20px; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles der Kopfzeile, Werte aus Figma.
+ * - Desktop: Logo 242 x 70 px, Suchfeld bis 989 px breit, Profil mit
+ *   Name 32 px fett, Avatar 70 px und Pfeil.
+ * - flex: 0 1 989px: Das Suchfeld ist 989 px breit, darf aber kleiner
+ *   werden. So passt der Header auch auf kleinere Bildschirme.
+ * - Unter 1500 px: weniger Abstand, Name ausgeblendet (Avatar reicht).
+ * - Handy (unter 1000 px, Figma Seiten 44 und 48): Leiste 80 px, Logo
+ *   160 px, Avatar 50 px, keine Suche (sie steht im Menü). Im Chat
+ *   Zurück-Pfeil, Devspace-Logo und "Devspace".
+ * - .menu: Menü "Profil / Log out" im Dialog-Rahmen (Annahme).
+ */

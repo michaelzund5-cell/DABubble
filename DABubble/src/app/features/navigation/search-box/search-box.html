@@ -1,0 +1,52 @@
+@if (hasTerm()) {
+  <div class="panel-head">
+    <span>Search</span>
+    <button class="close" type="button" (click)="search.clear()" aria-label="Suche schließen">
+      <img src="img/icons/close.svg" alt="">
+    </button>
+  </div>
+}
+
+<div class="field">
+  <input type="search" [placeholder]="placeholder()" [attr.aria-label]="placeholder()" autocomplete="off"
+    [value]="search.term()" (input)="onInput($event)">
+  <img src="img/icons/search.svg" alt="">
+</div>
+
+@if (search.term().trim()) {
+  <ul class="results" role="listbox" aria-label="Suchergebnisse">
+    @for (result of search.results(); track result.key) {
+      <li>
+        <button type="button" [class]="result.kind" (click)="open(result)">
+          @if (result.kind === 'channel') {
+            <img src="img/icons/tag.svg" alt="">
+          } @else if (result.user) {
+            <app-avatar [user]="result.user" [size]="result.kind === 'user' ? 50 : 40" [showStatus]="result.kind === 'user'" />
+          }
+          <span class="text">
+            @if (result.context) {
+              <span class="context">{{ result.context }}</span>
+            }
+            <span class="label">{{ result.label }}{{ result.kind === 'user' && result.user?.id === ownId() ? ' (Du)' : '' }}</span>
+          </span>
+        </button>
+      </li>
+    } @empty {
+      <li class="empty">Keine Treffer</li>
+    }
+  </ul>
+}
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  - .panel-head "Search" mit Kreuz: nur auf dem Handy sichtbar, sobald
+    etwas eingegeben ist. Die Suche füllt dann den Bildschirm (Figma 46, 47).
+  - Bei dir selbst steht "(Du)" hinter dem Namen.
+  Vorlage der Suche.
+  - Feld mit Lupe. Sobald Text drin steht, erscheint die Trefferliste.
+  - Channels mit #, Personen mit Avatar und Online-Punkt, Nachrichten
+    mit kleinem Avatar, Ort und Absender darüber (Kontext).
+  - @empty: "Keine Treffer", wenn nichts passt.
+-->

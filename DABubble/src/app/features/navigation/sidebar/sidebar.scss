@@ -1,39 +1,126 @@
-.sidebar { height: 100%; background: #fff; border-radius: 30px; padding: 28px 20px; overflow: auto; box-shadow: 0 6px 20px rgba(0,0,0,.03); }
-.sidebar-header, .group-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.sidebar-header { font-size: 20px; margin-bottom: 28px; }
-.sidebar-header button, .group-title button { border: 0; background: transparent; font-size: 24px; border-radius: 50%; width: 38px; height: 38px; }
-.sidebar-header button:hover, .group-title button:hover { background: var(--background); color: var(--purple-dark); }
-section + section { margin-top: 28px; }
-.group-title { justify-content: flex-start; margin-bottom: 10px; font-size: 18px; }
-.group-title button { margin-left: auto; }
-nav { display: grid; gap: 4px; }
-nav button { border: 0; background: transparent; border-radius: 999px; padding: 9px 12px; display: flex; align-items: center; gap: 10px; text-align: left; font-weight: 600; }
-nav button:hover, nav button.active { background: var(--background); color: var(--purple-dark); }
-.channel-symbol { font-size: 22px; width: 30px; text-align: center; }
-.avatar { position: relative; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #e3e5ff; color: var(--purple-dark); font-size: 12px; font-weight: 800; }
-.avatar i { position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #fff; background: #aaa; }
-.avatar i.online { background: var(--online); } .avatar i.away { background: #f4b942; }
-.dialog-backdrop { position: fixed; inset: 0; z-index: 60; background: rgba(20,20,50,.25); display: grid; place-items: center; padding: 20px; }
-.dialog { width: min(520px, 100%); background: #fff; border-radius: 30px 30px 30px 4px; padding: 28px; display: grid; gap: 14px; box-shadow: 0 18px 50px rgba(0,0,0,.16); }
-.dialog > div { display: flex; justify-content: space-between; align-items: center; }
-.dialog h3 { margin: 0; font-size: 24px; }
-.dialog > div button { border: 0; background: transparent; font-size: 26px; }
-.dialog p { color: var(--text-grey); margin: 0; }
-.dialog input { border: 1px solid var(--purple-light); border-radius: 999px; padding: 13px 18px; outline: none; }
-.dialog .btn-primary { justify-self: end; }
-@media (max-width: 780px) { .sidebar { width: min(330px, 92vw); border-radius: 26px; height: calc(100vh - 100px); } }
+// Sidebar "Devspace" (Figma page 17). Card 366 x 940 px.
+
+:host { display: block; height: 100%; }
+
+.sidebar {
+  height: 100%;
+  padding: 32px 33px 0 30px;
+  overflow-y: auto;
+  border-radius: 30px;
+  background: var(--white);
+}
+
+button { padding: 0; background: none; font-size: 18px; color: inherit; }
+ul { margin: 0; padding: 0; list-style: none; }
+img { display: block; }
+
+.devspace { display: flex; align-items: center; height: 60px; }
+.devspace-logo { width: 60px; height: 60px; border-radius: 50%; }
+h2 { margin: 0 0 0 15px; font-size: 24px; font-weight: 700; }
+.edit { margin: 2px 4px 0 auto; }
+
+.icon-btn { border-radius: 50%; }
+.icon-btn:hover { background: var(--bg); }
+
+.group-head { display: flex; align-items: center; margin-top: 34px; }
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.toggle .caret { margin: 0 9px 0 2px; transition: rotate 120ms; }
+.toggle.closed .caret { rotate: -90deg; }
+.toggle:hover { color: var(--purple-1); }
+.add { margin-left: auto; }
+
+.channels { display: flex; flex-direction: column; gap: 13px; margin-top: 35px; padding-left: 25px; }
+.channels li:last-child { margin-top: 12px; } // Figma: 25 px before "Channel hinzufügen"
+
+.channel {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: 33px;
+  padding: 0 20px 0 19px;
+  border-radius: 100px;
+}
+
+.channel:hover, .channel.active { background: var(--bg); }
+.channel.active { color: var(--purple-link); font-weight: 700; }
+.channel img { margin-top: -1px; }
+.add-channel img { margin-top: 0; }
+.add-channel { margin-left: 1px; }
+.add-channel:hover { background: none; color: var(--purple-1); }
+
+.people { display: flex; flex-direction: column; gap: 13px; margin-top: 35px; padding-left: 25px; }
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 4px 20px;
+  border-radius: 100px;
+}
+
+.person:hover { color: var(--purple-1); }
+.person.active { background: var(--bg); color: var(--purple-link); font-weight: 700; }
+
+.mobile-search, .mobile-icon, .new-message-fab { display: none; }
+
+// Mobile menu (Figma pages 44, 45): card 398 px, 17 px text, 10 px less indent.
+@media (max-width: 999px) {
+  :host { height: 100%; padding: 12px 16px 20px; }
+  .sidebar { padding: 19px 29px 100px 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); }
+  .mobile-search { display: block; margin: 0 -30px 0 -21px; }
+  .devspace, .desktop-icon { display: none; }
+  .mobile-icon { display: block; }
+  .group-head { margin-top: 33px; }
+  button { font-size: 17px; }
+  .add { margin-right: -6px; }
+  .channels { gap: 11px; margin-top: 39px; padding: 0 0 6px 26px; }
+  .channels li:last-child { margin-top: 18px; }
+  .channel { gap: 4px; }
+  .add-channel { gap: 9px; margin-left: -1px; color: var(--purple-link); }
+  .people { margin-top: 40px; padding-left: 25px; }
+
+  .new-message-fab {
+    position: fixed;
+    right: 16px;
+    bottom: 57px;
+    z-index: 5;
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--purple-1);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  .new-message-fab:hover { background: var(--purple-2); }
+}
 
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Styles der Seitenleiste.
- * - nav button.active: Hervorhebung des geöffneten Chats.
- * - .avatar i: der kleine Statuspunkt unten rechts am Avatar.
- *   .online = grün, .away = gelb, sonst grau.
- * - .dialog-backdrop: position: fixed; inset: 0 legt den grauen
- *   Hintergrund über das ganze Fenster. z-index sorgt dafür, dass er
- *   über allem anderen liegt.
- * - @media (max-width: 780px): Auf dem Handy wird die Seitenleiste
- *   schmaler und als ausklappbares Menü angezeigt.
+ * Styles der Sidebar, alle Abstände aus Figma Seiten 17, 19 und 21.
+ * - :host { height: 100% }: Die Sidebar füllt die Höhe der Spalte.
+ * - overflow-y: auto: Bei vielen Channels scrollt nur die Sidebar.
+ * - .caret: Der Pfeil dreht sich beim Einklappen um -90 Grad.
+ * - .channel.active / .person.active: helle Pille, Text fett und lila
+ *   (Figma: Text #5259F0, Icon #535AF1).
+ * - Channels: 13 px Abstand untereinander, 25 px vor "Channel hinzufügen".
+ * - .person: 4 px / 20 px Innenabstand, damit die Pille beim aktiven
+ *   Eintrag den Avatar umschliesst (Figma Seite 21).
+ * - Handy (unter 1000 px, Figma Seiten 44 und 45): Karte mit Schatten,
+ *   Suchfeld oben, Schrift 17 px, runder Button "Neue Nachricht" unten
+ *   rechts (position: fixed). padding-bottom 100 px, damit der Button
+ *   den letzten Namen nicht verdeckt.
+ * - Hover-Zustände sind in Figma nicht definiert: Annahme helle Pille
+ *   bzw. lila Text.
  */

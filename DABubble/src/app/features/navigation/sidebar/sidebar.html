@@ -1,76 +1,93 @@
-<div class="sidebar">
-  <div class="sidebar-header">
-    <strong>Arbeitsbereich</strong>
-    <!-- Placeholder: "new message" is not implemented yet -->
-    <button type="button" title="Neue Nachricht" aria-label="Neue Nachricht">✎</button>
+<nav class="sidebar" aria-label="Devspace">
+  <app-search-box class="mobile mobile-search" placeholder="Gehe zu..." />
+
+  <div class="devspace">
+    <img class="devspace-logo" src="img/devspace.png" alt="">
+    <h2>Devspace</h2>
+    <button class="icon-btn edit" type="button" (click)="state.openNewMessage()" aria-label="Neue Nachricht">
+      <img src="img/icons/edit-square.svg" alt="">
+    </button>
   </div>
 
-  <!-- Channels -->
-  <section>
-    <div class="group-title">
-      <span aria-hidden="true">▾</span><strong>Channels</strong>
-      <button type="button" (click)="openCreateDialog()" title="Channel erstellen" aria-label="Channel erstellen">＋</button>
+  <section class="group">
+    <div class="group-head">
+      <button class="toggle" type="button" (click)="channelsOpen.set(!channelsOpen())"
+        [class.closed]="!channelsOpen()" [attr.aria-expanded]="channelsOpen()">
+        <img class="caret" src="img/icons/arrow-drop-down.svg" alt="">
+        <img src="img/icons/workspaces.svg" alt="">
+        <span>Channels</span>
+      </button>
+      <button class="icon-btn add" type="button" (click)="state.openDialog('createChannel')" aria-label="Channel erstellen">
+        <img class="desktop-icon" src="img/icons/add.svg" alt="">
+        <img class="mobile-icon" src="img/icons/add-purple.svg" alt="">
+      </button>
     </div>
-    <nav aria-label="Channels">
-      @for (channel of channelService.channels(); track channel.id) {
-        <button type="button" [class.active]="isActive('channel', channel.id)" (click)="open('channel', channel.id)">
-          <span class="channel-symbol" aria-hidden="true">#</span>{{ channel.name }}
-        </button>
-      }
-    </nav>
-  </section>
 
-  <!-- Direct messages: every user except me -->
-  <section>
-    <div class="group-title"><span aria-hidden="true">▾</span><strong>Direktnachrichten</strong></div>
-    <nav aria-label="Direktnachrichten">
-      @for (user of userService.otherUsers(); track user.id) {
-        <button type="button" [class.active]="isActive('direct', user.id)" (click)="open('direct', user.id)">
-          <span class="avatar">{{ user.initials }}<i [class]="user.status"></i></span>{{ user.name }}
-        </button>
-      }
-    </nav>
-  </section>
-
-  <!-- Dialog "create channel". Click on the backdrop closes it; stopPropagation keeps clicks inside open. -->
-  @if (createDialogOpen()) {
-    <div class="dialog-backdrop" (click)="createDialogOpen.set(false)">
-      <form class="dialog" (click)="$event.stopPropagation()" (ngSubmit)="createChannel()">
-        <div>
-          <h3>Channel erstellen</h3>
-          <button type="button" (click)="createDialogOpen.set(false)" aria-label="Schließen">×</button>
-        </div>
-        <p>Lege einen eigenen Bereich für ein Thema oder Team an.</p>
-        <label for="channel-name">Channel-Name</label>
-        <input id="channel-name" name="channelName" [(ngModel)]="newChannelName" placeholder="z. B. frontend">
-        @if (createError) {
-          <p class="error-text" role="alert">{{ createError }}</p>
+    @if (channelsOpen()) {
+      <ul class="channels">
+        @for (channel of channelService.myChannels(); track channel.id) {
+          <li>
+            <button class="channel" type="button" [class.active]="isActive('channel', channel.id)"
+              (click)="open('channel', channel.id)">
+              <img [src]="isActive('channel', channel.id) ? 'img/icons/tag-active.svg' : 'img/icons/tag.svg'" alt="">
+              {{ channel.name }}
+            </button>
+          </li>
         }
-        <button class="btn-primary" type="submit">Erstellen</button>
-      </form>
+        <li>
+          <button class="channel add-channel" type="button" (click)="state.openDialog('createChannel')">
+            <img class="desktop-icon" src="img/icons/add-circle.svg" alt="">
+            <img class="mobile-icon" src="img/icons/add-circle-purple.svg" alt="">
+            Channel hinzufügen
+          </button>
+        </li>
+      </ul>
+    }
+  </section>
+
+  <section class="group">
+    <div class="group-head">
+      <button class="toggle" type="button" (click)="directOpen.set(!directOpen())"
+        [class.closed]="!directOpen()" [attr.aria-expanded]="directOpen()">
+        <img class="caret" src="img/icons/arrow-drop-down.svg" alt="">
+        <img src="img/icons/account-circle.svg" alt="">
+        <span>Direktnachrichten</span>
+      </button>
     </div>
-  }
-</div>
+
+    @if (directOpen()) {
+      <ul class="people">
+        @for (user of userService.users(); track user.id) {
+          <li>
+            <button class="person" type="button" [class.active]="isActive('direct', user.id)"
+              (click)="open('direct', user.id)">
+              <app-avatar [user]="user" [size]="50" [showStatus]="true" />
+              {{ user.name }}{{ user.id === userService.currentUser()?.id ? ' (Du)' : '' }}
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <button class="new-message-fab" type="button" (click)="state.openNewMessage()" aria-label="Neue Nachricht">
+    <img src="img/icons/edit-white.svg" alt="">
+  </button>
+</nav>
 
 <!--
   =====================================================================
   ZUSAMMENFASSUNG (Deutsch)
   =====================================================================
-  Das HTML der Seitenleiste.
-  - @for ... track channel.id: Schleife über alle Channels. track sagt
-    Angular, woran es jeden Eintrag erkennt. So muss bei Änderungen nur
-    der geänderte Eintrag neu gezeichnet werden (Performance).
-  - [class.active]="...": Class Binding. Die CSS-Klasse "active" wird
-    gesetzt, wenn der Ausdruck true ist.
-  - (click)="...": Event Binding. Ruft beim Klick eine Methode auf.
-  - Direktnachrichten nutzen jetzt userService.otherUsers(), also alle
-    außer mir. Vorher wurde das mit einem zusätzlichen @if gefiltert.
-  - [class]="user.status": Setzt die Klasse online / away / offline für
-    den farbigen Statuspunkt.
-  - Dialog: Klick auf den grauen Hintergrund schließt ihn.
-    $event.stopPropagation() verhindert, dass ein Klick im Formular bis
-    zum Hintergrund "durchrutscht" (Event Bubbling) und den Dialog
-    ebenfalls schließt.
-  - aria-label: Beschriftung für Buttons, die nur ein Symbol zeigen.
-    aria-hidden="true" blendet reine Deko-Zeichen für Screenreader aus.
+  Sidebar "Devspace" (Figma Seite 17).
+  - Stift-Icon: öffnet "Neue Nachricht" (Block 6).
+  - Channels und Direktnachrichten lassen sich mit dem Pfeil
+    einklappen (channelsOpen / directOpen).
+  - Aktiver Channel: helle Pille und blaues #-Icon (Figma).
+  - "+" und "Channel hinzufügen": öffnen das Fenster "Channel erstellen".
+  - Handy (Figma Seite 44): oben das Suchfeld "Gehe zu...", das Stift-
+    Icon wird zum runden Button unten rechts (new-message-fab), "+" und
+    "Channel hinzufügen" sind lila.
+  - Direktnachrichten: alle Personen inkl. dir selbst mit "(Du)",
+    wie in Figma. Der Online-Punkt kommt aus dem Avatar.
 -->

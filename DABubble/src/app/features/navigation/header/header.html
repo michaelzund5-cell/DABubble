@@ -1,0 +1,50 @@
+<header class="header">
+  @if (showBack()) {
+    <button class="back" type="button" (click)="state.mobileBack()" aria-label="Zurück zum Menü">
+      <img src="img/icons/arrow-left.svg" alt="">
+    </button>
+    <img class="devspace-logo" src="img/devspace.png" alt="">
+    <span class="devspace">Devspace</span>
+  } @else {
+    <picture class="logo">
+      <source media="(max-width: 999px)" srcset="img/logo-mobile.svg">
+      <img src="img/logo.svg" alt="DABubble">
+    </picture>
+  }
+
+  <app-search-box class="search" />
+
+  @if (userService.currentUser(); as user) {
+    <button class="profile" type="button" (click)="state.openDialog('headerMenu')"
+      [attr.aria-expanded]="state.dialog() === 'headerMenu'" aria-label="Profilmenü">
+      <span class="name">{{ user.name }}</span>
+      <app-avatar [user]="user" [size]="viewport.isMobile() ? 50 : 70" [showStatus]="!viewport.isMobile()" />
+      <img class="arrow" src="img/icons/arrow-down.svg" alt="">
+    </button>
+
+    @if (state.dialog() === 'headerMenu') {
+      <app-dialog placement="top-right" [dim]="false" label="Profilmenü" (closed)="state.closeDialog()">
+        <div class="menu">
+          <button type="button" (click)="state.openProfile(user.id)">Profil</button>
+          <button type="button" (click)="logout()">Log out</button>
+        </div>
+      </app-dialog>
+    }
+  }
+</header>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Kopfzeile des Arbeitsbereichs (Figma Seite 17).
+  - Suche: eigene Komponente <app-search-box>, auf dem Handy steht sie
+    stattdessen im Menü ("Gehe zu...").
+  - Handy im Chat (Figma Seite 48): Zurück-Pfeil, Devspace-Logo und
+    "Devspace" statt DABubble-Logo. Der Pfeil führt zurück zum Menü.
+  - Profil-Button: Name, Avatar mit Online-Punkt (Handy ohne Punkt,
+    Figma Seite 44), Pfeil. Klick öffnet
+    das Menü mit "Profil" und "Log out" (app-dialog, ohne
+    Abdunkelung). Figma zeigt dieses Menü nicht, Design ist eine Annahme.
+  - aria-expanded: sagt Screenreadern, ob das Menü offen ist.
+-->
