@@ -1,0 +1,61 @@
+// Empty chat intro (Figma pages 19, 21-26).
+
+:host { display: block; margin: auto 0 -2px; padding: 0 45px; }
+
+h3 { margin: 0; font-size: 24px; font-weight: 700; }
+
+.channel-title { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.channel-title img { margin-left: 4px; }
+.channel-intro { margin-bottom: 13px; }
+
+.person { display: flex; align-items: flex-end; gap: 25px; margin-bottom: 24px; }
+.person h3 { margin-bottom: 1px; }
+
+.text {
+  margin: 0;
+  font-size: 20px;
+  line-height: 27px;
+  color: var(--text-grey);
+}
+
+.text.dark { color: var(--black); }
+
+// Figma pages 21 and 26: the avatar stays at the same height for one or two lines of text.
+.direct { margin-bottom: -27px; }
+.direct .text { min-height: 54px; }
+
+.link {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+  color: var(--purple-link);
+}
+
+// Figma page 19: the # in front of the channel name is an icon, 4 px before the name.
+.tag { margin: 0 4px 0 -1px; vertical-align: -3px; }
+
+button.link { display: inline; font-family: inherit; line-height: inherit; }
+button.link:hover { text-decoration: underline; }
+
+// Mobile (Figma pages 51, 53, 58): 16 px margin, avatar 88 px, name 10 px next to it.
+@media (max-width: 999px) {
+  :host { padding: 0 16px; }
+  .person { gap: 10px; }
+  .direct, .channel-intro { margin-bottom: 46px; }
+  .direct .text { min-height: 0; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles des Begrüssungstexts, Werte aus Figma.
+ * - margin-top: auto: Der Text steht unten über dem Eingabefeld.
+ * - .person: Avatar und Name, Name unten bündig (align-items: flex-end).
+ * - .direct: Platz für zwei Zeilen, damit der Avatar bei einer und bei
+ *   zwei Zeilen Text auf derselben Höhe steht (Figma Seiten 21 und 26).
+ * - Fliesstext 20 px grau, beim Channel schwarz (Figma Seite 19).
+ * - Handy: 16 px Rand, Avatar 88 px (Figma Seiten 51, 53, 58). Hier
+ *   endet der Text immer 49 px über dem Eingabefeld, egal wie lang.
+ * - .link: Lila wie in Figma (#5259F0).
+ */

@@ -1,29 +1,36 @@
-<div class="composer">
-  <textarea [(ngModel)]="text" (keydown)="onKeydown($event)" [placeholder]="'Nachricht an ' + state.activeTitle()" rows="3" aria-label="Nachricht schreiben"></textarea>
+<form class="composer" (ngSubmit)="send()">
+  <textarea #field name="text" [(ngModel)]="text" (ngModelChange)="onTextChange()" (keydown)="onKeydown($event)"
+    [placeholder]="placeholder()" aria-label="Nachricht schreiben"></textarea>
 
   <div class="toolbar">
-    <!-- Placeholders: attachments, emoji picker and mentions are not implemented yet -->
-    <div>
-      <button type="button" title="Datei anhängen" aria-label="Datei anhängen">＋</button>
-      <button type="button" title="Emoji" aria-label="Emoji einfügen">☺</button>
-      <button type="button" title="Erwähnung" aria-label="Person erwähnen">&#64;</button>
-    </div>
-    <!-- Disabled while the text is empty -->
-    <button class="send" type="button" (click)="send()" [disabled]="!text.trim()" aria-label="Senden">➤</button>
+    <button class="icon-btn" type="button" (click)="pickerOpen.set(!pickerOpen())" aria-label="Emoji einfügen">
+      <img src="img/icons/emoji.svg" alt="">
+    </button>
+    <button class="icon-btn" type="button" (click)="startMention()" aria-label="Person erwähnen">
+      <img src="img/icons/mention.svg" alt="">
+    </button>
+    <button class="icon-btn send" type="submit" [disabled]="!text.trim() || !hasTarget()" aria-label="Senden">
+      <img src="img/icons/send-message.svg" alt="">
+    </button>
   </div>
-</div>
+
+  @if (pickerOpen()) {
+    <app-emoji-picker class="popup" (picked)="insertEmoji($event)" />
+  }
+  @if (trigger(); as currentTrigger) {
+    <app-mention-list class="popup" [trigger]="currentTrigger" [query]="query()"
+      (pickedUser)="insertMention($event.name)" (pickedChannel)="insertMention($event.name)" />
+  }
+</form>
 
 <!--
   =====================================================================
   ZUSAMMENFASSUNG (Deutsch)
   =====================================================================
-  Das HTML des Eingabefelds.
-  - [(ngModel)]="text": Textfeld und Variable sind verbunden.
-  - (keydown)="onKeydown($event)": Bei jedem Tastendruck wird die
-    Methode mit dem Tastatur-Ereignis aufgerufen.
-  - [placeholder]: Property Binding. Der Platzhalter zeigt den Namen
-    des aktuellen Chats, z. B. "Nachricht an # allgemein".
-  - [disabled]="!text.trim()": Der Senden-Button ist gesperrt, solange
-    nur Leerzeichen oder nichts eingegeben ist.
-  - Die drei Symbol-Buttons links sind noch Platzhalter ohne Funktion.
+  Eingabefeld für Nachrichten (Figma Seite 17) und Thread-Antworten.
+  - (ngModelChange): nach jeder Eingabe prüfen, ob @ oder # getippt wurde.
+  - Smiley: Emoji-Auswahl, das Zeichen kommt in den Text.
+  - @-Icon: fügt ein @ ein und öffnet die Personenliste.
+  - Bei @ oder # öffnet die Liste über dem Feld, Klick setzt den Namen ein.
+  - Senden ist gesperrt, solange das Feld leer ist.
 -->

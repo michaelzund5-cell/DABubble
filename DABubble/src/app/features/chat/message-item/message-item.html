@@ -1,0 +1,105 @@
+@if (sender(); as user) {
+  <app-avatar class="avatar" [user]="user" [size]="avatarSize()" />
+
+  @if (editing()) {
+    <form class="edit-box" (ngSubmit)="saveEdit()">
+      <textarea name="editText" [(ngModel)]="editText" aria-label="Nachricht bearbeiten"></textarea>
+      <div class="edit-actions">
+        <button class="icon-btn" type="button" (click)="pickerOpen.set(!pickerOpen())" aria-label="Emoji einfügen">
+          <img src="img/icons/emoji.svg" alt="">
+        </button>
+        @if (pickerOpen()) {
+          <app-emoji-picker class="picker-edit" (picked)="insertEmoji($event)" />
+        }
+        <button class="btn-secondary" type="button" (click)="editing.set(false)">Abbrechen</button>
+        <button class="btn-primary" type="submit" [disabled]="!editText.trim()">Speichern</button>
+      </div>
+    </form>
+  } @else {
+    <div class="content">
+      <div class="meta">
+        <span class="name">{{ user.name }}</span>
+        <span class="time">{{ message().createdAt | date: 'HH:mm' }} Uhr</span>
+      </div>
+
+      <p class="bubble">{{ message().text }}</p>
+
+      @if (message().reactions.length) {
+        <div class="reactions">
+          @for (reaction of visibleReactions(); track reaction.emoji) {
+            <button class="reaction" type="button" [class.mine]="messageService.hasReacted(reaction)"
+              (click)="toggleReaction(reaction.emoji)" [attr.aria-label]="reactedBy(reaction)">
+              <img [src]="reaction.emoji | emojiSrc" alt="">
+              <span>{{ reaction.userIds.length }}</span>
+              <span class="who" aria-hidden="true">
+                <img [src]="reaction.emoji | emojiSrc" alt="">
+                {{ reactedBy(reaction) }}
+              </span>
+            </button>
+          }
+          @if (hiddenReactions() > 0) {
+            <button class="reaction more" type="button" (click)="showAllReactions.set(true)">
+              {{ hiddenReactions() }} weitere
+            </button>
+          } @else if (canCollapse()) {
+            <button class="reaction more" type="button" (click)="showAllReactions.set(false)">Weniger anzeigen</button>
+          }
+          <button class="add-reaction" type="button" (click)="pickerOpen.set(!pickerOpen())" aria-label="Reaktion hinzufügen">
+            <img src="img/icons/add-reaction.svg" alt="">
+          </button>
+        </div>
+      }
+
+      @if (showThreadInfo() && replies().length) {
+        <div class="thread-info">
+          <button type="button" (click)="openThread.emit(message().id)">
+            {{ replies().length }} {{ replies().length === 1 ? 'Antwort' : 'Antworten' }}
+          </button>
+          <span>Letzte Antwort {{ lastReplyAt() | date: 'HH:mm' }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="toolbar" [class.open]="pickerOpen() || menuOpen()">
+      @for (emoji of messageService.quickEmojis(); track emoji) {
+        <button class="icon-btn" type="button" (click)="toggleReaction(emoji)" aria-label="Schnell reagieren">
+          <img [src]="emoji | emojiSrc" alt="">
+        </button>
+      }
+      <button class="icon-btn" type="button" (click)="pickerOpen.set(!pickerOpen())" aria-label="Reaktion hinzufügen">
+        <img src="img/icons/add-reaction.svg" alt="">
+      </button>
+      @if (showThreadInfo()) {
+        <button class="icon-btn" type="button" (click)="openThread.emit(message().id)" aria-label="Im Thread antworten">
+          <img src="img/icons/comment.svg" alt="">
+        </button>
+      }
+      @if (isOwn()) {
+        <button class="icon-btn" type="button" (click)="menuOpen.set(!menuOpen())" aria-label="Weitere Optionen">
+          <img src="img/icons/more-vert.svg" alt="">
+        </button>
+      }
+      @if (menuOpen()) {
+        <div class="more-menu"><button type="button" (click)="startEditing()">Nachricht bearbeiten</button></div>
+      }
+      @if (pickerOpen()) {
+        <app-emoji-picker class="picker-toolbar" (picked)="pickReaction($event)" />
+      }
+    </div>
+  }
+}
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Aufbau einer Nachricht.
+  - Bearbeiten-Modus (Figma Seite 27): weißes Feld mit dem Text, Emoji,
+    "Abbrechen" und "Speichern". Name und Uhrzeit sind dann ausgeblendet.
+  - Normaler Modus: Name, Uhrzeit, Sprechblase, Reaktionen, Thread-Link.
+  - .toolbar: erscheint beim Hover (CSS). Schnell-Emojis, Emoji-Auswahl,
+    Thread, bei eigenen Nachrichten das Menü "Nachricht bearbeiten".
+    Figma hat dafür kein Desktop-Design: Icons aus demselben
+    Material-Set wie Figma, Aussehen ist eine Annahme.
+  - Im Thread (showThreadInfo = false) entfällt der Thread-Button.
+-->

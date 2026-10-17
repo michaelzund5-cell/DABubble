@@ -1,0 +1,71 @@
+// "Neue Nachricht" (Figma page 20). Header 160 px, recipient field 1406 x 57 px.
+
+:host { display: block; height: 100%; }
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 30px;
+  background: var(--white);
+}
+
+.new-header {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  height: 160px;
+  padding: 0 44px 0 45px;
+  background: var(--white);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+h2 { margin: 0; padding-top: 32px; font-size: 24px; font-weight: 700; line-height: 33px; }
+
+.recipient { position: relative; margin: 19px 0 0 -1px; }
+
+input {
+  width: 100%;
+  height: 57px;
+  padding: 0 20px;
+  border: 1px solid var(--purple-3);
+  border-radius: 100px;
+  outline: none;
+  font-size: 18px;
+}
+
+input:focus { border-color: var(--purple-1); }
+input::placeholder { color: var(--text-grey); }
+
+.popup { top: calc(100% + 8px); left: 0; }
+
+.error { position: absolute; margin: 4px 0 0 20px; font-size: 14px; color: var(--error); }
+
+.spacer { flex: 1; }
+
+app-message-input.new { padding: 0 70px 39px; }
+
+// Mobile (Figma page 50): header 125 px, field 400 x 53 px, 15 px margins.
+@media (max-width: 999px) {
+  .chat { border-radius: 0; }
+  .new-header { height: 125px; padding: 0 15px; }
+  h2 { padding: 20px 0 0 1px; font-size: 20px; line-height: 27px; }
+  .recipient { margin: 20px 0 0; }
+  input { height: 53px; }
+  app-message-input.new { padding: 0 15px 29px; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles "Neue Nachricht", Werte aus Figma Seite 20.
+ * - Kopf 160 px hoch mit Schatten, Titel 24 px fett.
+ * - Empfänger-Feld 57 px hoch, runde Enden, Rahmen lila-grau, beim
+ *   Klicken lila (Annahme, Figma zeigt nur den leeren Zustand).
+ * - .popup: Auswahlliste unter dem Feld.
+ * - Handy (Figma Seite 50): Kopf 125 px, Feld 53 px, 15 px Rand.
+ * - Das Eingabefeld unten hat hier 70 px Rand statt 44 px. So steht es
+ *   in Figma (Abweichung zu den anderen Seiten, 1:1 übernommen).
+ */

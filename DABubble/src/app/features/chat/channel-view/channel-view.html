@@ -1,114 +1,62 @@
-<section class="chat">
-  <!-- Header: title, member avatars, info card -->
-  <header class="chat-header">
-    <button type="button" class="title" (click)="infoOpen.set(!infoOpen())" [attr.aria-expanded]="infoOpen()">
-      {{ state.activeTitle() }} <span aria-hidden="true">⌄</span>
-    </button>
+<section class="chat" [class.with-thread]="!!state.openThreadId()">
+  <header class="chat-header" [class.person-header]="!!partner()">
+    @if (channel(); as current) {
+      <button class="title" type="button" (click)="state.openDialog('channelDetails')" aria-label="Channel-Details">
+        <img class="desktop-icon" src="img/icons/tag-header.svg" alt="">
+        <img class="mobile-icon" src="img/icons/tag-mobile.svg" alt="">
+        <span>{{ current.name }}</span>
+        <img class="desktop-icon" src="img/icons/arrow-down-header.svg" alt="">
+        <img class="mobile-icon" src="img/icons/arrow-down-mobile.svg" alt="">
+      </button>
 
-    <div class="header-actions">
-      <div class="mini-avatars">
-        @for (member of visibleMembers(); track member.id) {
-          <span [title]="member.name">{{ member.initials }}</span>
-        }
-        @if (hiddenMemberCount() > 0) {
-          <span>+{{ hiddenMemberCount() }}</span>
-        }
+      <div class="members">
+        <button class="avatars" type="button" (click)="state.openDialog('members')" aria-label="Mitglieder anzeigen">
+          @for (member of visibleMembers(); track member.id) {
+            <app-avatar [user]="member" [size]="40" />
+          }
+          <span class="count">{{ members().length }}</span>
+        </button>
+        <button class="add-member" type="button" (click)="state.openDialog('addMembers')"
+          aria-label="Mitglieder hinzufügen">
+          <img class="desktop-icon" src="img/icons/person-add.svg" alt="">
+          <img class="mobile-icon" src="img/icons/person-add-mobile.svg" alt="">
+        </button>
       </div>
-      <!-- Placeholder: adding members is not implemented yet -->
-      <button type="button" title="Mitglieder hinzufügen" aria-label="Mitglieder hinzufügen">＋</button>
-    </div>
-
-    @if (infoOpen()) {
-      <div class="info-card"><strong>{{ state.activeTitle() }}</strong><p>{{ description() }}</p></div>
+    } @else if (partner(); as person) {
+      <button class="title person" type="button" (click)="state.openProfile(person.id)" aria-label="Profil anzeigen">
+        <app-avatar [user]="person" [size]="50" [showStatus]="true" />
+        <span>{{ person.name }}{{ isSelf() ? ' (Du)' : '' }}</span>
+      </button>
     }
   </header>
 
-  <!-- Message list -->
-  <div class="message-list">
-    @for (message of messages(); track message.id) {
-      <article class="message" [class.own]="messageService.isOwnMessage(message.id)">
-        <div class="avatar-large">{{ userService.getById(message.senderId)?.initials }}</div>
-
-        <div class="message-content">
-          <div class="meta">
-            <strong>{{ userService.getById(message.senderId)?.name }}</strong>
-            <!-- DatePipe turns the timestamp into a readable time, e.g. 09:10 -->
-            <span>{{ message.createdAt | date: 'HH:mm' }}</span>
-            @if (message.edited) { <em>bearbeitet</em> }
-          </div>
-
-          <!-- Either edit mode (textarea) or the normal speech bubble -->
-          @if (editingId() === message.id) {
-            <div class="edit-box">
-              <textarea [(ngModel)]="editText" aria-label="Nachricht bearbeiten"></textarea>
-              <button type="button" (click)="saveEdit(message.id)">Speichern</button>
-              <button type="button" (click)="cancelEdit()">Abbrechen</button>
-            </div>
-          } @else {
-            <p class="bubble">{{ message.text }}</p>
-          }
-
-          <div class="reactions">
-            @for (reaction of message.reactions; track reaction.emoji) {
-              <!-- "mine" highlights reactions of the current user -->
-              <button type="button" [class.mine]="messageService.hasReacted(reaction)" (click)="messageService.toggleReaction(message.id, reaction.emoji)">
-                {{ reaction.emoji }} {{ reaction.userIds.length }}
-              </button>
-            }
-            <button type="button" (click)="messageService.toggleReaction(message.id, '👍')" aria-label="Mit Daumen hoch reagieren">＋ 👍</button>
-            <button type="button" (click)="state.openThread(message.id)" aria-label="Thread öffnen">💬 {{ messageService.repliesOf(message.id).length }}</button>
-          </div>
-        </div>
-
-        <!-- Hover menu. Edit and delete only for own messages (the service checks again). -->
-        <div class="message-menu">
-          <button type="button" (click)="messageService.toggleReaction(message.id, '✅')" title="Reagieren" aria-label="Reagieren">☺</button>
-          <button type="button" (click)="state.openThread(message.id)" title="Im Thread antworten" aria-label="Im Thread antworten">↩</button>
-          @if (messageService.isOwnMessage(message.id)) {
-            <button type="button" (click)="startEditing(message.id, message.text)" title="Bearbeiten" aria-label="Bearbeiten">✎</button>
-            <button type="button" (click)="deleteMessage(message.id)" title="Löschen" aria-label="Löschen">×</button>
-          }
-        </div>
-      </article>
+  <div class="messages">
+    @for (group of days(); track group.day) {
+      <div class="day-divider"><span>{{ group.day | chatDate }}</span></div>
+      @for (message of group.messages; track message.id) {
+        <app-message-item [message]="message" (openThread)="state.openThread($event)" />
+      }
     } @empty {
-      <!-- @empty is shown when the list has no entries -->
-      <div class="empty-state">
-        <div aria-hidden="true">#</div>
-        <h2>Noch keine Nachrichten</h2>
-        <p>Starte die Unterhaltung in diesem Bereich.</p>
-      </div>
+      <app-chat-intro [channel]="channel()" [partner]="partner()" [isSelf]="isSelf()" />
     }
   </div>
 
-  <app-message-input></app-message-input>
+  <app-message-input [narrow]="!!state.openThreadId()" />
 </section>
 
 <!--
   =====================================================================
   ZUSAMMENFASSUNG (Deutsch)
   =====================================================================
-  Das HTML der Chat-Ansicht in drei Teilen:
-
-  1. Kopfzeile: Klick auf den Titel öffnet die Info-Karte. Die Avatare
-     kommen per @for aus den echten Mitgliedern. [attr.aria-expanded]
-     sagt Screenreadern, ob die Info-Karte offen ist.
-
-  2. Nachrichtenliste (@for über messages()):
-     - [class.own]: Eigene Nachrichten werden rechts und lila angezeigt.
-     - Die Uhrzeit kommt über die DatePipe: | date: 'HH:mm' wandelt den
-       Zeitstempel in "09:10" um. Das | heißt Pipe (Umwandlung nur für
-       die Anzeige).
-     - @if / @else: Entweder Bearbeitungsmodus (Textfeld) oder normale
-       Sprechblase.
-     - Reaktionen: Die Zahl ist jetzt reaction.userIds.length.
-       [class.mine] hebt meine eigenen Reaktionen hervor. Erneuter Klick
-       entfernt die Reaktion wieder.
-     - Die Zahl am Sprechblasen-Symbol zählt die Thread-Antworten über
-       den Service.
-     - Bearbeiten und Löschen erscheinen nur bei eigenen Nachrichten.
-       Der Service prüft das zusätzlich noch einmal.
-     - @empty: Neuer Control Flow. Wird angezeigt, wenn die Liste leer
-       ist. Ersetzt das frühere separate @if mit length === 0.
-
-  3. <app-message-input>: das Eingabefeld als eigene Component.
+  Chat-Ansicht (Figma Seiten 17, 19, 21 bis 26).
+  - Kopfzeile Channel: # Name mit Pfeil (öffnet die Channel-Details),
+    drei Mitglieder-Avatare mit Anzahl (öffnet die Mitgliederliste),
+    Button "Mitglieder hinzufügen".
+  - Kopfzeile Direktnachricht: Avatar und Name, Klick öffnet das Profil.
+    Bei dir selbst steht "(Du)" hinter dem Namen.
+  - @else if: Entweder Channel oder Person, nie beides.
+  - Nachrichten: pro Tag eine Trennlinie (Pipe chatDate), darunter die
+    Nachrichten als <app-message-item>.
+  - @empty: Noch keine Nachricht, dann kommt der Begrüssungstext.
+  - [narrow]: Bei offenem Thread hat das Eingabefeld weniger Rand (Figma).
 -->

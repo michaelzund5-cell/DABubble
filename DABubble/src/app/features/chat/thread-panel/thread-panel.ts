@@ -1,53 +1,52 @@
-import { DatePipe } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ChannelService } from '../../../core/data/channel.service';
 import { MessageService } from '../../../core/data/message.service';
 import { UserService } from '../../../core/data/user.service';
 import { WorkspaceStateService } from '../../../core/data/workspace-state.service';
+import { MessageInput } from '../message-input/message-input';
+import { MessageItem } from '../message-item/message-item';
 
 @Component({
   selector: 'app-thread-panel',
-  imports: [FormsModule, DatePipe],
+  imports: [MessageInput, MessageItem],
   templateUrl: './thread-panel.html',
   styleUrl: './thread-panel.scss',
 })
 export class ThreadPanel {
   private readonly messageService = inject(MessageService);
-  readonly userService = inject(UserService);
+  private readonly channelService = inject(ChannelService);
+  private readonly userService = inject(UserService);
   readonly state = inject(WorkspaceStateService);
-
-  replyText = '';
 
   // The message the thread belongs to, and all replies to it.
   readonly rootMessage = computed(() => {
     const id = this.state.openThreadId();
     return id ? this.messageService.getById(id) : undefined;
   });
+
   readonly replies = computed(() => {
     const root = this.rootMessage();
     return root ? this.messageService.repliesOf(root.id) : [];
   });
 
-  sendReply(): void {
+  // "# Entwicklerteam" next to the title, or the person in a direct chat.
+  readonly location = computed(() => {
     const root = this.rootMessage();
-    if (!root) return;
-    this.messageService.reply(root.id, this.replyText);
-    this.replyText = '';
-  }
+    if (root?.channelId) return `# ${this.channelService.getById(root.channelId)?.name ?? ''}`;
+    const view = this.state.activeView();
+    return this.userService.getById(view.id)?.name ?? '';
+  });
 }
 
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Das Thread-Panel rechts: eine Nachricht und alle Antworten darauf.
- *
- * - rootMessage: computed. Die Ursprungsnachricht des offenen Threads.
- * - replies: computed. Alle Antworten, die über threadId auf diese
- *   Nachricht zeigen. Vorher steckten die Antworten in der Nachricht
- *   selbst, jetzt sind sie eigene Nachrichten.
- * - sendReply(): Schickt die Antwort über den MessageService und leert
- *   das Feld.
- * - Die Logik liegt jetzt in der Component (TypeScript) statt in
- *   verschachtelten @if-Blöcken im HTML. Das macht das HTML lesbarer.
+ * Logik des Thread-Panels (Figma Seite 15).
+ * - rootMessage: die Nachricht, zu der der Thread gehört.
+ * - replies: alle Antworten, älteste zuerst.
+ * - location: Text neben "Thread", z. B. "# Entwicklerteam".
+ * - Nachrichten und Eingabefeld sind dieselben Komponenten wie im Chat
+ *   (MessageItem im kompakten Modus, MessageInput mit threadId).
+ *   So gibt es den Code nur einmal.
  */

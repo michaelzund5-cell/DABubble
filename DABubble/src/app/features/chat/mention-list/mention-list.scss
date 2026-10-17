@@ -1,0 +1,52 @@
+// Mention dropdown (Figma page 52): card 352 px, border, rows 58 px with 15 px gap.
+
+:host { position: absolute; z-index: 20; }
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 352px;
+  max-width: calc(100vw - 70px);
+  max-height: 469px;
+  margin: 0;
+  padding: 20px 23px 24px 29px;
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid var(--purple-3);
+  border-radius: 20px;
+  background: var(--white);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+button {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  min-height: 58px;
+  padding: 0 20px;
+  border-radius: 100px;
+  background: none;
+  font-size: 18px;
+  text-align: left;
+}
+
+li:first-child button, button:hover { background: var(--bg); }
+button:hover { color: var(--purple-1); }
+.channel { gap: 11px; min-height: 48px; }
+.empty { padding: 10px 15px; color: var(--text-grey); }
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles der Auswahlliste.
+ * - :host position: absolute: liegt über dem Chat, Position setzt das
+ *   Eingabefeld (über dem Feld).
+ * - max-height + overflow-y: Bei vielen Einträgen scrollt die Liste.
+ * - Karte und Zeilen wie in Figma Seite 52: Rahmen, Ecken 20 px,
+ *   Zeilen 58 px hoch, 15 px Abstand. Der erste Eintrag ist hell
+ *   hinterlegt: Enter wählt ihn aus. Desktop nutzt dasselbe Design
+ *   (Figma zeigt die Liste nur auf dem Handy).
+ */

@@ -1,0 +1,221 @@
+// Chat message (Figma pages 15, 17, 27). Own messages are mirrored (class "own").
+
+:host {
+  position: relative;
+  display: flex;
+  gap: 30px;
+  padding: 10px 45px;
+}
+
+:host(.own) { flex-direction: row-reverse; }
+:host(:hover), :host(.editing), :host(.highlight) { background: var(--bg); }
+
+// Thread panel (Figma page 15): smaller spacing, bubble may use the full width.
+:host(.compact) { gap: 20px; padding: 10px 40px; }
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+:host(.own) .content { align-items: flex-end; padding-left: 101px; }
+:host(:not(.own)) .content { padding-right: 101px; }
+:host(.compact) .content { padding: 0; }
+
+.meta { display: flex; align-items: baseline; gap: 20px; max-width: 100%; }
+:host(.own) .meta { flex-direction: row-reverse; }
+.name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 18px; font-weight: 700; }
+.time { flex-shrink: 0; white-space: nowrap; font-size: 14px; color: var(--text-grey); }
+
+.bubble {
+  margin: 9px 0 0;
+  padding: 15px;
+  border-radius: 0 30px 30px 30px;
+  background: var(--bg);
+  font-size: 18px;
+  line-height: 25px;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+:host(:hover) .bubble { background: var(--white); }
+
+:host(.own) .bubble {
+  border-radius: 30px 0 30px 30px;
+  background: var(--purple-2);
+  color: var(--white);
+}
+
+.reactions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 7px 0 0; }
+:host(.own) .reactions { margin-right: 7px; }
+
+.reaction {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 11px 0 12px;
+  border: 1px solid var(--purple-3);
+  border-radius: 100px;
+  background: var(--white);
+  font-size: 16px;
+}
+
+.reaction:hover, .reaction.mine { border-color: var(--purple-1); }
+.reaction img { width: 24px; height: 24px; }
+.reaction { position: relative; }
+
+// Figma pages 12, 13 (thread and mobile): chips wrap, 4 px apart, 66 x 36 px.
+:host(.compact) .reactions { gap: 4px; margin: 6px 0 0 -6px; }
+:host(.own.compact) .reactions { margin: 6px -20px 0 0; } // Figma page 15: row reaches up to the avatar
+:host(.compact) .add-reaction { display: grid; place-items: center; width: 34px; height: 34px; margin-left: 3px; }
+:host(.compact) .reaction { min-width: 66px; gap: 10px; padding: 0 10px; }
+.reaction.more { padding: 0 10px; color: #aaa; } // color only used here in Figma
+.reaction.more:hover { color: var(--purple-1); }
+
+// Who reacted: shown on hover (assumed design, Figma has no tooltip).
+.who {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: max-content;
+  max-width: 200px;
+  padding: 12px 16px;
+  border-radius: 30px 30px 30px 0;
+  background: var(--purple-2);
+  color: var(--white);
+  font-size: 16px;
+  text-align: center;
+}
+
+.reaction:hover .who { display: flex; }
+
+.icon-btn, .add-reaction { display: flex; padding: 0; border-radius: 50%; background: none; }
+.add-reaction { margin-left: 6px; }
+.icon-btn:hover, .add-reaction:hover { background: var(--bg); }
+.icon-btn img { width: 24px; height: 24px; }
+
+.thread-info { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 20px; margin-top: 8px; white-space: nowrap; }
+.thread-info button { padding: 0; background: none; font-size: 18px; color: var(--purple-link); }
+.thread-info button:hover { font-weight: 700; }
+.thread-info span { font-size: 14px; color: var(--text-grey); }
+
+// Hover menu (assumed design, Figma has none on desktop).
+.toolbar {
+  position: absolute;
+  top: -18px;
+  right: 45px;
+  display: none;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 15px;
+  border: 1px solid var(--purple-3);
+  border-radius: 25px 25px 0 25px;
+  background: var(--white);
+}
+
+:host(.own) .toolbar { right: auto; left: 45px; border-radius: 25px 25px 25px 0; }
+:host(:hover) .toolbar, .toolbar.open { display: flex; }
+
+.more-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  padding: 10px;
+  border-radius: 30px 0 30px 30px;
+  background: var(--white);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.more-menu button {
+  padding: 10px 20px;
+  border-radius: 100px;
+  background: none;
+  font-size: 20px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.more-menu button:hover { background: var(--bg); color: var(--purple-1); }
+.picker-toolbar { top: 100%; right: 0; }
+
+// Edit mode (Figma page 27)
+.edit-box {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 15px;
+  margin: -1px -1px -1px 100px;
+  padding: 20px 20px 19px;
+  border: 1px solid var(--purple-3);
+  border-radius: 20px;
+  background: var(--white);
+}
+
+.edit-box textarea {
+  min-height: 75px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  resize: none;
+  font-size: 18px;
+  line-height: 25px;
+  color: var(--text-grey);
+  field-sizing: content;
+}
+
+.edit-actions { position: relative; display: flex; align-items: center; gap: 31px; }
+.edit-actions .icon-btn { margin: 0 auto 0 8px; }
+.edit-actions .btn-primary { padding: 0 25px; } // Figma page 27: 133 px wide
+.edit-box textarea { margin-right: -4px; } // Figma: text runs 4 px into the padding
+.picker-edit { bottom: 100%; left: 0; }
+
+// Mobile (Figma pages 48, 49): 16 px side margin, avatar 50 px, text 17 px.
+@media (max-width: 999px) {
+  :host, :host(.compact) { gap: 20px; padding: 10px 16px 7px; }
+  :host(.own), :host(.compact) { gap: 16px; }
+  :host(.own) .content { padding-left: 34px; }
+  :host(.own) .reactions { margin-right: 24px; }
+  :host(:not(.own)) .content { padding-right: 0; }
+  :host(.compact:not(.own)) .content { padding-right: 34px; }
+  .meta { gap: 21px; }
+  :host(.own) .meta { gap: 20px; }
+  .bubble { font-size: 17px; line-height: 23px; }
+  :host(.compact) .bubble { border-radius: 0 20px 20px 20px; }
+  :host(.own.compact) .bubble { border-radius: 20px 0 20px 20px; }
+  .reactions { flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  :host(.compact) .reactions { gap: 7px; margin: 13px 0 0 -1px; }
+  :host(.own.compact) .reactions { margin: 8px 0 0; }
+  :host(.compact) .add-reaction { margin-left: 0; }
+  .edit-box { margin: 0; }
+  .toolbar { right: 16px; }
+  :host(.own) .toolbar { left: 16px; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles einer Nachricht, Werte aus Figma.
+ * - :host(.own): eigene Nachricht, gespiegelt (row-reverse), lila Blase,
+ *   Ecke oben rechts eckig. Fremde Nachricht: Ecke oben links eckig.
+ * - :host(:hover) / .editing: hellgrauer Hintergrund über die ganze
+ *   Breite (Figma Seite 27). Die fremde Blase wird dann weiß, damit sie
+ *   sich vom Hintergrund abhebt.
+ * - :host(.compact): Thread-Ansicht, 20 px statt 30 px Abstand.
+ * - white-space: pre-line: Zeilenumbrüche aus Shift+Enter bleiben.
+ * - .toolbar: nur beim Hover sichtbar (display: flex). Eigenes Design,
+ *   da Figma keines vorgibt.
+ * - .edit-box: Bearbeiten-Feld mit Rahmen, 20 px Innenabstand.
+ *   field-sizing: content lässt die Textarea mit dem Text wachsen.
+ * - Name, Uhrzeit und "2 Antworten" brechen nicht um. Ein sehr langer
+ *   Name wird mit ... gekürzt (wichtig für 320 px Breite).
+ */

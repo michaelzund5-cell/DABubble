@@ -1,0 +1,41 @@
+@if (channel(); as current) {
+  <div class="intro channel-intro">
+    <h3 class="channel-title"><img src="img/icons/tag-header.svg" alt="">{{ current.name }}</h3>
+    <p class="text dark">
+      {{ creatorIsMe() ? 'Du hast' : creatorName() + ' hat' }} diesen Channel
+      {{ createdLabel() }} erstellt.
+      Das ist der Anfang des Channels <span class="link"><img class="tag" src="img/icons/tag-link.svg" alt="#">{{ current.name }}.</span>
+    </p>
+  </div>
+} @else if (partner(); as person) {
+  <div class="intro direct">
+    <div class="person">
+      <app-avatar [user]="person" [size]="viewport.isMobile() ? 88 : 100" />
+      <h3>{{ person.name }}{{ isSelf() ? ' (Du)' : '' }}</h3>
+    </div>
+    @if (isSelf()) {
+      <p class="text">
+        <strong>Dieser Raum ist nur für dich da.</strong> Mache dir Notizen, liste deine To-dos auf oder bewahre
+        Links und Dateien griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.
+      </p>
+    } @else {
+      <p class="text">
+        Diese Unterhaltung findet nur zwischen
+        <button class="link" type="button" (click)="state.openProfile(person.id)">&#64;{{ person.name }}</button>
+        und dir statt.
+      </p>
+    }
+  </div>
+}
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Vorlage für den Begrüssungstext eines leeren Chats.
+  - Channel: Titel mit #-Icon, Satz zum Ersteller, Channel-Name in Lila.
+  - Person: Avatar 100 px, Name, Satz mit @Name als Link zum Profil.
+  - &#64; ist das Zeichen @. Angular würde ein nacktes @ in der Vorlage
+    als Befehl (wie @if) lesen.
+  - Bei dir selbst ist der erste Satz fett (Figma Seite 26).
+-->

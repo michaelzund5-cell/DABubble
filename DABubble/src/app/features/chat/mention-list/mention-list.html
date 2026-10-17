@@ -1,0 +1,34 @@
+<ul class="list" role="listbox">
+  @if (trigger() === '@') {
+    @for (user of users(); track user.id) {
+      <li>
+        <button type="button" (click)="pickedUser.emit(user)">
+          <app-avatar [user]="user" [size]="50" [showStatus]="true" />
+          {{ user.name }}{{ user.id === currentUserId() ? ' (Du)' : '' }}
+        </button>
+      </li>
+    } @empty {
+      <li class="empty">Keine Person gefunden</li>
+    }
+  } @else {
+    @for (channel of channels(); track channel.id) {
+      <li>
+        <button class="channel" type="button" (click)="pickedChannel.emit(channel)">
+          <img src="img/icons/tag.svg" alt="">
+          {{ channel.name }}
+        </button>
+      </li>
+    } @empty {
+      <li class="empty">Kein Channel gefunden</li>
+    }
+  }
+</ul>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Liste mit Personen (Avatar und Name) oder Channels (# und Name),
+  wie in Figma Seiten 46 und 47. @empty: Hinweis, wenn nichts passt.
+  role="listbox": Screenreader erkennen die Liste als Auswahl.
+-->

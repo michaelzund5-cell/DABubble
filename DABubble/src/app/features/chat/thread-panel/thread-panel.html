@@ -1,38 +1,26 @@
-<section class="thread">
-  <header>
-    <div><strong>Thread</strong><span>{{ state.activeTitle() }}</span></div>
-    <button type="button" (click)="state.closeThread()" aria-label="Thread schließen">×</button>
+<section class="thread-card" aria-labelledby="thread-title">
+  <header class="thread-header">
+    <h2 id="thread-title">Thread</h2>
+    <span class="location">{{ location() }}</span>
+    <button class="close" type="button" (click)="state.closeThread()" aria-label="Thread schließen">
+      <img src="img/icons/close.svg" alt="">
+    </button>
   </header>
 
   @if (rootMessage(); as root) {
-    <div class="thread-content">
-      <!-- Root message -->
-      <article>
-        <div class="avatar">{{ userService.getById(root.senderId)?.initials }}</div>
-        <div>
-          <div class="meta"><strong>{{ userService.getById(root.senderId)?.name }}</strong><span>{{ root.createdAt | date: 'HH:mm' }}</span></div>
-          <p>{{ root.text }}</p>
-        </div>
-      </article>
+    <div class="messages">
+      <app-message-item [message]="root" [compact]="true" [showThreadInfo]="false" />
 
-      <div class="separator"><span>{{ replies().length }} {{ replies().length === 1 ? 'Antwort' : 'Antworten' }}</span></div>
+      <div class="replies-divider">
+        <span>{{ replies().length }} {{ replies().length === 1 ? 'Antwort' : 'Antworten' }}</span>
+      </div>
 
-      <!-- Replies -->
       @for (reply of replies(); track reply.id) {
-        <article>
-          <div class="avatar">{{ userService.getById(reply.senderId)?.initials }}</div>
-          <div>
-            <div class="meta"><strong>{{ userService.getById(reply.senderId)?.name }}</strong><span>{{ reply.createdAt | date: 'HH:mm' }}</span></div>
-            <p>{{ reply.text }}</p>
-          </div>
-        </article>
+        <app-message-item [message]="reply" [compact]="true" [showThreadInfo]="false" />
       }
     </div>
 
-    <form (ngSubmit)="sendReply()">
-      <textarea name="reply" [(ngModel)]="replyText" placeholder="Antworten ..." aria-label="Antwort schreiben"></textarea>
-      <button type="submit" [disabled]="!replyText.trim()" aria-label="Antwort senden">➤</button>
-    </form>
+    <app-message-input [threadId]="root.id" />
   }
 </section>
 
@@ -40,13 +28,10 @@
   =====================================================================
   ZUSAMMENFASSUNG (Deutsch)
   =====================================================================
-  Das HTML des Thread-Panels.
-  - @if (rootMessage(); as root): Nur wenn es eine Ursprungsnachricht
-    gibt, wird der Inhalt gezeigt. "as root" speichert den Wert in einer
-    kurzen Variable für das HTML darunter.
-  - Oben die Ursprungsnachricht, darunter die Anzahl der Antworten.
-    Neu: "1 Antwort" statt "1 Antworten" (Ternary-Operator).
-  - @for zeigt alle Antworten, die Uhrzeit kommt über die DatePipe.
-  - Unten das Formular für eine neue Antwort. Der Button ist gesperrt,
-    solange das Feld leer ist.
+  Thread-Panel (Figma Seite 15).
+  - Kopf: "Thread", Ort (# Channel) und Schließen-Kreuz.
+  - Erste Nachricht, dann die Trennlinie "2 Antworten", dann die Antworten.
+  - [compact]="true": Thread-Abstände. [showThreadInfo]="false": Im Thread
+    keine "x Antworten"-Zeile und kein Thread-Button.
+  - Eingabefeld mit threadId: Antworten landen in diesem Thread.
 -->

@@ -1,0 +1,34 @@
+<section class="chat">
+  <header class="new-header">
+    <h2>Neue Nachricht</h2>
+
+    <div class="recipient">
+      <input #recipientField type="text" name="recipient" [(ngModel)]="text" (ngModelChange)="onRecipientChange()"
+        (keydown)="onKeydown($event)" placeholder="An: #channel, oder @jemand oder E-Mail Adresse"
+        aria-label="Empfänger" autocomplete="off">
+      @if (trigger(); as currentTrigger) {
+        <app-mention-list class="popup" [trigger]="currentTrigger" [query]="query()"
+          (pickedUser)="pick($event.name)" (pickedChannel)="pick($event.name)" />
+      }
+      @if (showError()) {
+        <p class="error" role="alert">Kein Channel und keine Person mit diesem Namen gefunden.</p>
+      }
+    </div>
+  </header>
+
+  <div class="spacer"></div>
+
+  <app-message-input class="new" [targetView]="target()" (sent)="openChat($event)" />
+</section>
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Vorlage "Neue Nachricht" (Figma Seite 20).
+  - Kopf mit Titel und Empfänger-Feld. Beim Tippen von # oder @ öffnet
+    die Auswahlliste unter dem Feld.
+  - Darunter leerer Platz, unten das normale Eingabefeld. Es bekommt den
+    gefundenen Empfänger ([targetView]) und meldet (sent) nach dem
+    Senden.
+-->
