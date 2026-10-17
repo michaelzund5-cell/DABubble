@@ -1,5 +1,8 @@
 <main class="auth-page">
-  <img class="logo" src="img/logo.svg" alt="DABubble">
+  <picture class="logo">
+    <source media="(max-width: 999px)" srcset="img/logo-auth-mobile.svg">
+    <img src="img/logo.svg" alt="DABubble">
+  </picture>
 
   <section class="card" aria-labelledby="register-title">
     <a class="back-btn" routerLink="/login" aria-label="Zurück zur Anmeldung">

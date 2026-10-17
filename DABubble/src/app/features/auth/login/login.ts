@@ -1,12 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../../core/auth/session.service';
 import { validateEmail } from '../../../shared/utils/validators';
+import { IntroSplash } from '../intro-splash/intro-splash';
 
 @Component({
   selector: 'app-login-page',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, IntroSplash, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -34,8 +35,11 @@ export class LoginPage {
     this.openWorkspace();
   }
 
+  readonly googleHint = signal('');
+
+  // Demo: Google sign-in needs Firebase (signInWithPopup). Until then the button explains this.
   loginWithGoogle(): void {
-    // Connected in the Firebase step.
+    this.googleHint.set('Google-Anmeldung wird mit Firebase aktiviert. Bitte Gäste-Login nutzen.');
   }
 
   private validateInputs(): boolean {
@@ -58,5 +62,6 @@ export class LoginPage {
  * - Bewusst dieselbe Meldung für falsche E-Mail und falsches Passwort.
  *   So kann niemand herausfinden, welche E-Mails ein Konto haben.
  * - loginAsGuest(): Gäste-Login (Demo: Demo-Benutzer).
- * - loginWithGoogle(): folgt mit Firebase.
+ * - loginWithGoogle(): zeigt in der Demo einen Hinweis. Mit Firebase
+ *   kommt hier signInWithPopup() mit dem Google-Anbieter hin.
  */

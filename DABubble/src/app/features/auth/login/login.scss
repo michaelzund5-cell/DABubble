@@ -69,12 +69,47 @@ form {
 
 .btn-google:hover { border-color: var(--purple-1); }
 
+.google-wrap { position: relative; }
+.btn-google { width: 100%; }
+.google-hint { position: absolute; top: 100%; left: 0; right: 0; margin: 6px 0 0; font-size: 14px; color: var(--text-grey); }
+
 .actions {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 29px;
   margin: 42px 0 0 1px;
+}
+
+@media #{$mobile} {
+  .logo { margin-top: 72px; }
+  .signup-hint { position: static; order: 1; align-items: center; gap: 20px; margin-top: 32px; }
+  .signup-hint .link {
+    display: inline-flex;
+    align-items: center;
+    height: 41px;
+    margin: 0;
+    padding: 0 21px;
+    border: 1px solid var(--purple-2);
+    border-radius: 100px;
+    color: var(--purple-1);
+    font-size: 18px;
+  }
+  .signup-hint .link:hover { background: var(--purple-1); color: var(--white); }
+  .card { height: auto; margin-top: 32px; padding-top: 33px; padding-bottom: 33px; }
+  .intro { max-width: 330px; margin: 13px auto 0; }
+  form { margin-top: 19px; }
+  .field + .field { margin-top: 29px; }
+  .forgot { margin: 26px 0 0; }
+  .divider { margin-top: 25px; font-size: 17px; }
+  .btn-google { gap: 23px; height: 50px; margin-top: 27px; font-size: 17px; }
+  .actions { gap: 19px; margin: 20px 0 0; }
+  .legal-links { order: 2; }
+}
+
+@media (max-width: 400px) {
+  .actions { gap: 10px; }
+  .actions button { padding: 0 14px; white-space: nowrap; }
 }
 
 /*

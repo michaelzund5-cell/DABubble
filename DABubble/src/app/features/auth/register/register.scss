@@ -41,6 +41,18 @@ form {
 
 .next { align-self: flex-end; width: 107px; margin-top: 44px; padding: 0; }
 
+@media #{$mobile} {
+  .logo { margin-top: 199px; }
+  .card { height: auto; margin-top: 32px; padding: 18px 20px 26px; }
+  h1, .intro { padding-left: 0; }
+  .intro { margin-top: 13px; }
+  form { margin-top: 19px; }
+  .field + .field { margin-top: 29px; }
+  .consent { gap: 8px; margin-top: 20px; font-size: 16px; }
+  .consent .link { font-size: 18px; }
+  .next { margin-top: 19px; }
+}
+
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)

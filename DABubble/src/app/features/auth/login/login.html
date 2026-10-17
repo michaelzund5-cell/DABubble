@@ -1,5 +1,10 @@
 <main class="auth-page">
-  <img class="logo" src="img/logo.svg" alt="DABubble">
+  <app-intro-splash />
+
+  <picture class="logo">
+    <source media="(max-width: 999px)" srcset="img/logo-auth-mobile.svg">
+    <img src="img/logo.svg" alt="DABubble">
+  </picture>
 
   <div class="signup-hint">
     <span>Neu bei DABubble?</span>
@@ -33,10 +38,15 @@
 
       <div class="divider"><span>ODER</span></div>
 
-      <button class="btn-google" type="button" (click)="loginWithGoogle()">
-        <img src="img/icons/google.svg" alt="">
-        Anmelden mit Google
-      </button>
+      <div class="google-wrap">
+        <button class="btn-google" type="button" (click)="loginWithGoogle()">
+          <img src="img/icons/google.svg" alt="">
+          Anmelden mit Google
+        </button>
+        @if (googleHint()) {
+          <p class="google-hint" role="status">{{ googleHint() }}</p>
+        }
+      </div>
 
       <div class="actions">
         <button class="btn-primary" type="submit">Anmelden</button>
@@ -55,6 +65,8 @@
   =====================================================================
   ZUSAMMENFASSUNG (Deutsch)
   =====================================================================
+  - Google-Button: zeigt in der Demo einen Hinweis, bis Firebase da ist.
+  - <app-intro-splash>: Start-Animation beim ersten Aufruf (Figma 1, 34).
   Login-Seite (Figma Seite 2).
   - Oben rechts: Link zur Registrierung.
   - Zwei Felder mit Icon, Fehlertext direkt unter dem betroffenen Feld.

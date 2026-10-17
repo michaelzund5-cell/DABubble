@@ -1,0 +1,86 @@
+// Start animation. Figma page 1: icon 187 px in the center, page 34 (mobile): 71 px.
+// The logo is built at its final size (242 x 70 px) and scaled with --start-scale.
+
+.splash {
+  --start-scale: 2.67;
+  --end-x: 75px;
+  --end-y: 75px;
+  --end-scale: 1;
+
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: linear-gradient(180deg, #777cf2 0%, #303ae5 100%); // Figma page 1
+  animation: splash-fade 600ms ease 2100ms forwards;
+  pointer-events: none;
+}
+
+.logo-anim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 242px;
+  height: 70px;
+  transform-origin: 0 0;
+  animation: logo-move 1700ms ease-in-out 500ms both;
+}
+
+.icon { position: absolute; top: 0; left: 0; z-index: 1; width: 70px; height: 70px; }
+
+.text-clip {
+  position: absolute;
+  top: 23px;
+  left: 86px;
+  width: 154px;
+  height: 25px;
+  overflow: hidden;
+  clip-path: inset(0 100% 0 0);
+  animation: text-reveal 700ms ease-out 500ms forwards;
+}
+
+.text {
+  display: block;
+  width: 154px;
+  animation: text-color 700ms ease-in-out 1500ms forwards;
+}
+
+// 1. icon centered (Figma start frame), 2. whole logo centered while the text appears, 3. move to its place.
+@keyframes logo-move {
+  0% { transform: translate(calc(50vw - 35px * var(--start-scale)), calc(50vh - 35px * var(--start-scale))) scale(var(--start-scale)); }
+  41%, 59% { transform: translate(calc(50vw - 121px * var(--start-scale)), calc(50vh - 35px * var(--start-scale))) scale(var(--start-scale)); }
+  100% { transform: translate(var(--end-x), var(--end-y)) scale(var(--end-scale)); }
+}
+
+@keyframes text-reveal {
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes text-color {
+  to { filter: brightness(0); } // white -> black like the real logo
+}
+
+@keyframes splash-fade {
+  to { opacity: 0; visibility: hidden; }
+}
+
+// Mobile (Figma page 34 and 35): smaller icon, logo ends centered 72 px from the top.
+@media (max-width: 999px) {
+  .splash { --start-scale: 1.01; --end-x: calc(50vw - 102px); --end-y: 72px; --end-scale: 0.843; }
+}
+
+/*
+ * =====================================================================
+ * ZUSAMMENFASSUNG (Deutsch)
+ * =====================================================================
+ * Styles der Start-Animation.
+ * - Hintergrund: Verlauf von #777CF2 nach #303AE5 (aus Figma gemessen).
+ * - Ablauf: 0,5 s Schriftzug aufdecken (clip-path), ab 1,5 s wandert
+ *   das Logo an seinen Platz und der Schriftzug wird schwarz
+ *   (filter: brightness(0)), ab 2,1 s blendet der Hintergrund aus.
+ * - CSS-Variablen (--start-scale, --end-x ...): gleiche Animation für
+ *   Desktop und Handy, nur die Werte sind anders.
+ * - logo-move in drei Schritten: Symbol mittig (Startbild Figma), dann
+ *   das ganze Logo mittig, während der Schriftzug erscheint, dann an den
+ *   Platz. Figma zeigt nur das Startbild, der Ablauf ist eine Annahme.
+ * - pointer-events: none: Man kann schon während der Animation klicken.
+ */

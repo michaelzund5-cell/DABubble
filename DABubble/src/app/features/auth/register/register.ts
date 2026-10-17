@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { RegistrationService } from '../../../core/auth/registration.service';
+import { UserService } from '../../../core/data/user.service';
 import { validateEmail, validateName, validatePassword } from '../../../shared/utils/validators';
 
 @Component({
@@ -13,6 +14,7 @@ import { validateEmail, validateName, validatePassword } from '../../../shared/u
 export class RegisterPage {
   private readonly registration = inject(RegistrationService);
   private readonly router = inject(Router);
+  private readonly userService = inject(UserService);
 
   name = '';
   email = '';
@@ -30,7 +32,9 @@ export class RegisterPage {
   }
 
   getEmailError(): string {
-    return validateEmail(this.email);
+    const error = validateEmail(this.email);
+    if (error) return error;
+    return this.userService.emailExists(this.email) ? 'Diese E-Mail-Adresse wird bereits verwendet.' : '';
   }
 
   getPasswordError(): string {
@@ -71,4 +75,5 @@ export class RegisterPage {
  *   Avatar-Auswahl.
  * - restoreDraft(): Kommt man mit dem Zurück-Pfeil von der Avatar-Seite,
  *   sind die Eingaben noch da.
+ * - getEmailError(): prüft zusätzlich, ob die E-Mail schon ein Konto hat.
  */

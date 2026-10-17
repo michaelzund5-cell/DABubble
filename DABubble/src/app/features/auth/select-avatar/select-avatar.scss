@@ -54,6 +54,18 @@ h1 { padding-left: 14px; }
 
 .next { align-self: flex-end; width: 107px; margin: auto 0 40px; padding: 0; }
 
+@media #{$mobile} {
+  .logo { margin-top: 87px; }
+  .card { height: auto; margin-top: 64px; padding: 26px 20px 26px; }
+  h1 { max-width: 250px; padding-left: 0; line-height: 38px; }
+  .preview { width: 120px; height: 120px; margin-top: 23px; }
+  .user-name { margin-top: 25px; }
+  .choose-label { margin: 8px 0 0 1px; }
+  .avatar-list { flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 20px; }
+  .avatar-option { width: 48px; height: 48px; }
+  .next { margin: 28px 1px 0 0; }
+}
+
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)

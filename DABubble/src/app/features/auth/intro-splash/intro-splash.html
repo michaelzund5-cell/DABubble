@@ -1,0 +1,20 @@
+@if (visible()) {
+  <div class="splash" aria-hidden="true" (animationend)="onAnimationEnd($event)">
+    <div class="logo-anim">
+      <img class="icon" src="img/logo-icon.svg" alt="">
+      <div class="text-clip"><img class="text" src="img/logo-text-white.svg" alt=""></div>
+    </div>
+  </div>
+}
+
+<!--
+  =====================================================================
+  ZUSAMMENFASSUNG (Deutsch)
+  =====================================================================
+  Vorlage der Start-Animation.
+  - .logo-anim: Logo aus Symbol und Schriftzug, so gross wie das echte
+    Logo (242 x 70 px) und per transform vergrössert.
+  - .text-clip: Fenster, das beim Aufdecken breiter wird. So scheint der
+    Schriftzug hinter dem Symbol hervorzukommen.
+  - aria-hidden: Die Animation ist reine Dekoration für Screenreader.
+-->

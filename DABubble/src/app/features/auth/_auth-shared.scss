@@ -18,6 +18,8 @@
   height: 70px;
 }
 
+.logo img { display: block; width: 100%; height: 100%; }
+
 .card {
   position: relative;
   width: 606px;
@@ -101,34 +103,37 @@ h1 {
 
 .link:hover { color: var(--purple-1); }
 
-.btn-primary,
-.btn-secondary {
-  height: 49px;
-  padding: 0 25.5px;
-  border-radius: 25px;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.btn-primary { background: var(--purple-1); color: var(--white); }
-.btn-primary:hover:not(:disabled) { background: var(--purple-2); }
-.btn-primary:disabled { background: var(--text-grey); }
-
-.btn-secondary {
-  background: var(--white);
-  color: var(--purple-1);
-  border: 1px solid var(--purple-2);
-  height: 51px;
-  padding: 0 25px;
-}
-
-.btn-secondary:hover { background: var(--purple-1); color: var(--white); }
-
 .legal-links {
   display: flex;
   gap: 48px;
   margin-top: auto;
   padding: 24px 2px 58px 0;
+}
+
+// Mobile layout (Figma pages 35-39): logo 201 px centered above the card,
+// card up to 398 px wide, 17 px text. Each page sets its own logo margin-top.
+$mobile: '(max-width: 999px)';
+
+@media #{$mobile} {
+  .auth-page { padding: 0 16px; }
+  .logo { position: static; width: 204px; height: 56px; flex-shrink: 0; }
+  .card { width: 100%; max-width: 398px; margin-top: 30px; padding: 0 20px; height: auto; }
+  h1 { font-size: 32px; }
+  .intro { font-size: 17px; line-height: 20px; }
+  .field { height: 50px; }
+  .field input { font-size: 18px; }
+  .link { font-size: 17px; }
+  .back-btn { top: 28px; left: 30px; }
+  .legal-links { gap: 46px; padding: 24px 0 40px; }
+  .legal-links .link { font-size: 18px; }
+}
+
+// Very small phones (down to 320 px, no Figma design): smaller title, arrow closer to the edge.
+@media (max-width: 400px) {
+  .card { padding: 0 14px; }
+  h1 { font-size: 26px; }
+  .back-btn { left: 10px; }
+  .legal-links { gap: 24px; }
 }
 
 /*
@@ -140,7 +145,9 @@ h1 {
  * Datei wird nur per @use in die Seiten eingebunden.
  * - .auth-page: Seite als Spalte, Karte mittig, Footer unten (margin-top:
  *   auto bei .legal-links).
- * - .logo: fest oben links, 75 px vom Rand, wie in Figma.
+ * - .logo: fest oben links, 75 px vom Rand, wie in Figma. <picture>
+ *   lädt auf dem Handy die Handy-Version (Figma: Schrift im Verhältnis
+ *   grösser als im Desktop-Logo).
  * - .card: weiße Karte. Höhe und Abstand nach oben setzt jede Seite selbst.
  * - .field: Eingabefeld mit Icon. :hover und :focus-within ändern die
  *   Randfarbe. focus-within greift, wenn das input darin fokussiert ist.
@@ -148,6 +155,11 @@ h1 {
  *   Layout nicht, wenn ein Fehler erscheint.
  * - .back-btn: Zurück-Pfeil oben links in der Karte.
  * - .link: Links in der Schrift Figtree (Figma).
- * - .btn-primary / .btn-secondary: Buttons inkl. hover und disabled.
- *   Disabled-Farbe #686868 ist durch Figma Seiten 5 und 6 bestätigt.
+ * - Handy (unter 1000 px, Figma Seiten 35 bis 39): Logo 201 px mittig
+ *   über der Karte, Karte bis 398 px breit, Schrift 17 px. Wie auf dem
+ *   Desktop setzt jede Seite den Abstand nach oben selbst (Figma).
+ * - Buttons (.btn-primary / .btn-secondary) stehen jetzt global in
+ *   styles.scss, weil sie auch im Chat gebraucht werden.
+ * - Unter 400 px (kein Figma-Design, Checkliste verlangt 320 px):
+ *   kleinere Überschrift, Pfeil näher am Rand, damit nichts überlappt.
  */
