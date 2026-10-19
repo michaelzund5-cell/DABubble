@@ -1,94 +1,150 @@
 import { computed, Injectable, signal } from '@angular/core';
+import {
+  createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword,
+  signInWithPopup, signOut, updateProfile, User as AuthUser,
+} from 'firebase/auth';
+import { auth } from '../firebase/firebase';
+import { reportError } from '../firebase/report-error';
+import { ensureUserProfile, joinPublicChannel, setOffline } from './profile-setup';
 
-// DEMO ONLY: fake login until a real auth provider is connected.
-// IMPORTANT: Anything stored in the browser (localStorage, signals) can be changed by the user.
-// This service only controls what the UI shows. Real protection must happen on the server
-// (auth provider + database access rules).
+export type LoginResult = 'ok' | 'invalid' | 'blocked' | 'cancelled' | 'failed';
+export type RegisterResult = 'ok' | 'email-in-use' | 'weak-password' | 'failed';
+
+// Login state, backed by Firebase Authentication.
 @Injectable({ providedIn: 'root' })
 export class SessionService {
-  private readonly storageKey = 'dabubble-demo-user-id';
-  private readonly demoUser = { id: 'u1', email: 'test@test.ch', password: '123456' };
-  // Accounts registered in this tab (memory only, gone after reload). Firebase replaces this.
-  private readonly registeredAccounts: { id: string; email: string; password: string }[] = [];
-
-  // ID of the logged-in user, or null if nobody is logged in.
-  readonly currentUserId = signal<string | null>(this.readStoredUserId());
-
-  // Derived value: recalculated automatically whenever currentUserId changes.
+  // ID of the logged-in user, or null. Only set after the profile in Firestore exists.
+  readonly currentUserId = signal<string | null>(null);
   readonly isLoggedIn = computed(() => this.currentUserId() !== null);
 
-  login(email: string, password: string): boolean {
-    const cleanEmail = email.trim().toLowerCase();
-    const account = [this.demoUser, ...this.registeredAccounts]
-      .find((entry) => entry.email === cleanEmail && entry.password === password);
-    if (!account) return false;
-    this.currentUserId.set(account.id);
-    // Only the demo user is remembered: registered demo accounts do not survive a reload.
-    if (account.id === this.demoUser.id) this.writeStoredUserId(account.id);
-    return true;
+  // Resolves once Firebase has restored a session after reloading the page (used by the guard).
+  readonly ready: Promise<void>;
+
+  private pendingName = ''; // name from the register form, used when the profile is created
+  private readonly applying = new Map<string, Promise<void>>();
+
+  constructor() {
+    this.ready = new Promise((resolve) => {
+      onAuthStateChanged(auth, (user) => void this.applyUser(user).then(resolve));
+    });
   }
 
-  // Demo: makes a freshly registered account usable for login in this tab.
-  registerDemoAccount(id: string, email: string, password: string): void {
-    this.registeredAccounts.push({ id, email: email.trim().toLowerCase(), password });
+  async login(email: string, password: string): Promise<LoginResult> {
+    try {
+      const credential = await signInWithEmailAndPassword(auth, email.trim(), password);
+      await this.applyUser(credential.user);
+      return 'ok';
+    } catch (error) {
+      // Wrong email and wrong password give the same result: nobody can test which emails exist.
+      return toLoginResult(errorCode(error));
+    }
   }
 
-  // Demo: guest uses the demo user. With Firebase this becomes an anonymous login.
-  loginAsGuest(): void {
-    this.currentUserId.set(this.demoUser.id);
-    this.writeStoredUserId(this.demoUser.id);
+  async loginAsGuest(): Promise<LoginResult> {
+    return this.run(async () => (await signInAnonymously(auth)).user);
   }
 
-  logout(): void {
+  async loginWithGoogle(): Promise<LoginResult> {
+    return this.run(async () => (await signInWithPopup(auth, new GoogleAuthProvider())).user);
+  }
+
+  // Creates the account. The user is logged in afterwards (needed for the avatar step).
+  async register(name: string, email: string, password: string): Promise<RegisterResult> {
+    try {
+      this.pendingName = name;
+      const credential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      await updateProfile(credential.user, { displayName: name });
+      await this.applyUser(credential.user);
+      return 'ok';
+    } catch (error) {
+      return toRegisterResult(errorCode(error));
+    }
+  }
+
+  async logout(): Promise<void> {
+    const uid = this.currentUserId();
+    if (uid) await setOffline(uid).catch((error) => reportError('Status offline', error));
+    await signOut(auth);
+  }
+
+  // Shared part of guest and Google login. A closed Google popup is not an error.
+  private async run(signIn: () => Promise<AuthUser>): Promise<LoginResult> {
+    try {
+      await this.applyUser(await signIn());
+      return 'ok';
+    } catch (error) {
+      const code = errorCode(error);
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return 'cancelled';
+      reportError('Login', error);
+      return 'failed';
+    }
+  }
+
+  // Runs once per user, even if Firebase and the login method call it at the same time.
+  private applyUser(user: AuthUser | null): Promise<void> {
+    if (!user) return Promise.resolve(this.clear());
+    const running = this.applying.get(user.uid) ?? this.setUp(user);
+    this.applying.set(user.uid, running);
+    return running;
+  }
+
+  private async setUp(user: AuthUser): Promise<void> {
+    try {
+      await ensureUserProfile(user, this.pendingName);
+      await joinPublicChannel(user.uid);
+    } catch (error) {
+      reportError('Profil einrichten', error);
+    }
+    this.currentUserId.set(user.uid);
+  }
+
+  private clear(): void {
+    this.applying.clear();
+    this.pendingName = '';
     this.currentUserId.set(null);
-    this.writeStoredUserId(null);
   }
+}
 
-  // localStorage can throw (e.g. private mode), so every access is wrapped in try/catch.
-  private readStoredUserId(): string | null {
-    try {
-      return localStorage.getItem(this.storageKey);
-    } catch {
-      return null;
-    }
-  }
+function errorCode(error: unknown): string {
+  return typeof error === 'object' && error !== null && 'code' in error ? String(error.code) : '';
+}
 
-  private writeStoredUserId(id: string | null): void {
-    try {
-      if (id) localStorage.setItem(this.storageKey, id);
-      else localStorage.removeItem(this.storageKey);
-    } catch {
-      // Ignore: the login still works for this browser tab.
-    }
-  }
+function toLoginResult(code: string): LoginResult {
+  if (code === 'auth/too-many-requests') return 'blocked';
+  if (code === 'auth/network-request-failed') return 'failed';
+  return 'invalid';
+}
+
+function toRegisterResult(code: string): RegisterResult {
+  if (code === 'auth/email-already-in-use') return 'email-in-use';
+  if (code === 'auth/weak-password') return 'weak-password';
+  return 'failed';
 }
 
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Der SessionService verwaltet den Anmeldestatus (Session).
- *
- * - @Injectable({ providedIn: 'root' }): Angular erstellt genau eine
- *   Instanz dieses Services für die ganze App (Singleton). Jede
- *   Component, die ihn per inject() holt, bekommt dieselbe Instanz.
- * - currentUserId ist ein Signal: ein Wert, bei dem Angular merkt,
- *   wenn er sich ändert, und die Anzeige automatisch aktualisiert.
- * - isLoggedIn ist computed: ein abgeleiteter Wert. Er wird automatisch
- *   neu berechnet, wenn sich currentUserId ändert.
- * - login(): Vergleicht mit dem Demo-Zugang und speichert die
- *   Benutzer-ID im localStorage, damit man nach dem Neuladen
- *   eingeloggt bleibt.
- * - logout(): Setzt die ID auf null und löscht den Speicher.
- * - try/catch: Der Zugriff auf localStorage kann in manchen Browsern
- *   fehlschlagen (z. B. privater Modus). Dann stürzt die App nicht ab.
- *
- * Sicherheit: Alles im Browser kann der Benutzer selbst verändern.
- * Dieser Service steuert nur, was die Oberfläche zeigt. Echter Schutz
- * entsteht erst durch den Auth-Anbieter und die Zugriffsregeln der
- * Datenbank. Vorher wurde nur 'ja' gespeichert, jetzt die echte
- * Benutzer-ID, damit die App weiß, WER eingeloggt ist.
- * - registerDemoAccount(): Nach der Registrierung kann man sich mit dem
- *   neuen Konto anmelden, solange der Tab offen ist (nur im Speicher).
- *   Mit Firebase fällt das weg.
+ * Anmeldestatus der App, jetzt mit Firebase Authentication.
+ * - currentUserId: ID des angemeldeten Benutzers oder null. Wird erst
+ *   gesetzt, wenn sein Profil in der Datenbank existiert. So laden die
+ *   anderen Services nie Daten für einen halb angelegten Benutzer.
+ * - ready: Nach dem Neuladen stellt Firebase die Anmeldung kurz
+ *   verzögert wieder her. Der Guard wartet darauf, sonst würde man kurz
+ *   auf den Login geworfen.
+ * - login(): E-Mail und Passwort. Falsche E-Mail und falsches Passwort
+ *   ergeben dasselbe Ergebnis ('invalid'), damit niemand testen kann,
+ *   welche E-Mails ein Konto haben. 'blocked': Firebase sperrt nach
+ *   zu vielen Fehlversuchen kurz (Schutz gegen Passwort-Raten).
+ *   'failed': keine Internetverbindung.
+ * - loginAsGuest(): anonymes Konto (wird nach 30 Tagen gelöscht).
+ * - loginWithGoogle(): Google-Fenster. Schliesst man es, ist das kein
+ *   Fehler ('cancelled').
+ * - register(): legt das Konto an. Das Passwort geht direkt an Firebase
+ *   und wird in der App nirgends gespeichert.
+ * - logout(): Status auf "offline", dann abmelden.
+ * - applyUser(): wird von Firebase und von der Login-Methode fast
+ *   gleichzeitig aufgerufen. Die Map "applying" sorgt dafür, dass das
+ *   Profil nur einmal eingerichtet wird.
+ * - errorCode(): liest den Fehlercode von Firebase sicher aus.
  */

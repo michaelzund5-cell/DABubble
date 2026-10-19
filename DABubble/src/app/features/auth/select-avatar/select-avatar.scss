@@ -53,6 +53,8 @@ h1 { padding-left: 14px; }
 .avatar-option.selected { outline-color: var(--purple-1); }
 
 .next { align-self: flex-end; width: 107px; margin: auto 0 40px; padding: 0; }
+.form-error { align-self: flex-end; margin: auto 0 8px; font-size: 14px; color: var(--error); }
+.form-error + .next { margin-top: 0; }
 
 @media #{$mobile} {
   .logo { margin-top: 87px; }
@@ -76,4 +78,5 @@ h1 { padding-left: 14px; }
  * - .avatar-option: 64 px rund. outline zeigt hover (hell) und Auswahl
  *   (dunkel). Figma gibt diese Zustände nicht vor, Annahme.
  * - .next: margin-top auto schiebt den Button ans untere Ende der Karte.
+ * - .form-error: Meldung, wenn das Speichern nicht geklappt hat.
  */

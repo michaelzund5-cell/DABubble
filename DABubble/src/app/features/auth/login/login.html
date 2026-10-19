@@ -39,7 +39,7 @@
       <div class="divider"><span>ODER</span></div>
 
       <div class="google-wrap">
-        <button class="btn-google" type="button" (click)="loginWithGoogle()">
+        <button class="btn-google" type="button" (click)="loginWithGoogle()" [disabled]="busy()">
           <img src="img/icons/google.svg" alt="">
           Anmelden mit Google
         </button>
@@ -49,8 +49,8 @@
       </div>
 
       <div class="actions">
-        <button class="btn-primary" type="submit">Anmelden</button>
-        <button class="btn-secondary" type="button" (click)="loginAsGuest()">Gäste-Login</button>
+        <button class="btn-primary" type="submit" [disabled]="busy()">Anmelden</button>
+        <button class="btn-secondary" type="button" (click)="loginAsGuest()" [disabled]="busy()">Gäste-Login</button>
       </div>
     </form>
   </section>
@@ -65,7 +65,9 @@
   =====================================================================
   ZUSAMMENFASSUNG (Deutsch)
   =====================================================================
-  - Google-Button: zeigt in der Demo einen Hinweis, bis Firebase da ist.
+  - Google-Button: öffnet das Google-Anmeldefenster. Darunter erscheinen
+    Meldungen zu Google- und Gäste-Login (z. B. keine Verbindung).
+  - Alle Buttons sind gesperrt, solange eine Anmeldung läuft.
   - <app-intro-splash>: Start-Animation beim ersten Aufruf (Figma 1, 34).
   Login-Seite (Figma Seite 2).
   - Oben rechts: Link zur Registrierung.

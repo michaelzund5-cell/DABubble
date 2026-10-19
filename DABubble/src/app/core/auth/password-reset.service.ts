@@ -1,20 +1,29 @@
 import { Injectable } from '@angular/core';
+import { confirmPasswordReset, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../firebase/firebase';
+import { reportError } from '../firebase/report-error';
 
-// Handles "forgot password". DEMO ONLY until Firebase is connected:
-// - sendResetEmail()     -> Firebase: sendPasswordResetEmail(auth, email)
-// - confirmNewPassword() -> Firebase: confirmPasswordReset(auth, code, password)
+// "Passwort vergessen" with Firebase Authentication.
 @Injectable({ providedIn: 'root' })
 export class PasswordResetService {
-  // Always resolves, even for unknown emails.
-  // The page shows the same message either way, so nobody can test which emails exist.
+  // Never reports whether the email has an account: the page shows the same message either way.
   async sendResetEmail(email: string): Promise<void> {
-    void email;
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+      reportError('Passwort-Mail', error);
+    }
   }
 
-  // The code comes from the link in the email (?oobCode=...).
-  async confirmNewPassword(code: string | null, password: string): Promise<void> {
-    void code;
-    void password;
+  // The code comes from the link in the email (?oobCode=...). Returns false if it is invalid or expired.
+  async confirmNewPassword(code: string | null, password: string): Promise<boolean> {
+    if (!code) return false;
+    try {
+      await confirmPasswordReset(auth, code, password);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
 
@@ -22,19 +31,14 @@ export class PasswordResetService {
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Service für "Passwort vergessen". Zwei Schritte:
- * 1. sendResetEmail(): schickt die E-Mail mit dem Link zum Zurücksetzen.
- * 2. confirmNewPassword(): speichert das neue Passwort. Der Code dafür
- *    steht im Link aus der E-Mail (?oobCode=...).
- *
- * Aktuell Demo: Die Methoden tun nichts. Mit Firebase werden nur diese
- * zwei Methoden ersetzt, die Seiten bleiben gleich.
- *
- * async / Promise: Das Senden dauert (Netzwerk). Die Seite wartet mit
- * await auf das Ergebnis.
- *
- * Sicherheit: Die Seite zeigt immer "E-Mail gesendet", auch wenn die
- * Adresse nicht existiert. Sonst könnte ein Angreifer ausprobieren,
- * welche E-Mail-Adressen ein Konto haben (User Enumeration).
- * void email: markiert den Parameter als bewusst ungenutzt (Demo).
+ * "Passwort vergessen" mit Firebase.
+ * - sendResetEmail(): Firebase schickt eine E-Mail mit Link. Die Seite
+ *   zeigt immer dieselbe Bestätigung, auch wenn es zur E-Mail kein Konto
+ *   gibt. So kann niemand testen, welche E-Mails registriert sind.
+ * - confirmNewPassword(): Der Link führt auf /password-reset/new mit dem
+ *   Code (oobCode). Ist er ungültig oder abgelaufen, kommt false zurück
+ *   und die Seite zeigt einen Hinweis.
+ * - Damit der Link auf unsere Seite führt, muss in der Firebase-Konsole
+ *   unter Authentication > Vorlagen > Passwort zurücksetzen die
+ *   Aktions-URL auf .../password-reset/new gesetzt sein.
  */

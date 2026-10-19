@@ -91,6 +91,8 @@ h1 {
   left: 40px;
   display: flex;
   border-radius: 50%;
+  padding: 0;
+  background: none;
 }
 
 .back-btn:hover { background: var(--bg); }

@@ -1,20 +1,22 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { RegistrationService } from './registration.service';
+import { SessionService } from './session.service';
 
-// The avatar step only opens after step 1 was filled in.
+// The avatar step only opens right after the account was created in step 1.
 export const registrationGuard: CanActivateFn = () => {
   const registration = inject(RegistrationService);
+  const session = inject(SessionService);
   const router = inject(Router);
-  return registration.draft() ? true : router.createUrlTree(['/register']);
+  return registration.draft() && session.isLoggedIn() ? true : router.createUrlTree(['/register']);
 };
 
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Guard für die Avatar-Seite.
- * - Läuft, BEVOR /register/avatar öffnet.
- * - Ohne ausgefüllten Schritt 1 geht es zurück zu /register.
- * - createUrlTree: Weiterleitung, die Angular sauber verarbeitet.
+ * Türsteher für die Avatar-Seite.
+ * - Sie öffnet sich nur direkt nach Schritt 1: Das Konto muss angelegt
+ *   und der Benutzer angemeldet sein.
+ * - Sonst geht es zurück zu "Konto erstellen".
  */

@@ -3,10 +3,11 @@ import { CanActivateFn, Router } from '@angular/router';
 import { SessionService } from './session.service';
 
 // Route guard: runs BEFORE a protected route opens.
-// Returns true (route may open) or a UrlTree (redirect to the login page).
-export const authGuard: CanActivateFn = () => {
+// Waits until Firebase has restored the session, then lets the user in or sends him to the login page.
+export const authGuard: CanActivateFn = async () => {
   const session = inject(SessionService);
   const router = inject(Router);
+  await session.ready;
   return session.isLoggedIn() ? true : router.createUrlTree(['/login']);
 };
 
@@ -14,19 +15,13 @@ export const authGuard: CanActivateFn = () => {
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Der Guard schützt den Arbeitsbereich.
- *
- * - CanActivateFn: Ein funktionaler Guard. Angular ruft ihn auf, bevor
- *   eine Route (Seite) geöffnet wird.
- * - inject(): Holt den SessionService und den Router (Dependency
- *   Injection, Angular liefert die fertigen Instanzen).
- * - Ist der Benutzer eingeloggt, wird true zurückgegeben und die Seite
- *   öffnet sich. Sonst gibt createUrlTree() eine Umleitung zurück,
- *   und Angular öffnet stattdessen /login.
- * - Der Ternary-Operator  bedingung ? a : b  ist eine kurze
- *   Schreibweise für if/else.
- *
- * Wichtig: Der Guard ist eine Komfortfunktion für die Oberfläche, keine
- * Sicherheit. Die Daten selbst schützen erst die Zugriffsregeln der
- * Datenbank.
+ * Türsteher für den Workspace.
+ * - Läuft, bevor /workspace geöffnet wird.
+ * - await session.ready: Nach dem Neuladen braucht Firebase einen
+ *   Moment, um die Anmeldung wiederherzustellen. Ohne Warten würde man
+ *   kurz auf den Login geworfen, obwohl man angemeldet ist.
+ * - Angemeldet: true, die Seite öffnet sich. Sonst Weiterleitung auf
+ *   /login.
+ * - Wichtig: Der Guard schützt nur die Oberfläche. Die Daten schützen
+ *   die Firestore-Regeln auf dem Server.
  */

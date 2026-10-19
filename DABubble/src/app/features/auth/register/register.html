@@ -45,7 +45,10 @@
         <span>Ich stimme der <a class="link" routerLink="/privacy">Datenschutzerklärung</a> zu.</span>
       </label>
 
-      <button class="btn-primary next" type="submit" [disabled]="!isValid()">Weiter</button>
+      @if (formError()) {
+        <p class="form-error" role="alert">{{ formError() }}</p>
+      }
+      <button class="btn-primary next" type="submit" [disabled]="!isValid() || busy()">Weiter</button>
     </form>
   </section>
 

@@ -33,11 +33,17 @@ export class NewPasswordPage {
     return !this.getPasswordError() && !this.getRepeatError();
   }
 
+  readonly linkError = signal('');
+
   async save(): Promise<void> {
     if (!this.isValid() || this.saving()) return;
     this.saving.set(true);
-    await this.passwordReset.confirmNewPassword(this.resetCode, this.password);
-    void this.router.navigate(['/login']);
+    if (await this.passwordReset.confirmNewPassword(this.resetCode, this.password)) {
+      void this.router.navigate(['/login']);
+      return;
+    }
+    this.saving.set(false);
+    this.linkError.set('Der Link ist ungültig oder abgelaufen. Bitte fordere eine neue E-Mail an.');
   }
 }
 
@@ -54,4 +60,6 @@ export class NewPasswordPage {
  * - saving: Signal. Sperrt den Button während des Speicherns.
  * - save(): prüft, speichert über den Service (später Firebase) und
  *   leitet zur Anmeldung weiter.
+ * - linkError: Ist der Link aus der E-Mail ungültig oder abgelaufen,
+ *   erscheint eine Meldung statt der Weiterleitung.
  */

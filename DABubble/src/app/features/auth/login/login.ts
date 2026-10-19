@@ -1,9 +1,15 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { SessionService } from '../../../core/auth/session.service';
+import { LoginResult, SessionService } from '../../../core/auth/session.service';
 import { validateEmail } from '../../../shared/utils/validators';
 import { IntroSplash } from '../intro-splash/intro-splash';
+
+const MESSAGES: Record<Exclude<LoginResult, 'ok' | 'cancelled'>, string> = {
+  invalid: 'E-Mail oder Passwort ist falsch.',
+  blocked: 'Zu viele Versuche. Bitte warte kurz und versuche es dann nochmals.',
+  failed: 'Anmeldung nicht möglich. Bitte prüfe deine Internetverbindung.',
+};
 
 @Component({
   selector: 'app-login-page',
@@ -19,27 +25,31 @@ export class LoginPage {
   password = '';
   emailError = '';
   passwordError = '';
-
-  login(): void {
-    if (!this.validateInputs()) return;
-    if (this.session.login(this.email, this.password)) {
-      this.openWorkspace();
-      return;
-    }
-    // Same message for wrong email and wrong password: attackers cannot test which emails exist.
-    this.passwordError = 'E-Mail oder Passwort ist falsch.';
-  }
-
-  loginAsGuest(): void {
-    this.session.loginAsGuest();
-    this.openWorkspace();
-  }
-
+  readonly busy = signal(false);
   readonly googleHint = signal('');
 
-  // Demo: Google sign-in needs Firebase (signInWithPopup). Until then the button explains this.
-  loginWithGoogle(): void {
-    this.googleHint.set('Google-Anmeldung wird mit Firebase aktiviert. Bitte Gäste-Login nutzen.');
+  async login(): Promise<void> {
+    if (!this.validateInputs()) return;
+    await this.handle(() => this.session.login(this.email, this.password), (text) => this.passwordError = text);
+  }
+
+  async loginAsGuest(): Promise<void> {
+    await this.handle(() => this.session.loginAsGuest(), (text) => this.googleHint.set(text));
+  }
+
+  async loginWithGoogle(): Promise<void> {
+    await this.handle(() => this.session.loginWithGoogle(), (text) => this.googleHint.set(text));
+  }
+
+  // Runs one login method: blocks double clicks, opens the workspace or shows the message.
+  private async handle(attempt: () => Promise<LoginResult>, showError: (text: string) => void): Promise<void> {
+    if (this.busy()) return;
+    this.busy.set(true);
+    this.googleHint.set('');
+    const result = await attempt();
+    this.busy.set(false);
+    if (result === 'ok') void this.router.navigate(['/workspace']);
+    else if (result !== 'cancelled') showError(MESSAGES[result]);
   }
 
   private validateInputs(): boolean {
@@ -47,21 +57,21 @@ export class LoginPage {
     this.passwordError = this.password ? '' : 'Bitte gib dein Passwort ein.';
     return !this.emailError && !this.passwordError;
   }
-
-  private openWorkspace(): void {
-    void this.router.navigate(['/workspace']);
-  }
 }
 
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Logik der Login-Seite.
- * - login(): prüft die Eingaben, meldet an und öffnet den Arbeitsbereich.
+ * Logik der Login-Seite, jetzt mit Firebase.
+ * - login(): prüft die Eingaben, dann Anmeldung mit E-Mail und Passwort.
  * - Bewusst dieselbe Meldung für falsche E-Mail und falsches Passwort.
  *   So kann niemand herausfinden, welche E-Mails ein Konto haben.
- * - loginAsGuest(): Gäste-Login (Demo: Demo-Benutzer).
- * - loginWithGoogle(): zeigt in der Demo einen Hinweis. Mit Firebase
- *   kommt hier signInWithPopup() mit dem Google-Anbieter hin.
+ * - loginAsGuest(): anonymes Gastkonto bei Firebase.
+ * - loginWithGoogle(): Google-Fenster. Wird es geschlossen, passiert
+ *   nichts (kein Fehler).
+ * - handle(): gemeinsamer Ablauf aller drei Wege. busy verhindert
+ *   Doppelklicks, danach Workspace öffnen oder Meldung zeigen.
+ * - MESSAGES: kurze, verständliche Texte. Technische Details von
+ *   Firebase sieht der Benutzer nie.
  */

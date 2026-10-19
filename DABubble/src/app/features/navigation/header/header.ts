@@ -25,9 +25,10 @@ export class Header {
   // Mobile chat or thread view: back arrow instead of the logo (Figma page 48).
   readonly showBack = computed(() => this.viewport.isMobile() && this.state.mobileChatOpen());
 
-  logout(): void {
+  async logout(): Promise<void> {
     this.state.closeDialog();
-    this.session.logout();
+    await this.session.logout();
+    this.state.reset();
     void this.router.navigate(['/login']);
   }
 }

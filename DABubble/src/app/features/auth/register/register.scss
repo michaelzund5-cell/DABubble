@@ -41,6 +41,9 @@ form {
 
 .next { align-self: flex-end; width: 107px; margin-top: 44px; padding: 0; }
 
+// Error from Firebase (weak password, no connection). Negative margin: the button does not move.
+.form-error { margin: 16px 0 -36px; font-size: 14px; color: var(--error); }
+
 @media #{$mobile} {
   .logo { margin-top: 199px; }
   .card { height: auto; margin-top: 32px; padding: 18px 20px 26px; }
@@ -66,4 +69,5 @@ form {
  *   das Figma-Icon. Mit Tastatur bleibt es bedienbar, :focus-visible zeigt
  *   dann einen Rahmen.
  * - .next: Weiter-Button rechtsbündig, Breite 107 px aus Figma.
+ * - .form-error: Meldung von Firebase über dem Weiter-Button.
  */
