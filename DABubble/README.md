@@ -1,8 +1,8 @@
 # DABubble
 
 Slack-Klon der Developer Akademie. Angular 22, Standalone Components, Signals.
-Stand: Frontend komplett (Desktop und Handy bis 320 px), Daten sind noch Demo-Daten im Speicher.
-Nächster Schritt: Firebase anbinden (siehe `docs/FIREBASE_PLAN.md`).
+Stand: Frontend komplett (Desktop und Handy bis 320 px), Backend mit Firebase (Authentication und Firestore, Echtzeit).
+Firebase-Projekt: `dabubble-4cf82`, Datenbank in Zürich (`europe-west6`).
 
 ## Starten
 
@@ -14,15 +14,16 @@ npm start          # http://localhost:4200
 npm run build      # fertige Dateien in dist/dabubble/browser
 ```
 
-## Demo-Zugang
+## Anmelden
 
-| Was | Wert |
+| Weg | Was passiert |
 |---|---|
-| Login | `test@test.ch` / `123456` |
-| Gäste-Login | Button "Gäste-Login", meldet als Frederik Beck an |
-| Eigene Registrierung | funktioniert, solange der Tab offen ist (nur im Speicher) |
+| Konto erstellen | E-Mail und Passwort bei Firebase, danach Avatar wählen |
+| Login | E-Mail und Passwort |
+| Google | Google-Anmeldefenster |
+| Gäste-Login | Anonymes Konto "Gast", wird nach 30 Tagen automatisch gelöscht |
 
-Nach einem Neuladen sind alle Änderungen (Nachrichten, Channels, Profil) weg. Das ändert sich mit Firebase.
+Jeder Benutzer kommt automatisch in den Channel "Allgemein". Alles wird in Firestore gespeichert und erscheint bei allen sofort.
 
 ## Seiten und Funktionen
 
@@ -43,7 +44,7 @@ src/app/
   layout/       Seitenrahmen des Workspace
   shared/       Wiederverwendbares: components, models, pipes, utils
 public/img/     Bilder, Icons, Avatare, Emojis (aus Figma ausgeschnitten)
-docs/           Architektur, Sicherheit, Firebase-Plan, Figma-Abweichungen, n8n-Plan
+docs/           Architektur, Sicherheit, Firebase, Figma-Abweichungen, n8n-Plan
 ```
 
 Jede Datei hat Kommentare auf Englisch und am Ende eine deutsche "ZUSAMMENFASSUNG".
@@ -52,6 +53,6 @@ Jede Datei hat Kommentare auf Englisch und am Ende eine deutsche "ZUSAMMENFASSUN
 
 - `docs/ARCHITECTURE.md`: Aufbau des Projekts: Ordner, Datenfluss, Emojis, Code-Regeln
 - `docs/FIGMA_ABWEICHUNGEN.md`: Widersprüche in Figma und getroffene Annahmen
-- `docs/FIREBASE_PLAN.md`: Reihenfolge für das Backend
+- `docs/FIREBASE_PLAN.md`: Firebase-Einrichtung, Konsole, Regeln ändern
 - `docs/SECURITY.md`: Sicherheit: Überlegungen, Umsetzung, was mit Firebase kommt
 - `docs/N8N_PLAN.md`: Ideen für Automatisierungen

@@ -1,35 +1,36 @@
-# Firebase-Plan
+# Firebase
 
-Das Frontend läuft mit Demo-Daten (`core/data/demo-seed.ts`). Für Firebase werden nur die Services ersetzt.
+Projekt `dabubble-4cf82`, Spark-Tarif (kostenlos). Verbindungsdaten in `src/environments/environment.ts`.
+Diese Werte sind nicht geheim: Jeder Browser bekommt sie. Geschützt wird durch Login und `firestore.rules`.
 
-## Was wohin kommt
+## Eingerichtet in der Firebase-Konsole
+
+| Bereich | Einstellung |
+|---|---|
+| Authentication | E-Mail/Passwort, Google, Anonym (automatische Bereinigung nach 30 Tagen) |
+| Firestore | Standort `europe-west6` (Zürich), Produktionsmodus |
+| Regeln | Inhalt von `firestore.rules` unter Firestore > Regeln einfügen und veröffentlichen |
+| Passwort-Mail | Authentication > Vorlagen > Passwort zurücksetzen > Aktions-URL: `http://localhost:4200/password-reset/new` (nach dem Hosting die echte Adresse) |
+| Autorisierte Domains | `localhost` ist schon drin. Nach dem Hosting die eigene Domain ergänzen. |
+
+## Was wohin gehört
 
 | Service | Firebase |
 |---|---|
-| `session.service` | Firebase Auth: E-Mail/Passwort, Google, anonymer Login (Gast) |
-| `registration.service` | `createUserWithEmailAndPassword`, danach Profil in Firestore `users/{uid}` |
-| `password-reset.service` | `sendPasswordResetEmail`, Seite "Neues Passwort" mit `confirmPasswordReset(oobCode)` |
-| `user.service` | Firestore `users` (Name, E-Mail, Avatar, Status) |
-| `channel.service` | Firestore `channels` (Name, Beschreibung, memberIds, createdBy, createdAt) |
-| `message.service` | Firestore `messages` mit Echtzeit-Abfrage (`onSnapshot`) |
-| `search.service` | bleibt im Browser über die geladenen Daten |
+| `session.service` | Login, Registrierung, Gast, Google, Logout |
+| `profile-setup.ts` | Profil `users/{uid}` beim ersten Login, Beitritt zu "Allgemein" |
+| `password-reset.service` | `sendPasswordResetEmail`, `confirmPasswordReset` |
+| `user.service` | `users` live |
+| `channel.service` | `channels` live (nur eigene) |
+| `message-store` / `message.service` | Nachrichten live laden / schreiben |
 
-Die Modelle in `shared/models/` passen schon zu diesen Sammlungen.
+## Regeln ändern
 
-## Reihenfolge
+1. `firestore.rules` im Projekt anpassen (das ist die Vorlage im Repo).
+2. In der Konsole unter Firestore > Regeln einfügen und "Veröffentlichen".
+3. Mit dem "Regelsimulator" in der Konsole einen erlaubten und einen verbotenen Zugriff testen.
 
-1. Firebase-Projekt anlegen, Web-App registrieren, `@angular/fire` installieren
-2. Auth: Login, Registrierung, Gast, Google, Passwort zurücksetzen
-3. `users` anlegen beim Registrieren, Online-Status
-4. Channels und Mitglieder
-5. Nachrichten in Echtzeit, Threads, Reaktionen, Direktnachrichten
-6. Firestore-Regeln schreiben und mit falschen Zugriffen testen
-7. `demo-seed.ts` löschen
+## Später
 
-## Firestore-Regeln (Minimum)
-
-- Nur angemeldete Benutzer lesen und schreiben
-- Nachrichten lesen: Mitglieder des Channels bzw. die zwei Personen der Direktnachricht
-- Nachricht ändern oder löschen: nur der Absender
-- Profil ändern: nur der eigene Eintrag
-- API-Schlüssel der Web-App sind öffentlich, der Schutz kommt allein aus den Regeln
+- Firebase Hosting und App Check
+- Online-Status mit der Realtime Database (Presence)

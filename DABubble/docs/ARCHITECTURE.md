@@ -2,11 +2,11 @@
 
 ## Grundsatz
 
-Components zeigen an, Services halten Daten und Logik. Components greifen nie direkt auf Daten zu.
-Wird Firebase angebunden, ändern sich nur die Services in `core/`, nicht die Components.
+Components zeigen an, Services halten Daten und Logik. Components greifen nie direkt auf Daten oder Firebase zu.
+Beim Wechsel von Demo-Daten auf Firebase wurden nur die Services in `core/` ersetzt, die Components blieben fast gleich.
 
 ```
-Component  ->  Service (core/data, core/auth)  ->  später Firebase (Auth + Firestore)
+Component  ->  Service (core/data, core/auth)  ->  Firebase (Authentication + Firestore)
 ```
 
 ## Ordner
@@ -14,7 +14,8 @@ Component  ->  Service (core/data, core/auth)  ->  später Firebase (Auth + Fire
 | Ordner | Inhalt |
 |---|---|
 | `core/auth/` | `session.service` (wer ist angemeldet), `registration.service`, `password-reset.service`, Guards |
-| `core/data/` | `user`, `channel`, `message`, `search`, `workspace-state` (was gerade offen ist), `demo-seed` (Demo-Daten) |
+| `core/data/` | `user`, `channel`, `message` (schreiben), `message-store` (live laden), `search`, `workspace-state` (was gerade offen ist) |
+| `core/firebase/` | Verbindung (`firebase.ts`), Umwandlung Dokument -> Modell (`mappers.ts`), Listener-Verwaltung, Fehlermeldungen |
 | `core/layout/` | `viewport.service`: Handy-Ansicht ja/nein (unter 1000 px) |
 | `features/auth/` | Start-Animation, Login, Registrierung, Avatar, Passwort zurücksetzen |
 | `features/chat/` | Chat-Ansicht, Nachricht, Eingabe, @/#-Liste, Thread, Neue Nachricht, leerer Chat |
@@ -24,6 +25,22 @@ Component  ->  Service (core/data, core/auth)  ->  später Firebase (Auth + Fire
 | `features/legal/` | Impressum, Datenschutz |
 | `layout/workspace/` | Rahmen nach dem Login: Header, Sidebar, Chat, Thread, Dialoge |
 | `shared/` | Avatar, Dialog-Rahmen, Emoji-Auswahl, Toast, Modelle, Pipes, Validatoren |
+
+## Datenmodell in Firestore
+
+```
+users/{uid}                              name, email, avatar, status
+channels/{channelId}                     name, description, memberIds[], createdBy, createdAt, isPublic (nur "allgemein")
+channels/{channelId}/messages/{id}       senderId, text, createdAt, reactions[], threadId?, edited?
+directChats/dm_{uidA}_{uidB}             participants[]   (IDs sortiert, damit beide denselben Chat finden)
+directChats/dm_{uidA}_{uidB}/messages/{id}   wie bei Channels
+```
+
+- Thread-Antworten sind normale Nachrichten mit `threadId` (ID der Ursprungsnachricht) im selben Channel oder Chat.
+- Geladen wird nur, was zum Benutzer gehört: eigene Channels (`memberIds` enthält die eigene ID) und eigene Direktnachrichten.
+- Live über `onSnapshot`: Änderungen erscheinen bei allen sofort, ohne Neuladen.
+- Zeitstempel setzt der Server (`serverTimestamp`).
+- Die Sicherheitsregeln stehen in `firestore.rules`.
 
 ## Zustand
 

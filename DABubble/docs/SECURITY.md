@@ -1,6 +1,6 @@
 # Sicherheit
 
-Stand: Frontend mit Demo-Daten. Die echte Sicherheit kommt mit Firebase (Auth und Firestore-Regeln).
+Stand: Firebase Authentication und Firestore mit eigenen Sicherheitsregeln (`firestore.rules`).
 Grundsatz: Alles im Browser kann der Benutzer verändern. Prüfungen im Browser sind Komfort, die Regeln auf dem Server entscheiden.
 
 ## Meine Überlegungen dazu
@@ -13,7 +13,7 @@ Grundsatz: Alles im Browser kann der Benutzer verändern. Prüfungen im Browser 
 
 **Eingaben nie zu Code zusammenkleben (Injection).** Ein bekannter Trick ist, im Login-Feld Sonderzeichen einzugeben, die eine Datenbankabfrage verändern und zum Beispiel die Passwortprüfung "auskommentieren" (SQL-Injection). Das klappt nur, wenn eine App die Eingabe direkt in eine Abfrage einbaut. Darum gilt bei mir: Benutzereingaben werden nie mit Code oder Abfragen zusammengesetzt, sie bleiben immer reiner Inhalt. Pflichtfelder schützen davor nicht, sie lassen sich umgehen.
 
-**Der Browser gehört dem Benutzer, nicht mir.** Alles, was im Browser läuft, kann der Benutzer sehen und verändern. Eine Prüfung nur im Eingabefeld ist deshalb Komfort, kein Schutz. Wichtige Regeln stehen darum mehrfach: im Feld, in der Logik der App und später auf dem Server. Nur der Server ist wirklich sicher.
+**Der Browser gehört dem Benutzer, nicht mir.** Alles, was im Browser läuft, kann der Benutzer sehen und verändern. Eine Prüfung nur im Eingabefeld ist deshalb Komfort, kein Schutz. Wichtige Regeln stehen darum mehrfach: im Feld, in der Logik der App und auf dem Server (Firestore-Regeln). Nur der Server ist wirklich sicher.
 
 **Grenzen für alles.** Ohne Grenze kann jemand riesige Texte schicken und die App oder die Datenbank lahmlegen. Darum hat jede Eingabe eine maximale Länge.
 
@@ -32,29 +32,34 @@ Grundsatz: Alles im Browser kann der Benutzer verändern. Prüfungen im Browser 
 | Thema | Umsetzung |
 |---|---|
 | XSS (fremder Code in Nachrichten) | Alle Texte laufen über Angular `{{ }}`, Angular maskiert sie automatisch. Kein `innerHTML`, kein `bypassSecurityTrust`, kein `eval`. |
-| Injection (SQL/NoSQL) | Keine Datenbankabfrage wird aus Text zusammengebaut. Demo-Login vergleicht nur Texte, Firebase Auth prüft Passwörter auf dem Server, Firestore bekommt Werte über fertige Funktionen. |
+| Injection (SQL/NoSQL) | Keine Datenbankabfrage wird aus Text zusammengebaut. Firebase Auth prüft Passwörter auf dem Server, Firestore bekommt Werte über fertige Funktionen. |
 | Links | `mailto:` über `[href]`, Angular prüft die URL. Keine Links mit `target="_blank"`. |
 | Konto-Erkennung beim Login | Gleiche Fehlermeldung bei falscher E-Mail und falschem Passwort. |
-| Passwörter | Nur im Arbeitsspeicher, nie in localStorage. Mindestens 8 Zeichen, ein Buchstabe, eine Zahl. |
-| localStorage | Nur die Benutzer-ID der Demo, jeder Zugriff in `try/catch` (privater Modus). |
+| Passwörter | Gehen direkt an Firebase, die App speichert sie nirgends. Mindestens 8 Zeichen, ein Buchstabe, eine Zahl. Nach vielen Fehlversuchen sperrt Firebase kurz. |
+| Anmeldung | Firebase Authentication. Die Sitzung verwaltet Firebase selbst, die App legt keine eigenen Anmeldedaten im Browser ab. |
 | Eingabelängen | Name 60, Channel-Name 40, Beschreibung 500, Nachricht 4000 Zeichen. Im Feld (`maxlength`) und nochmals im Service (`shared/utils/limits.ts`). |
-| Rechte | Nur der Absender bearbeitet seine Nachricht, nur Mitglieder ändern einen Channel, nur das eigene Profil ist änderbar. Die Services prüfen das selbst, nicht nur die Oberfläche. |
-| Suche | Findet nur Channels, in denen man Mitglied ist, und nur eigene Direktnachrichten. |
+| Rechte | Nur der Absender bearbeitet seine Nachricht, nur Mitglieder ändern einen Channel, nur das eigene Profil ist änderbar. Geprüft in den Services und auf dem Server in `firestore.rules`. |
+| Firestore-Regeln | Alles ist verboten, ausser was ausdrücklich erlaubt ist. Lesen nur für Mitglieder bzw. Chat-Teilnehmer. Absender und Uhrzeit einer Nachricht prüft der Server, fälschen ist nicht möglich. Längen wie oben. Avatar nur aus der Liste. Andere aus einem Channel entfernen ist nicht möglich, nur sich selbst. Löschen von Nachrichten und Channels ist gesperrt. |
+| Suche | Findet nur Channels, in denen man Mitglied ist, und nur eigene Direktnachrichten. Fremde Daten kommen gar nicht in den Browser. |
+| Datenstandort | Firestore in Zürich (`europe-west6`), Daten bleiben in der Schweiz. |
+| Gastkonten | Werden nach 30 Tagen automatisch gelöscht (keine alten Konten, kein Massen-Missbrauch). |
 | Datenschutz | Schriften lokal (@fontsource), keine Anfragen an Google-Server. |
 | Geheimnisse | Keine Schlüssel oder Passwörter im Code, `.env` steht in `.gitignore`. |
-| Abhängigkeiten | `npm audit`: 0 Schwachstellen (Stand 17.10.2026). |
+| Abhängigkeiten | `npm audit`: 0 Schwachstellen (Stand 19.10.2026). Eine veraltete Unter-Abhängigkeit von Firebase (`@grpc/grpc-js`) wird per `overrides` in `package.json` auf eine sichere Version gesetzt. |
 
-## Offen, kommt mit Firebase
+## Bekannte Grenzen und offene Punkte
 
-- **Login:** Der Demo-Login schützt nichts. Firebase Auth ersetzt ihn.
-- **Firestore-Regeln:** Lesen nur für Mitglieder, Ändern nur für Besitzer, Längen wie oben. Das ist der eigentliche Schutz.
-- **App Check:** Schützt die Firebase-API vor fremden Aufrufen.
+- **App Check:** Schützt die Firebase-API vor Aufrufen, die nicht aus der App kommen. Kommt mit dem Hosting.
+- **Reaktionen:** Die Regeln erlauben jedem Leser, die Reaktionsliste zu ändern (sonst könnte niemand reagieren). Sie prüfen aber nicht, ob jemand nur seine eigene Reaktion ändert. Eine genauere Prüfung bräuchte eine Cloud Function.
+- **E-Mail-Adressen:** Angemeldete Benutzer sehen die E-Mail der anderen (Figma zeigt sie im Profil).
+- **Online-Status:** Wird beim Login und Logout gesetzt. Wer den Browser einfach schliesst, bleibt "online". Genau wäre es nur mit der Realtime Database (Presence).
 - **Content-Security-Policy:** Als Header beim Hosting setzen (erlaubt nur eigene Skripte und Firebase).
 - **Registrierung:** Die Meldung "E-Mail wird bereits verwendet" verrät, dass ein Konto existiert. Firebase meldet das bei der Registrierung ebenfalls. Bewusst so gelassen, weil der Benutzer sonst nicht weiss, warum es nicht klappt.
 
 ## Regeln für neuen Code
 
 - Nie `innerHTML` mit Benutzertext, nie `bypassSecurityTrust...`
-- Jede Prüfung (Rechte, Längen) im Service und später in den Firestore-Regeln, nicht nur im Template
+- Jede Prüfung (Rechte, Längen) im Service und in `firestore.rules`, nicht nur im Template
+- Neue Sammlung oder neues Feld: zuerst die Regel schreiben, dann den Code
 - Keine Schlüssel, Passwörter oder Tokens committen
 - Vor jedem Push `npm audit` ausführen
