@@ -38,7 +38,7 @@ export class MessageItem {
   readonly compact = input(false); // thread panel: smaller spacing
   readonly openThread = output<string>();
 
-  readonly sender = computed(() => this.userService.getById(this.message().senderId));
+  readonly sender = computed(() => this.userService.displayUser(this.message().senderId));
   readonly isOwn = computed(() => this.messageService.isOwnMessage(this.message().id));
   readonly replies = computed(() => this.messageService.repliesOf(this.message().id));
   readonly lastReplyAt = computed(() => this.replies().at(-1)?.createdAt ?? null);

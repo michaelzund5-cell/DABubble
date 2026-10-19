@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { ActiveView, DialogType, ViewType } from '../../shared/models/view.model';
+import { PUBLIC_CHANNEL_ID } from '../auth/profile-setup';
 import { ChannelService } from './channel.service';
 import { UserService } from './user.service';
 
@@ -10,7 +11,7 @@ export class WorkspaceStateService {
   private readonly channelService = inject(ChannelService);
   private readonly userService = inject(UserService);
 
-  readonly activeView = signal<ActiveView>({ type: 'channel', id: 'c1' });
+  readonly activeView = signal<ActiveView>({ type: 'channel', id: PUBLIC_CHANNEL_ID });
   readonly openThreadId = signal<string | null>(null);
   readonly mobileChatOpen = signal(false); // mobile: chat instead of the menu (user story 5)
   readonly dialog = signal<DialogType | null>(null);
@@ -71,6 +72,14 @@ export class WorkspaceStateService {
     this.dialog.set(null);
   }
 
+  // After logout: the next user starts fresh in "Allgemein".
+  reset(): void {
+    this.activeView.set({ type: 'channel', id: PUBLIC_CHANNEL_ID });
+    this.openThreadId.set(null);
+    this.mobileChatOpen.set(false);
+    this.dialog.set(null);
+  }
+
   // Search hit: highlight the message and scroll it into view once it is rendered.
   revealMessage(messageId: string): void {
     this.highlightId.set(messageId);
@@ -108,4 +117,6 @@ export class WorkspaceStateService {
  * im großen DemoDatenService gemischt. Jetzt ist klar getrennt: Was
  * gespeichert wird (Daten-Services) und was nur angezeigt wird
  * (dieser Service).
+ * - Start und reset(): Nach dem Login ist "Allgemein" offen, den Channel
+ *   hat jeder Benutzer. reset() räumt nach dem Logout auf.
  */

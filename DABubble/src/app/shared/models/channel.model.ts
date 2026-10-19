@@ -6,6 +6,7 @@ export interface Channel {
   memberIds: string[]; // IDs of the users in this channel (references to User.id)
   createdBy: string; // User.id of the creator (Figma: "Erstellt von")
   createdAt: number; // Timestamp in milliseconds
+  isPublic?: boolean; // "Allgemein": every user may join
 }
 
 /*
@@ -20,4 +21,6 @@ export interface Channel {
  *   werden, nicht jeder Channel.
  * - createdBy / createdAt: Wer den Channel wann erstellt hat. Wird in den
  *   Channel-Details ("Erstellt von") und im leeren Channel angezeigt.
+ * - isPublic: Nur der Channel "Allgemein". Jeder Benutzer darf sich
+ *   selbst hinzufügen, damit sich alle finden.
  */

@@ -1,27 +1,37 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import {
+  arrayRemove, arrayUnion, collection, doc, DocumentData, onSnapshot, query, serverTimestamp, setDoc, Unsubscribe,
+  updateDoc, where,
+} from 'firebase/firestore';
 import { Channel } from '../../shared/models/channel.model';
 import { User } from '../../shared/models/user.model';
 import { MAX_DESCRIPTION_LENGTH } from '../../shared/utils/limits';
 import { SessionService } from '../auth/session.service';
-import { DEMO_CHANNELS } from './demo-seed';
+import { db } from '../firebase/firebase';
+import { toChannel } from '../firebase/mappers';
+import { reportError } from '../firebase/report-error';
 import { UserService } from './user.service';
 
 const MAX_NAME_LENGTH = 40;
+const NOT_MEMBER = 'Nur Mitglieder können den Channel ändern.';
 
-// Responsible for channels and their members.
+// Responsible for channels and their members. Only channels the user is a member of are loaded.
 @Injectable({ providedIn: 'root' })
 export class ChannelService {
   private readonly session = inject(SessionService);
   private readonly userService = inject(UserService);
 
-  private readonly channelsState = signal<Channel[]>(DEMO_CHANNELS);
+  private readonly channelsState = signal<Channel[]>([]);
   readonly channels = this.channelsState.asReadonly();
 
-  // Channels the logged-in user is a member of (shown in the sidebar).
-  readonly myChannels = computed(() => {
-    const userId = this.session.currentUserId();
-    return this.channels().filter((channel) => !!userId && channel.memberIds.includes(userId));
-  });
+  // Same list as channels: Firestore only sends channels the user is a member of (sidebar).
+  readonly myChannels = computed(() => [...this.channels()].sort((a, b) => a.createdAt - b.createdAt));
+
+  private unsubscribe: Unsubscribe | null = null;
+
+  constructor() {
+    effect(() => this.listen(this.session.currentUserId()));
+  }
 
   getById(id: string): Channel | undefined {
     return this.channels().find((channel) => channel.id === id);
@@ -45,47 +55,40 @@ export class ChannelService {
     return '';
   }
 
-  // Creates a channel with the current user as only member. Returns null if the name is not valid.
-  create(name: string, description: string): Channel | null {
+  // Creates the channel with the current user and the chosen members. Returns null if the name is not valid.
+  create(name: string, description: string, memberIds: string[]): Channel | null {
     const userId = this.session.currentUserId();
     if (!userId || this.validateName(name)) return null;
-    const channel: Channel = {
-      id: crypto.randomUUID(),
-      name: toChannelName(name),
-      description: description.trim().slice(0, MAX_DESCRIPTION_LENGTH),
-      memberIds: [userId],
-      createdBy: userId,
-      createdAt: Date.now(),
+    const ref = doc(collection(db, 'channels'));
+    const data = {
+      name: toChannelName(name), description: description.trim().slice(0, MAX_DESCRIPTION_LENGTH),
+      memberIds: [...new Set([userId, ...memberIds])], createdBy: userId,
     };
-    this.channelsState.update((list) => [...list, channel]);
-    return channel;
+    this.write(setDoc(ref, { ...data, createdAt: serverTimestamp() }), 'Channel erstellen');
+    return { id: ref.id, ...data, createdAt: Date.now() };
   }
 
   // Returns an error text, or '' when the new name was saved. Only members may edit.
   rename(id: string, name: string): string {
-    const error = this.isMember(id) ? this.validateName(name, id) : 'Nur Mitglieder können den Channel ändern.';
+    const error = this.isMember(id) ? this.validateName(name, id) : NOT_MEMBER;
     if (!error) this.patch(id, { name: toChannelName(name) });
     return error;
   }
 
   updateDescription(id: string, description: string): string {
-    if (!this.isMember(id)) return 'Nur Mitglieder können den Channel ändern.';
+    if (!this.isMember(id)) return NOT_MEMBER;
     this.patch(id, { description: description.trim().slice(0, MAX_DESCRIPTION_LENGTH) });
     return '';
   }
 
   // Every member may add other users (user story "Management von Channels" 2).
   addMembers(id: string, userIds: string[]): void {
-    const channel = this.getById(id);
-    if (!channel || !this.isMember(id)) return;
-    this.patch(id, { memberIds: [...new Set([...channel.memberIds, ...userIds])] });
+    if (this.isMember(id) && userIds.length) this.patch(id, { memberIds: arrayUnion(...userIds) });
   }
 
   leave(id: string): void {
     const userId = this.session.currentUserId();
-    const channel = this.getById(id);
-    if (!userId || !channel) return;
-    this.patch(id, { memberIds: channel.memberIds.filter((memberId) => memberId !== userId) });
+    if (userId && this.isMember(id)) this.patch(id, { memberIds: arrayRemove(userId) });
   }
 
   isMember(id: string): boolean {
@@ -99,8 +102,24 @@ export class ChannelService {
     return this.channels().some((channel) => channel.id !== ignoreId && channel.name.toLowerCase() === lower);
   }
 
-  private patch(id: string, changes: Partial<Channel>): void {
-    this.channelsState.update((list) => list.map((channel) => channel.id === id ? { ...channel, ...changes } : channel));
+  private patch(id: string, changes: DocumentData): void {
+    this.write(updateDoc(doc(db, 'channels', id), changes), 'Channel ändern');
+  }
+
+  private write(request: Promise<void>, context: string): void {
+    request.catch((error) => reportError(context, error));
+  }
+
+  // Live list of the user's channels: only channels whose memberIds contain the user.
+  private listen(userId: string | null): void {
+    this.unsubscribe?.();
+    this.unsubscribe = null;
+    this.channelsState.set([]);
+    if (!userId) return;
+    const mine = query(collection(db, 'channels'), where('memberIds', 'array-contains', userId));
+    this.unsubscribe = onSnapshot(mine,
+      (snapshot) => this.channelsState.set(snapshot.docs.map(toChannel)),
+      (error) => reportError('Channels laden', error));
   }
 }
 
@@ -113,27 +132,29 @@ export function toChannelName(name: string): string {
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Der ChannelService ist nur für Channels zuständig.
- *
- * - myChannels: Channels, in denen du Mitglied bist (für die Sidebar).
- * - membersOf(): Wandelt die gespeicherten Mitglieder-IDs in echte
- *   Benutzer-Objekte um. "user is User" ist ein Type Guard: Danach sind
- *   nur noch echte User im Array.
- * - validateName(): Prüft den Namen und liefert einen Fehlertext, z. B.
- *   "Diesen Channel-Namen gibt es schon." (Duplikat-Prüfung aus der
- *   Checkliste, Gross-/Kleinschreibung egal). ignoreId: Beim Umbenennen
- *   darf der Channel seinen eigenen Namen behalten.
- * - create(): Legt einen Channel an, du bist erstes Mitglied und
- *   Ersteller. crypto.randomUUID() erzeugt eine eindeutige ID.
- * - rename() / updateDescription(): Name und Beschreibung ändern. Gibt
- *   einen Fehlertext zurück, damit die Oberfläche ihn anzeigen kann.
- * - addMembers(): fügt Personen hinzu. new Set() entfernt doppelte IDs.
- * - leave(): Du trittst aus dem Channel aus.
- * - patch(): ändert einen Channel. Es entsteht eine NEUE Liste (map mit
- *   Spread-Operator), so erkennt Angular die Änderung sicher.
+ * Der ChannelService ist für Channels zuständig, jetzt mit Firestore
+ * (Sammlung "channels").
+ * - listen(): Live-Verbindung, aber nur zu Channels, in denen du
+ *   Mitglied bist (where memberIds array-contains deine ID). Fremde
+ *   Channels kommen gar nicht erst in den Browser. Die Regeln auf dem
+ *   Server verlangen genau diese Einschränkung.
+ * - myChannels: dieselben Channels, älteste zuerst (Sidebar).
+ * - membersOf(): Wandelt die Mitglieder-IDs in Benutzer um. "user is
+ *   User" ist ein Type Guard: Danach sind nur noch echte User im Array.
+ * - validateName(): Prüft den Namen (leer, zu lang, doppelt). Doppelt
+ *   wird nur unter deinen eigenen Channels erkannt, fremde sind nicht
+ *   sichtbar.
+ * - create(): Legt den Channel mit dir und den gewählten Personen in
+ *   einem Schritt an. Die ID erzeugt Firestore (doc(collection(...))).
+ *   createdAt setzt der Server (serverTimestamp), nicht der Browser.
+ * - rename() / updateDescription(): Gibt einen Fehlertext zurück, damit
+ *   die Oberfläche ihn anzeigen kann.
+ * - addMembers() / leave(): arrayUnion / arrayRemove ändern nur die
+ *   betroffenen IDs. Gleichzeitige Änderungen von zwei Personen
+ *   überschreiben sich so nicht gegenseitig.
+ * - write(): Fehler beim Speichern landen in reportError(). Die
+ *   Anzeige ändert sich sofort, Firestore speichert im Hintergrund.
  * - toChannelName(): "Office team" wird zu "Office-team".
- * Wichtig: Diese Prüfungen sind nur für die Oberfläche. Mit Firebase
- * müssen die Firestore-Regeln dasselbe auf dem Server prüfen.
- * - Beschreibung: höchstens 500 Zeichen (MAX_DESCRIPTION_LENGTH), längerer
- *   Text wird abgeschnitten.
+ * - Beschreibung höchstens 500 Zeichen, Name höchstens 40. Die
+ *   Firestore-Regeln prüfen dasselbe noch einmal auf dem Server.
  */

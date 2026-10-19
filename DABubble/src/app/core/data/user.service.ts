@@ -1,16 +1,20 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { collection, doc, onSnapshot, Unsubscribe, updateDoc } from 'firebase/firestore';
+import { AVATARS, DEFAULT_AVATAR } from '../../shared/models/avatars';
 import { User } from '../../shared/models/user.model';
 import { validateName } from '../../shared/utils/validators';
 import { SessionService } from '../auth/session.service';
-import { DEMO_USERS } from './demo-seed';
+import { db } from '../firebase/firebase';
+import { toUser } from '../firebase/mappers';
+import { reportError } from '../firebase/report-error';
 
-// Responsible for user data only.
+// Responsible for user data. All users are loaded live from Firestore while someone is logged in.
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly session = inject(SessionService);
 
   // Private writable signal; components only get the read-only version below.
-  private readonly usersState = signal<User[]>(DEMO_USERS);
+  private readonly usersState = signal<User[]>([]);
   readonly users = this.usersState.asReadonly();
 
   // The logged-in user (undefined if nobody is logged in).
@@ -19,21 +23,20 @@ export class UserService {
   // All users except the logged-in one, e.g. for the direct message list.
   readonly otherUsers = computed(() => this.users().filter((user) => user.id !== this.session.currentUserId()));
 
+  private unsubscribe: Unsubscribe | null = null;
+
+  constructor() {
+    effect(() => this.listen(this.session.currentUserId()));
+  }
+
   getById(id: string | null | undefined): User | undefined {
     if (!id) return undefined;
     return this.users().find((user) => user.id === id);
   }
 
-  // Demo: adds a user locally. With Firebase the user document is stored in Firestore.
-  addUser(name: string, email: string, avatar: string): string {
-    const user: User = { id: crypto.randomUUID(), name, email, avatar, initials: toInitials(name), status: 'online' };
-    this.usersState.update((users) => [...users, user]);
-    return user.id;
-  }
-
-  emailExists(email: string): boolean {
-    const clean = email.trim().toLowerCase();
-    return this.users().some((user) => user.email.toLowerCase() === clean);
+  // Messages may outlive their sender (e.g. deleted guest accounts): show "Unbekannt" instead of nothing.
+  displayUser(id: string): User {
+    return this.getById(id) ?? { id, name: 'Unbekannt', email: '', initials: '?', status: 'offline', avatar: DEFAULT_AVATAR };
   }
 
   // User story 4: change own name and avatar. Returns an error text, or '' when saved.
@@ -41,42 +44,43 @@ export class UserService {
     const error = validateName(name);
     const id = this.session.currentUserId();
     if (error || !id) return error || 'Bitte melde dich erneut an.';
+    if (!AVATARS.includes(avatar)) return 'Bitte wähle einen Avatar aus der Liste.';
     const cleanName = name.trim().replace(/\s+/g, ' ');
-    this.usersState.update((users) => users.map((user) =>
-      user.id === id ? { ...user, name: cleanName, avatar, initials: toInitials(cleanName) } : user));
+    updateDoc(doc(db, 'users', id), { name: cleanName, avatar }).catch((err) => reportError('Profil speichern', err));
     return '';
   }
-}
 
-// "Frederik Beck" -> "FB"
-function toInitials(name: string): string {
-  return name.trim().split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase();
+  // Starts the live list after login, stops it after logout.
+  private listen(userId: string | null): void {
+    this.unsubscribe?.();
+    this.unsubscribe = null;
+    this.usersState.set([]);
+    if (!userId) return;
+    this.unsubscribe = onSnapshot(collection(db, 'users'),
+      (snapshot) => this.usersState.set(snapshot.docs.map(toUser)),
+      (error) => reportError('Benutzer laden', error));
+  }
 }
 
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
  * =====================================================================
- * Der UserService ist nur für Benutzerdaten zuständig.
- *
- * - inject(SessionService): Holt den SessionService, um zu wissen, wer
- *   eingeloggt ist.
- * - usersState ist privat und beschreibbar. Nach außen gibt es nur
- *   users, eine schreibgeschützte Version (asReadonly). So kann keine
- *   Component die Liste aus Versehen direkt verändern. Änderungen
+ * Der UserService ist für die Benutzerdaten zuständig, jetzt aus
+ * Firestore (Sammlung "users").
+ * - usersState ist privat und beschreibbar. Nach aussen gibt es nur
+ *   users, eine schreibgeschützte Version (asReadonly). Änderungen
  *   laufen immer über Methoden des Services (Kapselung).
- * - currentUser: Der eingeloggte Benutzer, automatisch berechnet.
- * - otherUsers: Alle außer mir selbst, für die Liste der
- *   Direktnachrichten.
- * - getById(): Sucht einen Benutzer anhand der ID. find() gibt das
- *   erste passende Element zurück oder undefined.
- * - addUser(): legt einen Benutzer an (Demo) und gibt die neue ID zurück.
- * - emailExists(): Prüft, ob die E-Mail schon vergeben ist
- *   (Registrierung, Gross-/Kleinschreibung egal).
- * - updateProfile(): ändert Name und Avatar des eingeloggten Benutzers
- *   (User Story 4). Der Name wird wie bei der Registrierung geprüft.
- *   Nur der eigene Eintrag kann geändert werden.
- *
- * Später lädt dieser Service die Benutzer aus der Datenbank. Die
- * Components merken davon nichts, weil sie nur den Service benutzen.
+ * - listen(): Nach dem Login öffnet onSnapshot() eine Live-Verbindung.
+ *   Ändert jemand seinen Namen oder Avatar, sehen es alle sofort. Nach
+ *   dem Logout wird die Verbindung geschlossen und die Liste geleert.
+ * - effect(): reagiert automatisch, wenn sich der angemeldete Benutzer
+ *   ändert (Login, Logout).
+ * - currentUser / otherUsers: wie bisher, automatisch berechnet.
+ * - displayUser(): Ersatz "Unbekannt", falls es den Absender einer
+ *   Nachricht nicht mehr gibt. Die Nachricht bleibt so sichtbar.
+ * - updateProfile(): ändert Name und Avatar (User Story 4). Name wird
+ *   geprüft, nur Avatare aus der Liste sind erlaubt. Die Anzeige
+ *   aktualisiert sich sofort, Firestore speichert im Hintergrund.
+ *   Die Sicherheitsregeln erlauben nur das eigene Profil.
  */

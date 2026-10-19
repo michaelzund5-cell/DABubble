@@ -36,9 +36,8 @@ export class CreateChannelDialog {
 
   // Step 2: create the channel, add the chosen people and open it.
   create(): void {
-    const channel = this.channelService.create(this.name, this.description);
+    const channel = this.channelService.create(this.name, this.description, this.memberIds());
     if (!channel) return this.backToName();
-    this.channelService.addMembers(channel.id, this.memberIds());
     this.state.closeDialog();
     this.state.openView('channel', channel.id);
   }
