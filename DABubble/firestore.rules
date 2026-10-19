@@ -1,0 +1,157 @@
+rules_version = '2';
+
+// DABubble security rules. Everything that is not allowed here is denied.
+// Copy this file into Firebase Console > Firestore Database > Regeln and click "Veröffentlichen".
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isText(value, maxLength) {
+      return value is string && value.size() <= maxLength;
+    }
+
+    function changedOnly(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    function validAvatar(value) {
+      return value is string && value.matches('img/avatars/avatar-([1-6]|default)[.]svg');
+    }
+
+    function validStatus(value) {
+      return value in ['online', 'offline'];
+    }
+
+    // ---------- message checks (used by channels and direct chats) ----------
+    // New message: own sender ID, server time, 1 to 4000 characters, no reactions yet.
+    function validNewMessage() {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['senderId', 'text', 'createdAt', 'reactions', 'threadId'])
+        && data.senderId == request.auth.uid
+        && isText(data.text, 4000) && data.text.size() > 0
+        && data.createdAt == request.time
+        && data.reactions == []
+        && (!('threadId' in data) || isText(data.threadId, 100));
+    }
+
+    // Edit: only the sender, only text and the "edited" mark.
+    function validEdit() {
+      return resource.data.senderId == request.auth.uid
+        && changedOnly(['text', 'edited'])
+        && isText(request.resource.data.text, 4000) && request.resource.data.text.size() > 0
+        && request.resource.data.edited == true;
+    }
+
+    // Reaction: every reader may change the reactions, nothing else (at most 20 different emojis).
+    function validReaction() {
+      return changedOnly(['reactions'])
+        && request.resource.data.reactions is list
+        && request.resource.data.reactions.size() <= 20;
+    }
+
+    // ---------- users/{uid}: profiles ----------
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'email', 'avatar', 'status'])
+        && isText(request.resource.data.name, 60) && request.resource.data.name.size() > 0
+        && request.resource.data.email == request.auth.token.get('email', '')
+        && validAvatar(request.resource.data.avatar) && validStatus(request.resource.data.status);
+      allow update: if signedIn() && request.auth.uid == uid
+        && changedOnly(['name', 'avatar', 'status'])
+        && isText(request.resource.data.name, 60) && request.resource.data.name.size() > 0
+        && validAvatar(request.resource.data.avatar) && validStatus(request.resource.data.status);
+      allow delete: if signedIn() && request.auth.uid == uid;
+    }
+
+    // ---------- channels/{channelId} ----------
+    match /channels/{channelId} {
+      function isMember() {
+        return request.auth.uid in resource.data.memberIds;
+      }
+
+      function validChannel(data) {
+        return isText(data.name, 40) && data.name.size() > 0 && isText(data.description, 500)
+          && data.memberIds is list && data.memberIds.size() <= 500;
+      }
+
+      // Only one thing changes: the user himself is added (joining "Allgemein").
+      function joinsHimself() {
+        return changedOnly(['memberIds'])
+          && request.resource.data.memberIds.hasAll(resource.data.memberIds)
+          && request.resource.data.memberIds.size() == resource.data.memberIds.size() + 1
+          && request.auth.uid in request.resource.data.memberIds;
+      }
+
+      // Only one thing changes: the user himself is removed (leaving a channel).
+      function leavesHimself() {
+        return changedOnly(['memberIds'])
+          && resource.data.memberIds.hasAll(request.resource.data.memberIds)
+          && request.resource.data.memberIds.size() == resource.data.memberIds.size() - 1
+          && !(request.auth.uid in request.resource.data.memberIds);
+      }
+
+      // Members may rename, change the description and add people, but never remove others.
+      function memberEdit() {
+        return changedOnly(['name', 'description', 'memberIds'])
+          && request.resource.data.memberIds.hasAll(resource.data.memberIds)
+          && validChannel(request.resource.data);
+      }
+
+      allow read: if signedIn() && (resource == null || isMember() || resource.data.get('isPublic', false) == true);
+      allow create: if signedIn() && validChannel(request.resource.data)
+        && request.resource.data.keys().hasOnly(['name', 'description', 'memberIds', 'createdBy', 'createdAt', 'isPublic'])
+        && request.resource.data.createdBy == request.auth.uid
+        && request.auth.uid in request.resource.data.memberIds
+        && request.resource.data.createdAt == request.time
+        && (channelId == 'allgemein' || !('isPublic' in request.resource.data));
+      allow update: if signedIn() && (
+        (isMember() && (memberEdit() || leavesHimself()))
+        || (resource.data.get('isPublic', false) == true && joinsHimself()));
+
+      // ---------- channels/{channelId}/messages/{messageId} ----------
+      match /messages/{messageId} {
+        function channelMember() {
+          return request.auth.uid in get(/databases/$(database)/documents/channels/$(channelId)).data.memberIds;
+        }
+
+        allow read: if signedIn() && channelMember();
+        allow create: if signedIn() && channelMember() && validNewMessage();
+        allow update: if signedIn() && channelMember() && (validEdit() || validReaction());
+      }
+    }
+
+    // ---------- directChats/{chatId}: "dm_<uidA>_<uidB>" (IDs sorted) ----------
+    match /directChats/{chatId} {
+      function chatUids() {
+        return chatId.split('_');
+      }
+
+      function participant() {
+        return chatUids().size() == 3 && chatUids()[0] == 'dm' && request.auth.uid in chatUids();
+      }
+
+      allow read: if signedIn() && request.auth.uid in resource.data.participants;
+      allow create: if signedIn() && participant()
+        && request.resource.data.keys().hasOnly(['participants'])
+        && request.resource.data.participants is list
+        && chatUids().hasAll(request.resource.data.participants)
+        && request.resource.data.participants.hasAll([chatUids()[1], chatUids()[2]]);
+      // Writing the same data again is harmless (happens when both start a chat at the same time).
+      allow update: if signedIn() && request.auth.uid in resource.data.participants
+        && request.resource.data == resource.data;
+
+      match /messages/{messageId} {
+        allow read: if signedIn() && participant();
+        allow create: if signedIn() && participant() && validNewMessage();
+        allow update: if signedIn() && participant() && (validEdit() || validReaction());
+      }
+    }
+
+    // Everything else (other collections, deleting messages or channels) stays forbidden.
+  }
+}
