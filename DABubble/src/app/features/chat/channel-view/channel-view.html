@@ -30,7 +30,7 @@
     }
   </header>
 
-  <div class="messages">
+  <div class="messages" #list>
     @for (group of days(); track group.day) {
       <div class="day-divider"><span>{{ group.day | chatDate }}</span></div>
       @for (message of group.messages; track message.id) {
@@ -58,5 +58,7 @@
   - Nachrichten: pro Tag eine Trennlinie (Pipe chatDate), darunter die
     Nachrichten als <app-message-item>.
   - @empty: Noch keine Nachricht, dann kommt der Begrüssungstext.
+  - #list: Name für die Nachrichtenliste. Damit scrollt channel-view.ts
+    automatisch zur neuesten Nachricht.
   - [narrow]: Bei offenem Thread hat das Eingabefeld weniger Rand (Figma).
 -->
