@@ -17,6 +17,14 @@ export class ListenerSet {
     }
   }
 
+  // Opens the listener for a key again, e.g. after an error. Does nothing if the key is no longer needed.
+  reopen(key: string, open: (key: string) => Unsubscribe): void {
+    const close = this.listeners.get(key);
+    if (!close) return;
+    close();
+    this.listeners.set(key, open(key));
+  }
+
   closeAll(): void {
     this.sync([], () => () => undefined);
   }
@@ -30,6 +38,8 @@ export class ListenerSet {
  * - Pro Schlüssel (z. B. pro Channel) gibt es genau einen Listener.
  * - sync(): öffnet Listener für neue Channels und schliesst Listener für
  *   Channels, die weggefallen sind (z. B. nach "Channel verlassen").
+ * - reopen(): öffnet einen Listener neu, z. B. nach einem Fehler. Ist der
+ *   Channel inzwischen weg, passiert nichts.
  * - closeAll(): schliesst alles, z. B. beim Abmelden. Offene Listener
  *   würden sonst nach dem Logout an den Sicherheitsregeln scheitern und
  *   Speicher verbrauchen.

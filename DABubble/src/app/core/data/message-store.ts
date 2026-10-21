@@ -1,5 +1,5 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
-import { collection, onSnapshot, query, Unsubscribe, where } from 'firebase/firestore';
+import { collection, FirestoreError, onSnapshot, query, Unsubscribe, where } from 'firebase/firestore';
 import { Message } from '../../shared/models/message.model';
 import { SessionService } from '../auth/session.service';
 import { db } from '../firebase/firebase';
@@ -12,6 +12,10 @@ import { ChannelService } from './channel.service';
 export function locationPath(location: MessageLocation): string {
   return location.channelId ? `channels/${location.channelId}` : `directChats/${location.directChatId}`;
 }
+
+// A new channel may not be saved on the server yet. Then the first read is denied and tried again.
+const RETRY_DELAY_MS = 1000;
+const MAX_RETRIES = 5;
 
 // Loads messages live from Firestore: one listener per own channel and per own direct chat.
 @Injectable({ providedIn: 'root' })
@@ -26,6 +30,7 @@ export class MessageStore {
   readonly chatIds = signal<string[]>([]);
 
   private readonly listeners = new ListenerSet();
+  private readonly retries = new Map<string, number>();
   private chatsUnsubscribe: Unsubscribe | null = null;
 
   constructor() {
@@ -47,8 +52,22 @@ export class MessageStore {
   private open(path: string): Unsubscribe {
     const location = toLocation(path);
     return onSnapshot(collection(db, path, 'messages'),
-      (snapshot) => this.byPath.update((all) => ({ ...all, [path]: snapshot.docs.map((d) => toMessage(d, location)) })),
-      (error) => reportError('Nachrichten laden', error));
+      (snapshot) => {
+        this.retries.delete(path);
+        this.byPath.update((all) => ({ ...all, [path]: snapshot.docs.map((d) => toMessage(d, location)) }));
+      },
+      (error) => this.onListenError(path, error));
+  }
+
+  // Denied right after creating a channel: the channel is not on the server yet. Try again shortly.
+  private onListenError(path: string, error: FirestoreError): void {
+    const attempt = this.retries.get(path) ?? 0;
+    if (error.code !== 'permission-denied' || attempt >= MAX_RETRIES) {
+      this.retries.delete(path);
+      return reportError('Nachrichten laden', error);
+    }
+    this.retries.set(path, attempt + 1);
+    setTimeout(() => this.listeners.reopen(path, (key) => this.open(key)), RETRY_DELAY_MS);
   }
 
   private listenToChats(userId: string | null): void {
@@ -87,5 +106,10 @@ function toLocation(path: string): MessageLocation {
  *   Nachrichten verschwinden aus dem Speicher.
  * - byPath: Nachrichten pro Ort. messages: alle zusammen, für Chat,
  *   Thread und Suche.
+ * - onListenError(): Wer einen Channel erstellt, sieht ihn sofort, der
+ *   Server kennt ihn aber erst einen Moment später. Die erste Abfrage der
+ *   Nachrichten wird darum von den Regeln abgelehnt. Dann wird sie nach
+ *   1 Sekunde wiederholt (höchstens 5 Mal). Erst wenn alle Versuche
+ *   scheitern, kommt eine Meldung in die Konsole.
  * - Beim Logout werden alle Listener geschlossen.
  */
