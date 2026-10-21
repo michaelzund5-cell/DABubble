@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { ChannelService } from '../../core/data/channel.service';
 import { WorkspaceStateService } from '../../core/data/workspace-state.service';
 import { AddMembersDialog } from '../../features/channel/add-members-dialog/add-members-dialog';
 import { ChannelDetails } from '../../features/channel/channel-details/channel-details';
@@ -23,6 +24,7 @@ import { ProfileDialog } from '../../features/profile/profile-dialog/profile-dia
 })
 export class Workspace {
   readonly state = inject(WorkspaceStateService);
+  readonly channelService = inject(ChannelService);
   readonly sidebarOpen = signal(true);
 }
 
@@ -37,4 +39,7 @@ export class Workspace {
  * - state.openThreadId(): Ist ein Thread offen, kommt die dritte Spalte.
  * - Die Fenster (Dialoge) werden hier eingebunden, damit sie über allen
  *   Spalten liegen.
+ * - channelService.saveError: Meldung, wenn eine Channel-Änderung auf dem
+ *   Server nicht gespeichert werden konnte. Sie liegt hier, damit sie
+ *   überall sichtbar ist, auch wenn das Fenster schon zu ist.
  */

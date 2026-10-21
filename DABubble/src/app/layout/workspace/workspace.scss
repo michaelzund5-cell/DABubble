@@ -81,6 +81,23 @@
 .menu-toggle span { writing-mode: vertical-rl; rotate: 180deg; }
 .menu-toggle:hover { color: var(--purple-1); }
 
+// Notice when a channel change could not be saved (checklist: warn if a change was not successful).
+.save-error {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  z-index: 200;
+  max-width: calc(100vw - 32px);
+  padding: 16px 24px;
+  transform: translateX(-50%);
+  border-radius: 30px;
+  background: var(--white);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+  color: var(--error);
+  font-weight: 700;
+  text-align: center;
+}
+
 /*
  * =====================================================================
  * ZUSAMMENFASSUNG (Deutsch)
@@ -101,4 +118,6 @@
  * - Handy (unter 1000 px): immer nur eine Ansicht (Menü, Chat oder
  *   Thread), gesteuert über die Klasse mobile-chat. 100dvh passt sich
  *   der echten Höhe im Handy-Browser an (Adressleiste).
+ * - .save-error: weisse Karte unten in der Mitte, Text in Fehlerfarbe.
+ *   max-width: passt auch auf 320 px breite Bildschirme.
  */

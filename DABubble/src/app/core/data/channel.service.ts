@@ -14,6 +14,8 @@ import { UserService } from './user.service';
 
 const MAX_NAME_LENGTH = 40;
 const NOT_MEMBER = 'Nur Mitglieder können den Channel ändern.';
+const SAVE_FAILED = 'Die Änderung konnte nicht gespeichert werden. Bitte versuche es erneut.';
+const ERROR_VISIBLE_MS = 5000;
 
 // Responsible for channels and their members. Only channels the user is a member of are loaded.
 @Injectable({ providedIn: 'root' })
@@ -28,6 +30,11 @@ export class ChannelService {
   readonly myChannels = computed(() => [...this.channels()].sort((a, b) => a.createdAt - b.createdAt));
 
   private unsubscribe: Unsubscribe | null = null;
+
+  // Message for the user when saving failed on the server, '' when everything is fine.
+  private readonly saveErrorState = signal('');
+  readonly saveError = this.saveErrorState.asReadonly();
+  private saveErrorTimer?: ReturnType<typeof setTimeout>;
 
   constructor() {
     effect(() => this.listen(this.session.currentUserId()));
@@ -106,8 +113,18 @@ export class ChannelService {
     this.write(updateDoc(doc(db, 'channels', id), changes), 'Channel ändern');
   }
 
+  // The screen changes at once, Firestore saves in the background. If the server refuses, the user is told.
   private write(request: Promise<void>, context: string): void {
-    request.catch((error) => reportError(context, error));
+    request.catch((error) => {
+      reportError(context, error);
+      this.showSaveError();
+    });
+  }
+
+  private showSaveError(): void {
+    this.saveErrorState.set(SAVE_FAILED);
+    clearTimeout(this.saveErrorTimer);
+    this.saveErrorTimer = setTimeout(() => this.saveErrorState.set(''), ERROR_VISIBLE_MS);
   }
 
   // Live list of the user's channels: only channels whose memberIds contain the user.
@@ -152,8 +169,11 @@ export function toChannelName(name: string): string {
  * - addMembers() / leave(): arrayUnion / arrayRemove ändern nur die
  *   betroffenen IDs. Gleichzeitige Änderungen von zwei Personen
  *   überschreiben sich so nicht gegenseitig.
- * - write(): Fehler beim Speichern landen in reportError(). Die
- *   Anzeige ändert sich sofort, Firestore speichert im Hintergrund.
+ * - write(): Die Anzeige ändert sich sofort, Firestore speichert im
+ *   Hintergrund. Lehnt der Server ab (kein Netz, Regeln), kommt der
+ *   Fehler in die Konsole und saveError zeigt dem Benutzer 5 Sekunden
+ *   lang eine Meldung (Checkliste Channels, User Story 4). Gilt für
+ *   Erstellen, Umbenennen, Beschreibung, Mitglieder und Verlassen.
  * - toChannelName(): "Office team" wird zu "Office-team".
  * - Beschreibung höchstens 500 Zeichen, Name höchstens 40. Die
  *   Firestore-Regeln prüfen dasselbe noch einmal auf dem Server.

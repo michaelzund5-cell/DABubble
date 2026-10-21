@@ -29,6 +29,10 @@
     @case ('createChannel') { <app-create-channel-dialog /> }
   }
 
+  @if (channelService.saveError(); as error) {
+    <p class="save-error" role="alert">{{ error }}</p>
+  }
+
   <button class="menu-toggle" type="button" [class.collapsed]="!sidebarOpen()" (click)="sidebarOpen.set(!sidebarOpen())"
     [attr.aria-expanded]="sidebarOpen()">
     <img [src]="sidebarOpen() ? 'img/icons/menu-close.svg' : 'img/icons/menu-open.svg'" alt="">
@@ -53,4 +57,6 @@
   - mobile-chat: Auf dem Handy ist immer nur eine Ansicht sichtbar: Menü,
     Chat oder Thread (CSS in workspace.scss, User Story 5).
   - aria-hidden: Eingeklappte Sidebar wird von Screenreadern ignoriert.
+  - .save-error: Hinweis unten in der Mitte, wenn eine Channel-Änderung
+    nicht gespeichert werden konnte. role="alert" liest ihn sofort vor.
 -->
