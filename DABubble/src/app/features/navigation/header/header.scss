@@ -42,6 +42,9 @@
 
 .menu button:hover { background: var(--bg); color: var(--purple-1); }
 
+// Handle and icons only belong to the mobile bottom menu.
+.handle, .menu-icon { display: none; }
+
 .back, .devspace-logo, .devspace { display: none; }
 
 // Smaller desktops: the search gets narrower before anything overlaps.
@@ -61,8 +64,11 @@
   .devspace-logo { display: block; width: 50px; height: 50px; margin-left: 3px; border-radius: 50%; }
   .devspace { display: block; margin-left: 10px; font-size: 20px; font-weight: 700; }
 
-  .menu { padding: 20px; }
-  .menu button { padding: 10px 30px; font-size: 20px; }
+  // Bottom menu (mobile): grey handle on top, icon in front of each entry.
+  .menu { gap: 20px; padding: 18px 40px 50px; }
+  .handle { display: block; width: 62px; height: 6px; margin: 0 auto 6px; border-radius: 3px; background: #d9d9d9; }
+  .menu button { display: flex; align-items: center; gap: 20px; padding: 10px 16px; font-size: 20px; font-weight: 400; }
+  .menu-icon { display: block; width: 30px; height: 30px; }
 }
 
 /*
@@ -79,4 +85,6 @@
  *   160 px, Avatar 50 px, keine Suche (sie steht im Menü). Im Chat
  *   Zurück-Pfeil, Devspace-Logo und "Devspace".
  * - .menu: Menü "Profil / Log out" im Dialog-Rahmen (Annahme).
+ * - .handle / .menu-icon: Griff und Icons gibt es nur im Handy-Menü,
+ *   das von unten hochkommt. Auf dem Desktop sind sie ausgeblendet.
  */

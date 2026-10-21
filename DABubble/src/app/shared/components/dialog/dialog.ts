@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 
-export type DialogPlacement = 'center' | 'sheet' | 'top-right' | 'channel' | 'members';
+export type DialogPlacement = 'center' | 'sheet' | 'top-right' | 'channel' | 'members' | 'bottom';
 
 // Frame for every popup: backdrop, white card, closes on backdrop click and Escape.
 @Component({

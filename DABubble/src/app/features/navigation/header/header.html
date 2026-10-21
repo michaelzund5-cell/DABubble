@@ -23,10 +23,16 @@
     </button>
 
     @if (state.dialog() === 'headerMenu') {
-      <app-dialog placement="top-right" [dim]="false" label="Profilmenü" (closed)="state.closeDialog()">
+      <app-dialog [placement]="viewport.isMobile() ? 'bottom' : 'top-right'" [dim]="viewport.isMobile()"
+        label="Profilmenü" (closed)="state.closeDialog()">
         <div class="menu">
-          <button type="button" (click)="state.openProfile(user.id)">Profil</button>
-          <button type="button" (click)="logout()">Log out</button>
+          <span class="handle" aria-hidden="true"></span>
+          <button type="button" (click)="state.openProfile(user.id)">
+            <img class="menu-icon" src="img/icons/account-circle.svg" alt="">Profil
+          </button>
+          <button type="button" (click)="logout()">
+            <img class="menu-icon" src="img/icons/logout.svg" alt="">Log out
+          </button>
         </div>
       </app-dialog>
     }
@@ -44,7 +50,9 @@
     "Devspace" statt DABubble-Logo. Der Pfeil führt zurück zum Menü.
   - Profil-Button: Name, Avatar mit Online-Punkt (Handy ohne Punkt,
     Figma Seite 44), Pfeil. Klick öffnet
-    das Menü mit "Profil" und "Log out" (app-dialog, ohne
-    Abdunkelung). Figma zeigt dieses Menü nicht, Design ist eine Annahme.
+    das Menü mit "Profil" und "Log out" (app-dialog).
+  - Desktop: Menü oben rechts, ohne Abdunkelung, ohne Icons.
+  - Handy: Menü kommt von unten hoch (placement "bottom"), Hintergrund
+    abgedunkelt, mit Griff oben und Icons vor dem Text.
   - aria-expanded: sagt Screenreadern, ob das Menü offen ist.
 -->
