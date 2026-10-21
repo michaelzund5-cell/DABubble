@@ -1,0 +1,7 @@
+# Angular routes (/workspace, /imprint, ...) only exist in the app, not as files on the server.
+# Every address that is not a real file or folder gets index.html, then Angular shows the right page.
+# ZUSAMMENFASSUNG: Ohne diese Datei meldet der Server beim Neuladen von /workspace den Fehler 404.
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
