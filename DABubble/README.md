@@ -44,7 +44,7 @@ src/app/
   layout/       Seitenrahmen des Workspace
   shared/       Wiederverwendbares: components, models, pipes, utils
 public/img/     Bilder, Icons, Avatare, Emojis (aus Figma ausgeschnitten)
-docs/           Architektur, Sicherheit, Firebase, Figma-Abweichungen, n8n-Plan
+docs/           Architektur, Sicherheit, Firebase, Figma-Abweichungen
 ```
 
 Jede Datei hat Kommentare auf Englisch und am Ende eine deutsche "ZUSAMMENFASSUNG".
@@ -55,4 +55,3 @@ Jede Datei hat Kommentare auf Englisch und am Ende eine deutsche "ZUSAMMENFASSUN
 - `docs/FIGMA_ABWEICHUNGEN.md`: Widersprüche in Figma und getroffene Annahmen
 - `docs/FIREBASE_PLAN.md`: Firebase-Einrichtung, Konsole, Regeln ändern
 - `docs/SECURITY.md`: Sicherheit: Überlegungen, Umsetzung, was mit Firebase kommt
-- `docs/N8N_PLAN.md`: Ideen für Automatisierungen
