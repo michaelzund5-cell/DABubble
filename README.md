@@ -27,7 +27,7 @@ Use "Gäste-Login" (guest login) to try it without an account.
 | Backend | Firebase Authentication and Cloud Firestore (real-time listeners) |
 | Database location | Zurich, Switzerland (`europe-west6`) |
 | Security | Firestore security rules: deny by default, members only, server-side checks for sender, time and lengths |
-| Hosting | Apache web server with SPA rewrite (`.htaccess`) |
+| Hosting | Developer Akademie web server, hash URLs (`/#/workspace`) so reloading never gives a 404 |
 
 ## Run locally
 
@@ -48,19 +48,19 @@ DABubble/
   src/app/features/   pages: auth, chat, channel, navigation, profile, legal
   src/app/shared/     reusable components, models, pipes, utils
   public/img/         images, icons, avatars, emojis
-  docs/               architecture, security, Firebase setup (German)
+  docs/               architecture, security, Firebase setup, Figma notes
   firestore.rules     security rules
 ```
 
 Code rules: functions up to 14 lines, files up to 400 lines, camelCase.
 Comments in the code are in English, every file ends with a summary in German.
 
-## Documentation (German)
+## Documentation
 
 - [Architecture](DABubble/docs/ARCHITECTURE.md): folders, data flow, data model, emojis
 - [Security](DABubble/docs/SECURITY.md): reasoning, implementation, known limits
-- [Firebase](DABubble/docs/FIREBASE_PLAN.md): console setup and rules
-- [Figma notes](DABubble/docs/FIGMA_ABWEICHUNGEN.md): contradictions in the design and assumptions
+- [Firebase](DABubble/docs/FIREBASE_PLAN.md): console setup, rules and hosting
+- [Figma notes](DABubble/docs/FIGMA_NOTES.md): contradictions in the design and assumptions
 
 ## Author
 

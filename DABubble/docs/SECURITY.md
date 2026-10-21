@@ -1,65 +1,65 @@
-# Sicherheit
+# Security
 
-Stand: Firebase Authentication und Firestore mit eigenen Sicherheitsregeln (`firestore.rules`).
-Grundsatz: Alles im Browser kann der Benutzer verändern. Prüfungen im Browser sind Komfort, die Regeln auf dem Server entscheiden.
+Status: Firebase Authentication and Firestore with own security rules (`firestore.rules`).
+Principle: the user can change everything in the browser. Checks in the browser are for comfort, the rules on the server decide.
 
-## Meine Überlegungen dazu
+## My reasoning
 
-**Wie ein Angreifer denkt.** Wer eine Web-App angreifen will, klickt alles an, schaut sich jedes Eingabefeld an und beobachtet, welche Daten die App sendet und empfängt. Jedes Feld, jeder Button und jede Antwort der App ist ein möglicher Einstieg. Er sucht nach Stellen, an denen er eigenen Code einschleusen, fremde Daten sehen oder Dinge tun kann, die er nicht darf.
+**How an attacker thinks.** Someone who wants to attack a web app clicks everything, looks at every input field and watches which data the app sends and receives. Every field, every button and every response of the app is a possible way in. He looks for places where he can inject his own code, see other people's data or do things he is not allowed to do.
 
-**Mein Ziel: so wenig Spielraum wie möglich.** Ich gehe davon aus, dass jemand es versucht. Deshalb soll die App an jeder Stelle nur genau das erlauben, was ein normaler Benutzer braucht, und nicht mehr. Je enger die Grenzen, desto weniger Möglichkeiten hat ein Angreifer.
+**My goal: as little room as possible.** I assume that someone will try. That is why the app should only allow exactly what a normal user needs, and nothing more. The tighter the limits, the fewer options an attacker has.
 
-**Jede Eingabe ist verdächtig.** Alles, was ein Benutzer eintippt, kann absichtlich manipuliert sein: ein Name, eine Nachricht, eine Beschreibung. Darum wird Text nie als Code behandelt, sondern immer nur als Text angezeigt. So kann niemand über eine Nachricht etwas in den Browser eines anderen schmuggeln.
+**Every input is suspicious.** Everything a user types can be manipulated on purpose: a name, a message, a description. That is why text is never treated as code, it is always shown as plain text. So nobody can smuggle something into another person's browser through a message.
 
-**Eingaben nie zu Code zusammenkleben (Injection).** Ein bekannter Trick ist, im Login-Feld Sonderzeichen einzugeben, die eine Datenbankabfrage verändern und zum Beispiel die Passwortprüfung "auskommentieren" (SQL-Injection). Das klappt nur, wenn eine App die Eingabe direkt in eine Abfrage einbaut. Darum gilt bei mir: Benutzereingaben werden nie mit Code oder Abfragen zusammengesetzt, sie bleiben immer reiner Inhalt. Pflichtfelder schützen davor nicht, sie lassen sich umgehen.
+**Never glue input into code (injection).** A well-known trick is to type special characters into the login field that change a database query and, for example, "comment out" the password check (SQL injection). This only works if an app builds the input directly into a query. My rule: user input is never combined with code or queries, it always stays pure content. Required fields do not protect against this, they can be bypassed.
 
-**Der Browser gehört dem Benutzer, nicht mir.** Alles, was im Browser läuft, kann der Benutzer sehen und verändern. Eine Prüfung nur im Eingabefeld ist deshalb Komfort, kein Schutz. Wichtige Regeln stehen darum mehrfach: im Feld, in der Logik der App und auf dem Server (Firestore-Regeln). Nur der Server ist wirklich sicher.
+**The browser belongs to the user, not to me.** Everything running in the browser can be seen and changed by the user. A check only in the input field is comfort, not protection. Important rules therefore exist several times: in the field, in the app logic and on the server (Firestore rules). Only the server is really safe.
 
-**Grenzen für alles.** Ohne Grenze kann jemand riesige Texte schicken und die App oder die Datenbank lahmlegen. Darum hat jede Eingabe eine maximale Länge.
+**Limits for everything.** Without a limit, someone can send huge texts and slow down the app or the database. That is why every input has a maximum length.
 
-**Nichts verraten.** Fehlermeldungen sollen dem Benutzer helfen, aber einem Angreifer nichts verraten. Beim Login steht deshalb immer dieselbe Meldung, egal ob die E-Mail oder das Passwort falsch ist. Sonst könnte man testen, welche E-Mail-Adressen ein Konto haben.
+**Reveal nothing.** Error messages should help the user but tell an attacker nothing. The login always shows the same message, whether the email or the password is wrong. Otherwise one could test which email addresses have an account.
 
-**Nur sehen, was einem gehört.** Jeder sieht nur seine eigenen Channels und Direktnachrichten, auch in der Suche. Bearbeiten darf man nur, was man selbst geschrieben hat. Das wird nicht nur in der Oberfläche versteckt, sondern auch in der Logik geprüft.
+**Only see what is yours.** Everyone only sees their own channels and direct messages, also in the search. You can only edit what you wrote yourself. This is not only hidden in the interface, it is also checked in the logic.
 
-**So wenig Daten wie möglich speichern und weitergeben.** Passwörter werden nie im Browser gespeichert. Schriften kommen vom eigenen Server statt von Google, damit keine Daten über Besucher an Dritte gehen.
+**Store and share as little data as possible.** Passwords are never stored in the browser. Fonts come from our own server instead of Google, so no visitor data goes to third parties.
 
-**Keine Geheimnisse im Code.** Was auf GitHub liegt, kann jeder lesen. Darum kommen Passwörter, Schlüssel oder Zugangsdaten nie in den Code.
+**No secrets in the code.** Everything on GitHub can be read by anyone. Passwords, keys or credentials never go into the code.
 
-**Sicherheit hört nicht auf.** Auch fremde Pakete können Lücken haben. Darum prüfe ich sie regelmässig, und neuer Code folgt denselben Regeln.
+**Security never stops.** Third-party packages can have weaknesses too. That is why I check them regularly, and new code follows the same rules.
 
-## Umgesetzt im Code
+## Implemented in the code
 
-| Thema | Umsetzung |
+| Topic | Implementation |
 |---|---|
-| XSS (fremder Code in Nachrichten) | Alle Texte laufen über Angular `{{ }}`, Angular maskiert sie automatisch. Kein `innerHTML`, kein `bypassSecurityTrust`, kein `eval`. |
-| Injection (SQL/NoSQL) | Keine Datenbankabfrage wird aus Text zusammengebaut. Firebase Auth prüft Passwörter auf dem Server, Firestore bekommt Werte über fertige Funktionen. |
-| Links | `mailto:` über `[href]`, Angular prüft die URL. Keine Links mit `target="_blank"`. |
-| Konto-Erkennung beim Login | Gleiche Fehlermeldung bei falscher E-Mail und falschem Passwort. |
-| Passwörter | Gehen direkt an Firebase, die App speichert sie nirgends. Mindestens 8 Zeichen, ein Buchstabe, eine Zahl. Nach vielen Fehlversuchen sperrt Firebase kurz. |
-| Anmeldung | Firebase Authentication. Die Sitzung verwaltet Firebase selbst, die App legt keine eigenen Anmeldedaten im Browser ab. |
-| Eingabelängen | Name 60, Channel-Name 40, Beschreibung 500, Nachricht 4000 Zeichen. Im Feld (`maxlength`) und nochmals im Service (`shared/utils/limits.ts`). |
-| Rechte | Nur der Absender bearbeitet seine Nachricht, nur Mitglieder ändern einen Channel, nur das eigene Profil ist änderbar. Geprüft in den Services und auf dem Server in `firestore.rules`. |
-| Firestore-Regeln | Alles ist verboten, ausser was ausdrücklich erlaubt ist. Lesen nur für Mitglieder bzw. Chat-Teilnehmer. Absender und Uhrzeit einer Nachricht prüft der Server, fälschen ist nicht möglich. Längen wie oben. Avatar nur aus der Liste. Andere aus einem Channel entfernen ist nicht möglich, nur sich selbst. Löschen von Nachrichten und Channels ist gesperrt. |
-| Suche | Findet nur Channels, in denen man Mitglied ist, und nur eigene Direktnachrichten. Fremde Daten kommen gar nicht in den Browser. |
-| Datenstandort | Firestore in Zürich (`europe-west6`), Daten bleiben in der Schweiz. |
-| Gastkonten | Werden nach 30 Tagen automatisch gelöscht (keine alten Konten, kein Massen-Missbrauch). |
-| Datenschutz | Schriften lokal (@fontsource), keine Anfragen an Google-Server. |
-| Geheimnisse | Keine Schlüssel oder Passwörter im Code, `.env` steht in `.gitignore`. |
-| Abhängigkeiten | `npm audit`: 0 Schwachstellen (Stand 19.10.2026). Eine veraltete Unter-Abhängigkeit von Firebase (`@grpc/grpc-js`) wird per `overrides` in `package.json` auf eine sichere Version gesetzt. |
+| XSS (foreign code in messages) | All texts go through Angular `{{ }}`, Angular escapes them automatically. No `innerHTML`, no `bypassSecurityTrust`, no `eval`. |
+| Injection (SQL/NoSQL) | No database query is built from text. Firebase Auth checks passwords on the server, Firestore receives values through ready-made functions. |
+| Links | `mailto:` through `[href]`, Angular checks the URL. No links with `target="_blank"`. |
+| Account detection at login | Same error message for a wrong email and a wrong password. |
+| Passwords | Go directly to Firebase, the app stores them nowhere. At least 8 characters, one letter, one number. After many failed attempts Firebase blocks briefly. |
+| Login session | Firebase Authentication. Firebase manages the session itself, the app stores no own login data in the browser. |
+| Input lengths | Name 60, channel name 40, description 500, message 4000 characters. In the field (`maxlength`) and again in the service (`shared/utils/limits.ts`). |
+| Rights | Only the sender edits their message, only members change a channel, only the own profile can be changed. Checked in the services and on the server in `firestore.rules`. |
+| Firestore rules | Everything is forbidden unless explicitly allowed. Reading only for members or chat participants. The server checks sender and time of a message, faking is not possible. Lengths as above. Avatar only from the list. Removing others from a channel is not possible, only yourself. Deleting messages and channels is blocked. |
+| Search | Only finds channels you are a member of and only your own direct messages. Foreign data never reaches the browser. |
+| Data location | Firestore in Zurich (`europe-west6`), the data stays in Switzerland. |
+| Guest accounts | Deleted automatically after 30 days (no old accounts, no mass abuse). |
+| Privacy | Fonts local (@fontsource), no requests to Google servers. |
+| Secrets | No keys or passwords in the code, `.env` is in `.gitignore`. |
+| Dependencies | `npm audit`: 0 vulnerabilities (as of 19.10.2026). An outdated sub-dependency of Firebase (`@grpc/grpc-js`) is set to a safe version with `overrides` in `package.json`. |
 
-## Bekannte Grenzen und offene Punkte
+## Known limits and open points
 
-- **App Check:** Schützt die Firebase-API vor Aufrufen, die nicht aus der App kommen. Kommt mit dem Hosting.
-- **Reaktionen:** Die Regeln erlauben jedem Leser, die Reaktionsliste zu ändern (sonst könnte niemand reagieren). Sie prüfen aber nicht, ob jemand nur seine eigene Reaktion ändert. Eine genauere Prüfung bräuchte eine Cloud Function.
-- **E-Mail-Adressen:** Angemeldete Benutzer sehen die E-Mail der anderen (Figma zeigt sie im Profil).
-- **Online-Status:** Wird beim Login und Logout gesetzt. Wer den Browser einfach schliesst, bleibt "online". Genau wäre es nur mit der Realtime Database (Presence).
-- **Content-Security-Policy:** Als Header beim Hosting setzen (erlaubt nur eigene Skripte und Firebase).
-- **Registrierung:** Die Meldung "E-Mail wird bereits verwendet" verrät, dass ein Konto existiert. Firebase meldet das bei der Registrierung ebenfalls. Bewusst so gelassen, weil der Benutzer sonst nicht weiss, warum es nicht klappt.
+- **App Check:** Protects the Firebase API against calls that do not come from the app. Not set up yet.
+- **Reactions:** The rules allow every reader to change the reaction list (otherwise nobody could react). They do not check whether someone only changes their own reaction. A stricter check would need a Cloud Function.
+- **Email addresses:** Logged-in users see the email of others (Figma shows it in the profile).
+- **Online status:** Set at login and logout. Whoever simply closes the browser stays "online". Exact status would need the Realtime Database (presence).
+- **Content Security Policy:** Would be set as a header on the server (only allows own scripts and Firebase).
+- **Sign up:** The message "E-Mail wird bereits verwendet" reveals that an account exists. Firebase reports this at sign up as well. Kept on purpose, otherwise the user does not know why it fails.
 
-## Regeln für neuen Code
+## Rules for new code
 
-- Nie `innerHTML` mit Benutzertext, nie `bypassSecurityTrust...`
-- Jede Prüfung (Rechte, Längen) im Service und in `firestore.rules`, nicht nur im Template
-- Neue Sammlung oder neues Feld: zuerst die Regel schreiben, dann den Code
-- Keine Schlüssel, Passwörter oder Tokens committen
-- Vor jedem Push `npm audit` ausführen
+- Never `innerHTML` with user text, never `bypassSecurityTrust...`
+- Every check (rights, lengths) in the service and in `firestore.rules`, not only in the template
+- New collection or new field: write the rule first, then the code
+- Never commit keys, passwords or tokens
+- Run `npm audit` before every push

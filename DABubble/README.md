@@ -1,57 +1,57 @@
 # DABubble
 
-Slack-Klon der Developer Akademie. Angular 22, Standalone Components, Signals.
-Stand: Frontend komplett (Desktop und Handy bis 320 px), Backend mit Firebase (Authentication und Firestore, Echtzeit).
-Firebase-Projekt: `dabubble-4cf82`, Datenbank in Zürich (`europe-west6`).
+Slack clone from the Developer Akademie. Angular 22, standalone components, signals.
+Status: frontend complete (desktop and mobile down to 320 px), backend with Firebase (Authentication and Firestore, real time).
+Firebase project: `dabubble-4cf82`, database in Zurich (`europe-west6`).
 
-## Starten
+## Start
 
-Voraussetzung: Node.js 22.22.3 oder neuer (Angular 22 verlangt das).
+Requires Node.js 22.22.3 or newer (Angular 22 needs it).
 
 ```bash
 npm install
 npm start          # http://localhost:4200
-npm run build      # fertige Dateien in dist/dabubble/browser
+npm run build      # finished files in dist/dabubble/browser
 ```
 
-## Anmelden
+## Log in
 
-| Weg | Was passiert |
+| Way | What happens |
 |---|---|
-| Konto erstellen | E-Mail und Passwort bei Firebase, danach Avatar wählen |
-| Login | E-Mail und Passwort |
-| Google | Google-Anmeldefenster |
-| Gäste-Login | Anonymes Konto "Gast", wird nach 30 Tagen automatisch gelöscht |
+| Create account | Email and password with Firebase, then choose an avatar |
+| Login | Email and password |
+| Google | Google sign-in window |
+| Guest login | Anonymous account "Gast", deleted automatically after 30 days |
 
-Jeder Benutzer kommt automatisch in den Channel "Allgemein". Alles wird in Firestore gespeichert und erscheint bei allen sofort.
+Every user joins the channel "Allgemein" automatically. Everything is stored in Firestore and appears for everyone at once.
 
-## Seiten und Funktionen
+## Pages and features
 
-| Bereich | Figma-Seiten |
+| Area | Figma pages |
 |---|---|
-| Start-Animation, Login, Registrierung, Avatar, Passwort zurücksetzen, Toasts | 1-9, 34-42 |
-| Workspace: Header, Sidebar, Channel, Thread, Direktnachrichten, Neue Nachricht | 15-30, 44-58 |
-| Profil, Channel-Details, Mitglieder, Channel erstellen, Reaktionen | 10-14, 43, 59-61 |
-| Suche (Channels, Personen, Nachrichten; `@` und `#`) | 18, 46, 47 |
-| Impressum, Datenschutz | 32, 33, 62, 63 |
+| Start animation, login, sign up, avatar, reset password, toasts | 1-9, 34-42 |
+| Workspace: header, sidebar, channel, thread, direct messages, new message | 15-30, 44-58 |
+| Profile, channel details, members, create channel, reactions | 10-14, 43, 59-61 |
+| Search (channels, people, messages; `@` and `#`) | 18, 46, 47 |
+| Imprint, privacy policy | 32, 33, 62, 63 |
 
-## Ordnerstruktur
+## Folder structure
 
 ```
 src/app/
-  core/         Services ohne Oberfläche: auth (Login, Guards), data (Daten), layout (Bildschirmgrösse)
-  features/     Seiten und Bereiche: auth, chat, channel, navigation, profile, legal
-  layout/       Seitenrahmen des Workspace
-  shared/       Wiederverwendbares: components, models, pipes, utils
-public/img/     Bilder, Icons, Avatare, Emojis (aus Figma ausgeschnitten)
-docs/           Architektur, Sicherheit, Firebase, Figma-Abweichungen
+  core/         services without UI: auth (login, guards), data, firebase, layout (screen size)
+  features/     pages and areas: auth, chat, channel, navigation, profile, legal
+  layout/       frame of the workspace
+  shared/       reusable: components, models, pipes, utils
+public/img/     images, icons, avatars, emojis (cut out of Figma)
+docs/           architecture, security, Firebase, Figma notes
 ```
 
-Jede Datei hat Kommentare auf Englisch und am Ende eine deutsche "ZUSAMMENFASSUNG".
+Every file has comments in English and ends with a German "ZUSAMMENFASSUNG".
 
-## Dokumentation
+## Documentation
 
-- `docs/ARCHITECTURE.md`: Aufbau des Projekts: Ordner, Datenfluss, Emojis, Code-Regeln
-- `docs/FIGMA_ABWEICHUNGEN.md`: Widersprüche in Figma und getroffene Annahmen
-- `docs/FIREBASE_PLAN.md`: Firebase-Einrichtung, Konsole, Regeln ändern
-- `docs/SECURITY.md`: Sicherheit: Überlegungen, Umsetzung, was mit Firebase kommt
+- `docs/ARCHITECTURE.md`: project structure: folders, data flow, data model, emojis, code rules
+- `docs/FIGMA_NOTES.md`: contradictions in Figma and assumptions made
+- `docs/FIREBASE_PLAN.md`: Firebase setup, console, changing the rules, hosting
+- `docs/SECURITY.md`: security: reasoning, implementation, known limits

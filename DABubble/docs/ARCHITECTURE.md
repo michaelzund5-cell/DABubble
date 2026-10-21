@@ -1,81 +1,87 @@
-# Architektur
+# Architecture
 
-## Grundsatz
+## Principle
 
-Components zeigen an, Services halten Daten und Logik. Components greifen nie direkt auf Daten oder Firebase zu.
-Beim Wechsel von Demo-Daten auf Firebase wurden nur die Services in `core/` ersetzt, die Components blieben fast gleich.
+Components display, services hold data and logic. Components never access data or Firebase directly.
+When switching from demo data to Firebase, only the services in `core/` were replaced, the components stayed almost the same.
 
 ```
 Component  ->  Service (core/data, core/auth)  ->  Firebase (Authentication + Firestore)
 ```
 
-## Ordner
+## Folders
 
-| Ordner | Inhalt |
+| Folder | Content |
 |---|---|
-| `core/auth/` | `session.service` (wer ist angemeldet), `registration.service`, `password-reset.service`, Guards |
-| `core/data/` | `user`, `channel`, `message` (schreiben), `message-store` (live laden), `search`, `workspace-state` (was gerade offen ist) |
-| `core/firebase/` | Verbindung (`firebase.ts`), Umwandlung Dokument -> Modell (`mappers.ts`), Listener-Verwaltung, Fehlermeldungen |
-| `core/layout/` | `viewport.service`: Handy-Ansicht ja/nein (unter 1000 px) |
-| `features/auth/` | Start-Animation, Login, Registrierung, Avatar, Passwort zurücksetzen |
-| `features/chat/` | Chat-Ansicht, Nachricht, Eingabe, @/#-Liste, Thread, Neue Nachricht, leerer Chat |
-| `features/channel/` | Channel-Details, Mitglieder, Leute hinzufügen, Channel erstellen |
-| `features/navigation/` | Header, Suche, Sidebar |
-| `features/profile/` | Profil ansehen und bearbeiten |
-| `features/legal/` | Impressum, Datenschutz |
-| `layout/workspace/` | Rahmen nach dem Login: Header, Sidebar, Chat, Thread, Dialoge |
-| `shared/` | Avatar, Dialog-Rahmen, Emoji-Auswahl, Toast, Modelle, Pipes, Validatoren |
+| `core/auth/` | `session.service` (who is logged in), `registration.service`, `password-reset.service`, guards |
+| `core/data/` | `user`, `channel`, `message` (write), `message-store` (load live), `search`, `workspace-state` (what is open) |
+| `core/firebase/` | Connection (`firebase.ts`), document to model (`mappers.ts`), listener management, error reporting |
+| `core/layout/` | `viewport.service`: mobile view yes/no (below 1000 px) |
+| `features/auth/` | Start animation, login, sign up, avatar, reset password |
+| `features/chat/` | Chat view, message, input, @/# list, thread, new message, empty chat |
+| `features/channel/` | Channel details, members, add people, create channel |
+| `features/navigation/` | Header, search, sidebar |
+| `features/profile/` | View and edit profile |
+| `features/legal/` | Imprint, privacy policy |
+| `layout/workspace/` | Frame after login: header, sidebar, chat, thread, dialogs |
+| `shared/` | Avatar, dialog frame, emoji picker, toast, models, pipes, validators |
 
-## Datenmodell in Firestore
+## Data model in Firestore
 
 ```
 users/{uid}                              name, email, avatar, status
-channels/{channelId}                     name, description, memberIds[], createdBy, createdAt, isPublic (nur "allgemein")
+channels/{channelId}                     name, description, memberIds[], createdBy, createdAt, isPublic (only "allgemein")
 channels/{channelId}/messages/{id}       senderId, text, createdAt, reactions[], threadId?, edited?
-directChats/dm_{uidA}_{uidB}             participants[]   (IDs sortiert, damit beide denselben Chat finden)
-directChats/dm_{uidA}_{uidB}/messages/{id}   wie bei Channels
+directChats/dm_{uidA}_{uidB}             participants[]   (IDs sorted, so both find the same chat)
+directChats/dm_{uidA}_{uidB}/messages/{id}   same as in channels
 ```
 
-- Thread-Antworten sind normale Nachrichten mit `threadId` (ID der Ursprungsnachricht) im selben Channel oder Chat.
-- Geladen wird nur, was zum Benutzer gehört: eigene Channels (`memberIds` enthält die eigene ID) und eigene Direktnachrichten.
-- Live über `onSnapshot`: Änderungen erscheinen bei allen sofort, ohne Neuladen.
-- Zeitstempel setzt der Server (`serverTimestamp`).
-- Die Sicherheitsregeln stehen in `firestore.rules`.
+- Thread replies are normal messages with `threadId` (ID of the original message) in the same channel or chat.
+- Only what belongs to the user is loaded: own channels (`memberIds` contains the own ID) and own direct messages.
+- Live with `onSnapshot`: changes appear for everyone at once, without reloading.
+- Timestamps are set by the server (`serverTimestamp`).
+- A brand-new channel may not be on the server yet when its messages are first requested. The message listener then retries after 1 second (up to 5 times).
+- The security rules are in `firestore.rules`.
 
-## Zustand
+## State
 
-- Signals überall (`signal`, `computed`). Kein RxJS im eigenen Code.
-- `WorkspaceStateService`: offener Chat, offener Thread, offener Dialog, Handy-Navigation.
-- Daten-Services geben nur lesbare Signals nach aussen (`asReadonly()`), Änderungen nur über Methoden.
+- Signals everywhere (`signal`, `computed`). No RxJS in our own code.
+- `WorkspaceStateService`: open chat, open thread, open dialog, mobile navigation.
+- Data services only expose read-only signals (`asReadonly()`), changes only through methods.
 
-## Emojis: wie und warum
+## Routing
 
-**Wie:** Alle 20 Emojis stehen in `src/app/shared/models/emojis.ts`. Jedes hat drei Werte:
+- Hash URLs (`/#/login`, `/#/workspace`) with `withHashLocation()`. The server always loads `index.html`, so reloading a page never returns a 404.
+
+## Emojis: how and why
+
+**How:** All 20 emojis are in `src/app/shared/models/emojis.ts`. Each one has three values:
 
 ```ts
 { id: 'rocket', char: '🚀', src: 'img/emojis/rocket.svg' }
 ```
 
-- `id`: kurzer Name. Bei einer Reaktion wird nur dieser gespeichert, zusammen mit den Personen, die reagiert haben (`userIds`).
-- `char`: echtes Zeichen. Kommt in den Text, wenn man im Eingabefeld ein Emoji wählt.
-- `src`: Bild in `public/img/emojis/`. Wird bei Reaktionen angezeigt.
+- `id`: short name. A reaction only stores this, together with the people who reacted (`userIds`).
+- `char`: real character. Goes into the text when an emoji is picked in the input.
+- `src`: image in `public/img/emojis/`. Shown for reactions.
 
-Ablauf:
-- `emoji-picker` (`shared/components/emoji-picker`) zeigt alle Bilder als Buttons und meldet die Wahl per `output()`.
-- Die Pipe `emojiSrc` macht im Template aus der `id` das Bild: `<img [src]="reaction.emoji | emojiSrc">`.
-- Ein zweiter Klick auf die eigene Reaktion entfernt sie wieder.
-- Die Schnellleiste beim Hover zeigt die zwei zuletzt benutzten Emojis (`quickEmojis` im MessageService), am Anfang ✅ und 👍.
+Flow:
+- `emoji-picker` (`shared/components/emoji-picker`) shows all images as buttons and reports the choice with `output()`.
+- The pipe `emojiSrc` turns the `id` into the image in the template: `<img [src]="reaction.emoji | emojiSrc">`.
+- A second click on your own reaction removes it again.
+- The quick bar on hover shows the two most recently used emojis (`quickEmojis` in the MessageService), at the start ✅ and 👍.
 
-**Warum so:**
-- **Bilder statt System-Emojis:** Windows, Mac, Android und iPhone zeichnen Emojis verschieden. Mit eigenen Bildern sieht es überall gleich aus wie in Figma.
-- **Herkunft:** Die 4 Emojis aus Figma (✅ 👍 🚀 🤓) sind als SVG aus der Figma-Datei ausgeschnitten, die anderen 16 sind PNGs aus "Noto Color Emoji" von Google (freie Lizenz).
-- **Nur die `id` speichern:** Klein in der Datenbank, und ein Bild lässt sich später austauschen, ohne alte Nachrichten zu ändern.
-- **`userIds` statt Zähler:** Man sieht, wer reagiert hat, und kann die eigene Reaktion wieder entfernen. Ein reiner Zähler könnte das nicht.
+**Why:**
+- **Images instead of system emojis:** Windows, Mac, Android and iPhone draw emojis differently. With own images it looks the same everywhere, like in Figma.
+- **Origin:** The 4 emojis from Figma (✅ 👍 🚀 🤓) are cut out of the Figma file as SVG, the other 16 are PNGs from Google's "Noto Color Emoji" (free license).
+- **Store only the `id`:** Small in the database, and an image can be replaced later without changing old messages.
+- **`userIds` instead of a counter:** You can see who reacted and remove your own reaction. A plain counter could not do that.
 
-## Code-Regeln (DoD)
+## Code rules (DoD)
 
-- Funktionen höchstens 14 Zeilen, Dateien höchstens 400 Zeilen, camelCase, strict mode
-- `button { cursor: pointer; border: 0 }` global
-- Breakpoint Handy: 999 px (SCSS und `viewport.service` gleich)
+- Functions at most 14 lines, files at most 400 lines, camelCase, strict mode
+- `button { cursor: pointer; border: 0 }` globally
+- Mobile breakpoint: 999 px (same in SCSS and `viewport.service`)
+- Comments in English, every file ends with a summary in German ("ZUSAMMENFASSUNG")
 
-Sicherheit steht in einem eigenen Dokument: `docs/SECURITY.md`.
+Security has its own document: `docs/SECURITY.md`.

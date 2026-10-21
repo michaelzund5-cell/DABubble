@@ -1,36 +1,42 @@
 # Firebase
 
-Projekt `dabubble-4cf82`, Spark-Tarif (kostenlos). Verbindungsdaten in `src/environments/environment.ts`.
-Diese Werte sind nicht geheim: Jeder Browser bekommt sie. Geschützt wird durch Login und `firestore.rules`.
+Project `dabubble-4cf82`, Spark plan (free). Connection data in `src/environments/environment.ts`.
+These values are not secret: every browser receives them. Protection comes from the login and `firestore.rules`.
 
-## Eingerichtet in der Firebase-Konsole
+## Set up in the Firebase console
 
-| Bereich | Einstellung |
+| Area | Setting |
 |---|---|
-| Authentication | E-Mail/Passwort, Google, Anonym (automatische Bereinigung nach 30 Tagen) |
-| Firestore | Standort `europe-west6` (Zürich), Produktionsmodus |
-| Regeln | Inhalt von `firestore.rules` unter Firestore > Regeln einfügen und veröffentlichen |
-| Passwort-Mail | Authentication > Vorlagen > Passwort zurücksetzen > Aktions-URL: `http://localhost:4200/password-reset/new` (nach dem Hosting die echte Adresse) |
-| Autorisierte Domains | `localhost` ist schon drin. Nach dem Hosting die eigene Domain ergänzen. |
+| Authentication | Email/password, Google, anonymous (automatic cleanup after 30 days) |
+| Firestore | Location `europe-west6` (Zurich), production mode |
+| Rules | Paste the content of `firestore.rules` under Firestore > Rules and publish |
+| Authorized domains | `localhost` and `michael-zuend.developerakademie.net` |
+| Password email | Action URL stays on the default. The link opens the Firebase page, the new password is set there. |
 
-## Was wohin gehört
+## Which service talks to Firebase
 
 | Service | Firebase |
 |---|---|
-| `session.service` | Login, Registrierung, Gast, Google, Logout |
-| `profile-setup.ts` | Profil `users/{uid}` beim ersten Login, Beitritt zu "Allgemein" |
+| `session.service` | Login, sign up, guest, Google, logout |
+| `profile-setup.ts` | Profile `users/{uid}` on the first login, joining "Allgemein" |
 | `password-reset.service` | `sendPasswordResetEmail`, `confirmPasswordReset` |
 | `user.service` | `users` live |
-| `channel.service` | `channels` live (nur eigene) |
-| `message-store` / `message.service` | Nachrichten live laden / schreiben |
+| `channel.service` | `channels` live (own channels only), shows a notice when saving fails |
+| `message-store` / `message.service` | Load messages live / write them |
 
-## Regeln ändern
+## Changing the rules
 
-1. `firestore.rules` im Projekt anpassen (das ist die Vorlage im Repo).
-2. In der Konsole unter Firestore > Regeln einfügen und "Veröffentlichen".
-3. Mit dem "Regelsimulator" in der Konsole einen erlaubten und einen verbotenen Zugriff testen.
+1. Edit `firestore.rules` in the project (this is the template in the repo).
+2. Paste it in the console under Firestore > Rules and click "Publish".
+3. Test one allowed and one forbidden access with the "Rules Playground" in the console.
 
-## Später
+## Hosting
 
-- Firebase Hosting und App Check
-- Online-Status mit der Realtime Database (Presence)
+- Build with `npm run build`, upload `dist/dabubble/browser` to the server.
+- The app uses hash URLs (`/#/workspace`). The server always loads `index.html`, so reloading never gives a 404.
+
+## Later
+
+- App Check
+- Online status with the Realtime Database (presence)
+- Own action URL, so the email link opens the app page "Neues Passwort"
