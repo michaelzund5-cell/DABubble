@@ -11,9 +11,9 @@
 .card {
   position: relative;
   width: 676px;
-  height: 469px;
-  margin-top: 306px;
-  padding: 115px 56px 0;
+  min-height: 469px;
+  margin: 306px 0 56px;
+  padding: 115px 56px 56px;
   background: var(--white);
   border-radius: 30px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
@@ -42,6 +42,7 @@ h2 {
 }
 
 .contact { margin-top: 14px; line-height: 24px; }
+.text { margin-top: 14px; line-height: 24px; }
 
 @media #{$mobile} {
   .card { width: calc(100% - 30px); max-width: 400px; height: auto; min-height: 556px; margin: 42px 0 40px; padding: 116px 56px 40px; }
@@ -60,9 +61,14 @@ h2 {
  * =====================================================================
  * Styles des Impressums.
  * - .legal-page als Flex-Spalte: Karte waagrecht in der Mitte.
- * - .card: weiße Karte 676 x 469 px, Text linksbündig.
+ * - .card: weisse Karte 676 px breit, mindestens 469 px hoch (Figma).
+ *   min-height statt height: Die Karte wächst mit, wenn mehr Text
+ *   drinsteht (Hinweis, Haftung). Unten 56 px Abstand zum Rand.
  * - .back-btn: echter <button>, weil er eine Aktion auslöst (zurück)
  *   und keine feste Adresse hat. background: none entfernt den
  *   grauen Standard-Hintergrund (Checkliste: keine Standard-Styles).
- * - h2 "Contact:": 32 px, gleiche Farbe wie die Überschrift.
+ * - h2 "Kontakt:", "Hinweis:", "Haftung:": 32 px, gleiche Farbe wie
+ *   die Überschrift.
+ * - .text: Fliesstext von Hinweis und Haftung, gleicher Abstand wie
+ *   Adresse und Kontakt.
  */
