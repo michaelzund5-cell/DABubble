@@ -41,7 +41,7 @@ h2 { margin: 0 8px 0 0; font-size: 24px; font-weight: 700; }
   flex: 1;
   flex-direction: column;
   gap: 20px;
-  padding: 20px 0 30px;
+  padding: 32px 0 30px; // room for the hover bar of the first message, it sticks out 18 px
   overflow-y: auto;
 }
 
@@ -61,7 +61,7 @@ h2 { margin: 0 8px 0 0; font-size: 24px; font-weight: 700; }
   .thread-card { border-radius: 0; }
   .thread-header { height: 60px; padding: 0 16px; }
   h2 { font-size: 20px; }
-  .messages { gap: 31px; padding: 0; }
+  .messages { gap: 31px; padding: 24px 0 0; }
   .replies-divider { margin: -17px 16px -1px 21px; }
 }
 
@@ -71,7 +71,9 @@ h2 { margin: 0 8px 0 0; font-size: 24px; font-weight: 700; }
  * =====================================================================
  * Styles des Thread-Panels, Werte aus Figma Seite 15.
  * - Kopf 104 px hoch (der Chat-Kopf ist 96 px, 1:1 aus Figma).
- * - .messages scrollt, das Eingabefeld bleibt unten.
+ * - .messages scrollt, das Eingabefeld bleibt unten. Oben 32 px Abstand
+ *   (Handy 24 px): Die Hover-Leiste der ersten Nachricht ragt 18 px nach
+ *   oben und wurde vorher abgeschnitten (Feedback).
  * - Handy (Figma Seite 49): ganzer Bildschirm, Leiste 60 px, 16 px Rand.
  * - .replies-divider: "2 Antworten" in Hellgrau, die Linie danach ist ein
  *   ::after-Element, das mit flex: 1 den Rest der Breite füllt.
