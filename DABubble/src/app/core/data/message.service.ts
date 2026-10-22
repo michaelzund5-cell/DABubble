@@ -11,13 +11,27 @@ import { MessageLocation } from '../firebase/mappers';
 import { reportError } from '../firebase/report-error';
 import { locationPath, MessageStore } from './message-store';
 
+// After saving, the guess is kept a little longer, so the screen does not flicker until Firestore's update arrives.
+const CONFIRM_DELAY_MS = 2000;
+
 // Responsible for messages, thread replies and reactions. Loading happens in MessageStore.
 @Injectable({ providedIn: 'root' })
 export class MessageService {
   private readonly session = inject(SessionService);
   private readonly store = inject(MessageStore);
 
-  readonly messages = this.store.messages;
+  // Reactions that are shown already but not confirmed by the server yet (feedback: show them at once).
+  // base: the reactions from Firestore at the time of the click. As soon as Firestore sends something else,
+  // the real data wins again.
+  private readonly pendingReactions = signal<Record<string, { base: Reaction[]; next: Reaction[] }>>({});
+
+  readonly messages = computed(() => {
+    const pending = this.pendingReactions();
+    return this.store.messages().map((message) => {
+      const guess = pending[message.id];
+      return guess && sameReactions(guess.base, message.reactions) ? { ...message, reactions: guess.next } : message;
+    });
+  });
 
   // The two emojis used last (user story 2). Defaults until the user has reacted.
   private readonly recentEmojis = signal<string[]>([]);
@@ -72,17 +86,20 @@ export class MessageService {
   }
 
   // Adds the current user's reaction, or removes it if it already exists (real toggle).
+  // The change is visible at once, saving happens in the background.
   toggleReaction(id: string, emoji: string): void {
     const userId = this.session.currentUserId();
     const message = this.getById(id);
     if (!userId || !message || !emojiById(emoji)) return;
     this.rememberEmoji(emoji);
+    this.showReactionNow(id, toggledReactions(message.reactions, emoji, userId));
     const ref = doc(db, locationPath(message), 'messages', id);
     // Transaction: two people reacting at the same moment do not overwrite each other.
     runTransaction(db, async (transaction) => {
       const current = ((await transaction.get(ref)).data()?.['reactions'] ?? []) as Reaction[];
       transaction.update(ref, { reactions: toggledReactions(current, emoji, userId) });
-    }).catch((error) => reportError('Reaktion', error));
+    }).then(() => setTimeout(() => this.forgetReaction(id), CONFIRM_DELAY_MS))
+      .catch((error) => this.undoReaction(id, error));
   }
 
   hasReacted(reaction: Reaction): boolean {
@@ -93,6 +110,21 @@ export class MessageService {
   isOwnMessage(id: string): boolean {
     const message = this.getById(id);
     return !!message && message.senderId === this.session.currentUserId();
+  }
+
+  private showReactionNow(id: string, next: Reaction[]): void {
+    const base = this.store.messages().find((message) => message.id === id)?.reactions ?? [];
+    this.pendingReactions.update((all) => ({ ...all, [id]: { base, next } }));
+  }
+
+  // Saving failed: drop the guess, the message shows the real reactions from Firestore again.
+  private undoReaction(id: string, error: unknown): void {
+    reportError('Reaktion', error);
+    this.forgetReaction(id);
+  }
+
+  private forgetReaction(id: string): void {
+    this.pendingReactions.update(({ [id]: _done, ...rest }) => rest);
   }
 
   private rememberEmoji(emoji: string): void {
@@ -122,6 +154,11 @@ export class MessageService {
     addDoc(collection(db, locationPath(location), 'messages'), data)
       .catch((error) => reportError('Nachricht senden', error));
   }
+}
+
+// Same emojis with the same people in the same order.
+function sameReactions(a: Reaction[], b: Reaction[]): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
 }
 
 // Trimmed text, or '' when it is empty or longer than allowed (the caller then does nothing).
@@ -179,6 +216,14 @@ function toggledReactions(reactions: Reaction[], emoji: string, userId: string):
  *   gleichzeitig, geht keine Reaktion verloren.
  * - toggledReactions(): berechnet die neue Liste. Ist niemand mehr
  *   übrig, verschwindet das Emoji ganz.
+ * - Sofort sichtbar (Feedback): showReactionNow() merkt sich die neue
+ *   Liste in pendingReactions. messages zeigt diese Liste, solange
+ *   Firestore noch den alten Stand (base) hat. Kommt der neue Stand vom
+ *   Server, gelten wieder die echten Daten. Nach dem Speichern wird der
+ *   Eintrag nach 2 Sekunden entfernt (forgetReaction). Schlägt das
+ *   Speichern fehl, verschwindet er sofort (undoReaction) und die
+ *   Reaktion springt zurück.
+ * - sameReactions(): vergleicht zwei Listen über ihren Inhalt.
  * - hasReacted(): hebt die eigene Reaktion hervor.
  *
  * Weiteres:
