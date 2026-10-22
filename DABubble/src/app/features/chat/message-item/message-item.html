@@ -5,11 +5,13 @@
     <form class="edit-box" (ngSubmit)="saveEdit()">
       <textarea name="editText" [(ngModel)]="editText" aria-label="Nachricht bearbeiten" [maxlength]="maxLength"></textarea>
       <div class="edit-actions">
-        <button class="icon-btn" type="button" (click)="pickerOpen.set(!pickerOpen())" aria-label="Emoji einfügen">
+        <button #editEmojiBtn class="icon-btn" type="button" (click)="togglePicker(editEmojiBtn)" aria-label="Emoji einfügen">
           <img src="img/icons/emoji.svg" alt="">
         </button>
-        @if (pickerOpen()) {
-          <app-emoji-picker class="picker-edit" (picked)="insertEmoji($event)" />
+        @if (pickerAnchor(); as anchor) {
+          <app-popover [anchor]="anchor" label="Emoji einfügen" (closed)="pickerAnchor.set(null)">
+            <app-emoji-picker (picked)="insertEmoji($event)" />
+          </app-popover>
         }
         <button class="btn-secondary" type="button" (click)="editing.set(false)">Abbrechen</button>
         <button class="btn-primary" type="submit" [disabled]="!editText.trim()">Speichern</button>
@@ -22,7 +24,9 @@
         <span class="time">{{ message().createdAt | date: 'HH:mm' }} Uhr</span>
       </div>
 
-      <p class="bubble">{{ message().text }}</p>
+      <!-- One line on purpose: line breaks in the template would show up in the text (white-space: pre-line). -->
+      <p class="bubble">@for (part of parts(); track $index) {@if (part.id) {<button class="mention"
+        type="button" (click)="openMention(part)">{{ part.text }}</button>} @else {<span>{{ part.text }}</span>}}</p>
 
       @if (message().reactions.length) {
         <div class="reactions">
@@ -44,7 +48,7 @@
           } @else if (canCollapse()) {
             <button class="reaction more" type="button" (click)="showAllReactions.set(false)">Weniger anzeigen</button>
           }
-          <button class="add-reaction" type="button" (click)="pickerOpen.set(!pickerOpen())" aria-label="Reaktion hinzufügen">
+          <button #addBtn class="add-reaction" type="button" (click)="togglePicker(addBtn)" aria-label="Reaktion hinzufügen">
             <img src="img/icons/add-reaction.svg" alt="">
           </button>
         </div>
@@ -60,13 +64,13 @@
       }
     </div>
 
-    <div class="toolbar" [class.open]="pickerOpen() || menuOpen()">
+    <div class="toolbar" [class.open]="pickerAnchor() || menuAnchor()">
       @for (emoji of messageService.quickEmojis(); track emoji) {
         <button class="icon-btn" type="button" (click)="toggleReaction(emoji)" aria-label="Schnell reagieren">
           <img [src]="emoji | emojiSrc" alt="">
         </button>
       }
-      <button class="icon-btn" type="button" (click)="pickerOpen.set(!pickerOpen())" aria-label="Reaktion hinzufügen">
+      <button #toolbarBtn class="icon-btn" type="button" (click)="togglePicker(toolbarBtn)" aria-label="Reaktion hinzufügen">
         <img src="img/icons/add-reaction.svg" alt="">
       </button>
       @if (showThreadInfo()) {
@@ -75,17 +79,22 @@
         </button>
       }
       @if (isOwn()) {
-        <button class="icon-btn" type="button" (click)="menuOpen.set(!menuOpen())" aria-label="Weitere Optionen">
+        <button #moreBtn class="icon-btn" type="button" (click)="toggleMenu(moreBtn)" aria-label="Weitere Optionen">
           <img src="img/icons/more-vert.svg" alt="">
         </button>
       }
-      @if (menuOpen()) {
-        <div class="more-menu"><button type="button" (click)="startEditing()">Nachricht bearbeiten</button></div>
-      }
-      @if (pickerOpen()) {
-        <app-emoji-picker class="picker-toolbar" (picked)="pickReaction($event)" />
-      }
     </div>
+
+    @if (menuAnchor(); as anchor) {
+      <app-popover [anchor]="anchor" label="Optionen" (closed)="menuAnchor.set(null)">
+        <div class="more-menu"><button type="button" (click)="startEditing()">Nachricht bearbeiten</button></div>
+      </app-popover>
+    }
+    @if (pickerAnchor(); as anchor) {
+      <app-popover [anchor]="anchor" label="Reaktion wählen" (closed)="pickerAnchor.set(null)">
+        <app-emoji-picker (picked)="pickReaction($event)" />
+      </app-popover>
+    }
   }
 }
 
@@ -102,4 +111,12 @@
     Figma hat dafür kein Desktop-Design: Icons aus demselben
     Material-Set wie Figma, Aussehen ist eine Annahme.
   - Im Thread (showThreadInfo = false) entfällt der Thread-Button.
+  - Sprechblase: Der Text ist in Teile zerlegt (parts). @Name und #Channel
+    sind Buttons und öffnen die Direktnachricht bzw. den Channel
+    (Feedback: Erwähnungen als Link). Die Zeile steht absichtlich am
+    Stück, sonst kämen Zeilenumbrüche aus dem HTML in den Text.
+  - Emoji-Auswahl und Menü "Nachricht bearbeiten" stehen in
+    <app-popover>: Sie werden nicht mehr abgeschnitten und schliessen
+    sich beim Klick daneben. #toolbarBtn usw. sind die Buttons, an denen
+    das Popup ausgerichtet wird.
 -->

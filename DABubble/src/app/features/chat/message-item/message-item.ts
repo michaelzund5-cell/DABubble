@@ -1,21 +1,24 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ChannelService } from '../../../core/data/channel.service';
 import { MessageService } from '../../../core/data/message.service';
 import { UserService } from '../../../core/data/user.service';
 import { WorkspaceStateService } from '../../../core/data/workspace-state.service';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { Avatar } from '../../../shared/components/avatar/avatar';
 import { EmojiPicker } from '../../../shared/components/emoji-picker/emoji-picker';
+import { Popover } from '../../../shared/components/popover/popover';
 import { Emoji } from '../../../shared/models/emojis';
 import { Message, Reaction } from '../../../shared/models/message.model';
 import { EmojiSrcPipe } from '../../../shared/pipes/emoji-src.pipe';
 import { MAX_MESSAGE_LENGTH } from '../../../shared/utils/limits';
+import { MentionTarget, splitMentions, TextPart } from '../../../shared/utils/mention-parts';
 
 // One chat message: avatar, name, time, bubble, reactions, thread link, hover menu, edit mode.
 @Component({
   selector: 'app-message-item',
-  imports: [Avatar, DatePipe, EmojiPicker, EmojiSrcPipe, FormsModule],
+  imports: [Avatar, DatePipe, EmojiPicker, EmojiSrcPipe, FormsModule, Popover],
   templateUrl: './message-item.html',
   styleUrl: './message-item.scss',
   host: {
@@ -30,6 +33,7 @@ export class MessageItem {
   readonly maxLength = MAX_MESSAGE_LENGTH;
   readonly messageService = inject(MessageService);
   private readonly userService = inject(UserService);
+  private readonly channelService = inject(ChannelService);
   readonly state = inject(WorkspaceStateService);
   private readonly viewport = inject(ViewportService);
 
@@ -43,6 +47,13 @@ export class MessageItem {
   readonly replies = computed(() => this.messageService.repliesOf(this.message().id));
   readonly lastReplyAt = computed(() => this.replies().at(-1)?.createdAt ?? null);
 
+  // People and own channels that can be mentioned. Text with @Name or #Channel becomes a link.
+  private readonly mentionTargets = computed<MentionTarget[]>(() => [
+    ...this.userService.users().map((user) => ({ name: user.name, kind: 'user' as const, id: user.id })),
+    ...this.channelService.channels().map((channel) => ({ name: channel.name, kind: 'channel' as const, id: channel.id })),
+  ]);
+  readonly parts = computed(() => splitMentions(this.message().text, this.mentionTargets()));
+
   // User story 2: 20 reactions visible on desktop, 7 on mobile and in the thread, then "x weitere".
   readonly reactionLimit = computed(() => this.compact() || this.viewport.isMobile() ? 7 : 20);
   readonly showAllReactions = signal(false);
@@ -55,8 +66,9 @@ export class MessageItem {
 
   readonly avatarSize = computed(() => this.viewport.isMobile() ? 50 : 70); // Figma: 70 desktop, 50 mobile
 
-  readonly pickerOpen = signal(false);
-  readonly menuOpen = signal(false);
+  // The button an open popup belongs to, null when it is closed.
+  readonly pickerAnchor = signal<HTMLElement | null>(null);
+  readonly menuAnchor = signal<HTMLElement | null>(null);
   readonly editing = signal(false);
   editText = '';
 
@@ -72,14 +84,28 @@ export class MessageItem {
     return `${names.slice(0, -1).join(', ')} und ${names.at(-1)} haben reagiert`;
   }
 
+  togglePicker(button: HTMLElement): void {
+    this.pickerAnchor.set(this.pickerAnchor() ? null : button);
+  }
+
+  toggleMenu(button: HTMLElement): void {
+    this.menuAnchor.set(this.menuAnchor() ? null : button);
+  }
+
   pickReaction(emoji: Emoji): void {
     this.toggleReaction(emoji.id);
-    this.pickerOpen.set(false);
+    this.pickerAnchor.set(null);
+  }
+
+  // @Name opens the direct message with that person, #Channel opens the channel.
+  openMention(part: TextPart): void {
+    if (!part.id) return;
+    this.state.openView(part.kind === 'user' ? 'direct' : 'channel', part.id);
   }
 
   startEditing(): void {
     this.editText = this.message().text;
-    this.menuOpen.set(false);
+    this.menuAnchor.set(null);
     this.editing.set(true);
   }
 
@@ -89,7 +115,7 @@ export class MessageItem {
 
   insertEmoji(emoji: Emoji): void {
     this.editText += emoji.char;
-    this.pickerOpen.set(false);
+    this.pickerAnchor.set(null);
   }
 }
 
@@ -114,4 +140,11 @@ export class MessageItem {
  * - reactedBy(): Text für das Hover-Feld, z. B. "Sofia Müller und Du
  *   haben reagiert".
  * - maxLength: höchstens 4000 Zeichen pro Nachricht (shared/utils/limits.ts).
+ * - pickerAnchor / menuAnchor: der Button, an dem das offene Popup hängt,
+ *   null = zu. togglePicker() / toggleMenu() öffnen oder schliessen es.
+ *   Das Popup selbst ist <app-popover> (schliesst beim Klick daneben).
+ * - mentionTargets / parts: Personen und eigene Channels, die erwähnt
+ *   werden können. splitMentions() zerlegt den Text, @Name und #Channel
+ *   werden zu Buttons. openMention() öffnet die Direktnachricht bzw.
+ *   den Channel.
  */
