@@ -61,5 +61,6 @@ app-mention-list.popup { bottom: calc(100% - 18px); left: 19px; } // Figma page 
  * - .send:disabled: halb durchsichtig, solange nichts eingegeben ist.
  *   Figma zeigt nur den aktiven Zustand, Annahme.
  * - Handy: 15 px Rand links und rechts, 29 px unten (Figma 48 bis 53).
- * - .popup: Emoji- und @-Liste erscheinen über dem Feld.
+ * - .popup: Die @/#-Liste erscheint über dem Feld. Die Emoji-Auswahl
+ *   steht im Popover (eigene Position).
  */

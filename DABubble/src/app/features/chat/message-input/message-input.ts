@@ -5,6 +5,7 @@ import { MessageService } from '../../../core/data/message.service';
 import { UserService } from '../../../core/data/user.service';
 import { WorkspaceStateService } from '../../../core/data/workspace-state.service';
 import { EmojiPicker } from '../../../shared/components/emoji-picker/emoji-picker';
+import { Popover } from '../../../shared/components/popover/popover';
 import { Emoji } from '../../../shared/models/emojis';
 import { ActiveView } from '../../../shared/models/view.model';
 import { MAX_MESSAGE_LENGTH } from '../../../shared/utils/limits';
@@ -13,7 +14,7 @@ import { MentionInput } from './mention-input';
 
 @Component({
   selector: 'app-message-input',
-  imports: [FormsModule, EmojiPicker, MentionList],
+  imports: [FormsModule, EmojiPicker, MentionList, Popover],
   templateUrl: './message-input.html',
   styleUrl: './message-input.scss',
   host: { '[class.narrow]': 'narrow()', '[class.thread]': '!!threadId()' },
@@ -60,7 +61,7 @@ export class MessageInput extends MentionInput {
 
   insertEmoji(emoji: Emoji): void {
     this.text += emoji.char;
-    this.pickerOpen.set(false);
+    this.pickerAnchor.set(null);
   }
 
   // Figma: "Nachricht an #Entwicklerteam" / "Nachricht an Sofia Müller" / "Antworten..." / "Starte eine neue Nachricht"

@@ -1,17 +1,27 @@
-import { Directive, signal, viewChild } from '@angular/core';
+import { Directive, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { MentionList, MentionTrigger } from '../mention-list/mention-list';
 
 // Shared logic for text fields with "@person" and "#channel" suggestions.
 // Used by the message input and by "Neue Nachricht".
-@Directive()
+@Directive({ host: { '(document:pointerdown)': 'closeListOutside($event)' } })
 export abstract class MentionInput {
   text = '';
-  readonly pickerOpen = signal(false);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  readonly pickerAnchor = signal<HTMLElement | null>(null); // emoji button of the open picker, null = closed
   readonly trigger = signal<MentionTrigger | null>(null);
   readonly query = signal('');
   private readonly mentionList = viewChild(MentionList);
 
   abstract send(): void;
+
+  // A click anywhere outside the field closes the @/# list (feedback: overlays close when clicking next to them).
+  closeListOutside(event: PointerEvent): void {
+    if (!this.host.nativeElement.contains(event.target as Node)) this.trigger.set(null);
+  }
+
+  togglePicker(button: HTMLElement): void {
+    this.pickerAnchor.set(this.pickerAnchor() ? null : button);
+  }
 
   // Looks at the last word: "@no" -> trigger '@', query 'no'.
   onTextChange(): void {
@@ -60,4 +70,9 @@ export abstract class MentionInput {
  * - onKeydown(): Enter sendet, Shift+Enter macht eine neue Zeile. Ist die
  *   Liste offen, wählt Enter den ersten Eintrag (mentionList.pickFirst()).
  * - abstract send(): Jede Unterklasse legt fest, was Senden heißt.
+ * - closeListOutside(): Klick ausserhalb des Feldes schliesst die
+ *   @/#-Liste. host: '(document:pointerdown)' hört auf jeden Klick auf
+ *   der Seite, contains() prüft, ob er im eigenen Element war.
+ * - pickerAnchor / togglePicker(): Emoji-Auswahl im Popover, am
+ *   Smiley-Button ausgerichtet. null = geschlossen.
  */

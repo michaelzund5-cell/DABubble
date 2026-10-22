@@ -3,7 +3,7 @@
     [placeholder]="placeholder()" aria-label="Nachricht schreiben" [maxlength]="maxLength"></textarea>
 
   <div class="toolbar">
-    <button class="icon-btn" type="button" (click)="pickerOpen.set(!pickerOpen())" aria-label="Emoji einfügen">
+    <button #emojiBtn class="icon-btn" type="button" (click)="togglePicker(emojiBtn)" aria-label="Emoji einfügen">
       <img src="img/icons/emoji.svg" alt="">
     </button>
     <button class="icon-btn" type="button" (click)="startMention(); field.focus()" aria-label="Person erwähnen">
@@ -14,8 +14,10 @@
     </button>
   </div>
 
-  @if (pickerOpen()) {
-    <app-emoji-picker class="popup" (picked)="insertEmoji($event); field.focus()" />
+  @if (pickerAnchor(); as anchor) {
+    <app-popover [anchor]="anchor" label="Emoji einfügen" (closed)="pickerAnchor.set(null)">
+      <app-emoji-picker (picked)="insertEmoji($event); field.focus()" />
+    </app-popover>
   }
   @if (trigger(); as currentTrigger) {
     <app-mention-list class="popup" [trigger]="currentTrigger" [query]="query()"
@@ -30,7 +32,8 @@
   =====================================================================
   Eingabefeld für Nachrichten (Figma Seite 17) und Thread-Antworten.
   - (ngModelChange): nach jeder Eingabe prüfen, ob @ oder # getippt wurde.
-  - Smiley: Emoji-Auswahl, das Zeichen kommt in den Text.
+  - Smiley: Emoji-Auswahl im Popover, das Zeichen kommt in den Text.
+    Klick daneben schliesst sie.
   - @-Icon: fügt ein @ ein und öffnet die Personenliste.
   - Bei @ oder # öffnet die Liste über dem Feld, Klick setzt den Namen ein.
   - field.focus(): Nach einem Klick auf Emoji, @ oder einen Namen springt
