@@ -130,6 +130,12 @@ $mobile: '(max-width: 999px)';
   .legal-links .link { font-size: 18px; }
 }
 
+// Short phones (iPhone SE, 667 px high): the Figma gaps above the logo are made for 932 px.
+// Feedback: far too much empty space at the top. .auth-page .logo wins over the value of each page.
+@media #{$mobile} and (max-height: 800px) {
+  .auth-page .logo { margin-top: 40px; }
+}
+
 // Very small phones (down to 320 px, no Figma design): smaller title, arrow closer to the edge.
 @media (max-width: 400px) {
   .card { padding: 0 14px; }
@@ -164,4 +170,8 @@ $mobile: '(max-width: 999px)';
  *   styles.scss, weil sie auch im Chat gebraucht werden.
  * - Unter 400 px (kein Figma-Design, Checkliste verlangt 320 px):
  *   kleinere Überschrift, Pfeil näher am Rand, damit nichts überlappt.
+ * - Niedrige Handys (bis 800 px hoch, z. B. iPhone SE): nur 40 px über
+ *   dem Logo. Die Figma-Abstände sind für 932 px Höhe gemacht, sonst ist
+ *   oben viel leerer Platz (Feedback). ".auth-page .logo" ist genauer als
+ *   ".logo" der einzelnen Seite und gewinnt deshalb.
  */

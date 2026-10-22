@@ -29,6 +29,8 @@ form {
   cursor: pointer;
 }
 
+.consent span { text-align: left; } // feedback: the text sat far away from the checkbox
+
 .consent input {
   position: absolute;
   opacity: 0;
@@ -64,7 +66,8 @@ form {
  * - Titel und Text sitzen in Figma 7-8 px rechts der Kartenmitte, daher
  *   padding-left.
  * - .consent: Zeile mit Checkbox. Die Schrift ist Open Sans, nur hier im
- *   Design verwendet.
+ *   Design verwendet. Der Text steht linksbündig direkt neben der
+ *   Checkbox (Feedback: vorher war er zentriert und weit weg).
  * - .consent input: Das echte Kontrollkästchen ist unsichtbar, sichtbar ist
  *   das Figma-Icon. Mit Tastatur bleibt es bedienbar, :focus-visible zeigt
  *   dann einen Rahmen.

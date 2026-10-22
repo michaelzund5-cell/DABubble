@@ -63,8 +63,9 @@ h1 { padding-left: 14px; }
   .preview { width: 120px; height: 120px; margin-top: 23px; }
   .user-name { margin-top: 25px; }
   .choose-label { margin: 8px 0 0 1px; }
-  .avatar-list { flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 20px; }
-  .avatar-option { width: 48px; height: 48px; }
+  // All six avatars in one row like Figma page 37. They shrink on narrow phones instead of wrapping.
+  .avatar-list { justify-content: space-between; gap: 6px; width: 100%; margin-top: 20px; }
+  .avatar-option { flex: 0 1 48px; width: auto; height: auto; aspect-ratio: 1; }
   .next { margin: 28px 1px 0 0; }
 }
 
@@ -79,4 +80,8 @@ h1 { padding-left: 14px; }
  *   (dunkel). Figma gibt diese Zustände nicht vor, Annahme.
  * - .next: margin-top auto schiebt den Button ans untere Ende der Karte.
  * - .form-error: Meldung, wenn das Speichern nicht geklappt hat.
+ * - Handy: alle 6 Avatare in einer Reihe wie Figma Seite 37 (Feedback:
+ *   war nicht responsive). flex: 0 1 48px heisst höchstens 48 px, auf
+ *   schmalen Handys werden sie kleiner statt umzubrechen. aspect-ratio
+ *   hält sie rund.
  */
