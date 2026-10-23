@@ -7,17 +7,19 @@ import { auth } from '../firebase/firebase';
 import { reportError } from '../firebase/report-error';
 import { ensureUserProfile, joinPublicChannel, setOffline } from './profile-setup';
 
+/** Result of a login attempt, shown to the user as a short message. */
 export type LoginResult = 'ok' | 'invalid' | 'blocked' | 'cancelled' | 'failed';
+/** Result of creating an account. */
 export type RegisterResult = 'ok' | 'email-in-use' | 'weak-password' | 'failed';
 
-// Login state, backed by Firebase Authentication.
+/** Login state, backed by Firebase Authentication. */
 @Injectable({ providedIn: 'root' })
 export class SessionService {
-  // ID of the logged-in user, or null. Only set after the profile in Firestore exists.
+  /** ID of the logged-in user, or null. Only set after the profile in Firestore exists. */
   readonly currentUserId = signal<string | null>(null);
   readonly isLoggedIn = computed(() => this.currentUserId() !== null);
 
-  // Resolves once Firebase has restored a session after reloading the page (used by the guard).
+  /** Resolves once Firebase has restored a session after reloading the page (used by the guard). */
   readonly ready: Promise<void>;
 
   private pendingName = ''; // name from the register form, used when the profile is created
@@ -29,6 +31,13 @@ export class SessionService {
     });
   }
 
+  /**
+   * Email login.
+   *
+   * @param email - Email address
+   * @param password - Password
+   * @returns ok, or the same "invalid" for a wrong email and a wrong password
+   */
   async login(email: string, password: string): Promise<LoginResult> {
     try {
       const credential = await signInWithEmailAndPassword(auth, email.trim(), password);
@@ -40,15 +49,34 @@ export class SessionService {
     }
   }
 
+  /**
+   * Guest login.
+   * * @returns ok, cancelled or failed
+   *
+   * @returns ok, cancelled or failed
+   */
   async loginAsGuest(): Promise<LoginResult> {
     return this.run(async () => (await signInAnonymously(auth)).user);
   }
 
+  /**
+   * Google login.
+   * * @returns ok, cancelled (popup closed) or failed
+   *
+   * @returns ok, cancelled (popup closed) or failed
+   */
   async loginWithGoogle(): Promise<LoginResult> {
     return this.run(async () => (await signInWithPopup(auth, new GoogleAuthProvider())).user);
   }
 
-  // Creates the account. The user is logged in afterwards (needed for the avatar step).
+  /**
+   * Creates the account. The user is logged in afterwards (needed for the avatar step).
+   *
+   * @param name - First and last name
+   * @param email - Email address
+   * @param password - Password, goes straight to Firebase
+   * @returns ok or the reason why it failed
+   */
   async register(name: string, email: string, password: string): Promise<RegisterResult> {
     try {
       this.pendingName = name;
@@ -67,7 +95,7 @@ export class SessionService {
     await signOut(auth);
   }
 
-  // Shared part of guest and Google login. A closed Google popup is not an error.
+  /** Shared part of guest and Google login. A closed Google popup is not an error. */
   private async run(signIn: () => Promise<AuthUser>): Promise<LoginResult> {
     try {
       await this.applyUser(await signIn());
@@ -80,7 +108,12 @@ export class SessionService {
     }
   }
 
-  // Runs once per user, even if Firebase and the login method call it at the same time.
+  /**
+   * Runs once per user, even if Firebase and the login method call it at the same time.
+   *
+   * @param user - Firebase user, null after logout
+   * @returns Resolves when the profile is ready
+   */
   private applyUser(user: AuthUser | null): Promise<void> {
     if (!user) return Promise.resolve(this.clear());
     const running = this.applying.get(user.uid) ?? this.setUp(user);
@@ -90,8 +123,8 @@ export class SessionService {
 
   private async setUp(user: AuthUser): Promise<void> {
     try {
-      await ensureUserProfile(user, this.pendingName);
-      await joinPublicChannel(user.uid);
+      // Both at the same time: one round trip to the server less, the login is faster.
+      await Promise.all([ensureUserProfile(user, this.pendingName), joinPublicChannel(user.uid)]);
     } catch (error) {
       reportError('Profil einrichten', error);
     }
@@ -105,46 +138,36 @@ export class SessionService {
   }
 }
 
+/**
+ * Reads the Firebase error code.
+ *
+ * @param error - Anything that was thrown
+ * @returns The code, e.g. "auth/wrong-password", or an empty string
+ */
 function errorCode(error: unknown): string {
   return typeof error === 'object' && error !== null && 'code' in error ? String(error.code) : '';
 }
 
+/**
+ * Maps a Firebase code.
+ *
+ * @param code - Firebase error code
+ * @returns The login result shown to the user
+ */
 function toLoginResult(code: string): LoginResult {
   if (code === 'auth/too-many-requests') return 'blocked';
   if (code === 'auth/network-request-failed') return 'failed';
   return 'invalid';
 }
 
+/**
+ * Maps a Firebase code.
+ *
+ * @param code - Firebase error code
+ * @returns The register result shown to the user
+ */
 function toRegisterResult(code: string): RegisterResult {
   if (code === 'auth/email-already-in-use') return 'email-in-use';
   if (code === 'auth/weak-password') return 'weak-password';
   return 'failed';
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Anmeldestatus der App, jetzt mit Firebase Authentication.
- * - currentUserId: ID des angemeldeten Benutzers oder null. Wird erst
- *   gesetzt, wenn sein Profil in der Datenbank existiert. So laden die
- *   anderen Services nie Daten für einen halb angelegten Benutzer.
- * - ready: Nach dem Neuladen stellt Firebase die Anmeldung kurz
- *   verzögert wieder her. Der Guard wartet darauf, sonst würde man kurz
- *   auf den Login geworfen.
- * - login(): E-Mail und Passwort. Falsche E-Mail und falsches Passwort
- *   ergeben dasselbe Ergebnis ('invalid'), damit niemand testen kann,
- *   welche E-Mails ein Konto haben. 'blocked': Firebase sperrt nach
- *   zu vielen Fehlversuchen kurz (Schutz gegen Passwort-Raten).
- *   'failed': keine Internetverbindung.
- * - loginAsGuest(): anonymes Konto (wird nach 30 Tagen gelöscht).
- * - loginWithGoogle(): Google-Fenster. Schliesst man es, ist das kein
- *   Fehler ('cancelled').
- * - register(): legt das Konto an. Das Passwort geht direkt an Firebase
- *   und wird in der App nirgends gespeichert.
- * - logout(): Status auf "offline", dann abmelden.
- * - applyUser(): wird von Firebase und von der Login-Methode fast
- *   gleichzeitig aufgerufen. Die Map "applying" sorgt dafür, dass das
- *   Profil nur einmal eingerichtet wird.
- * - errorCode(): liest den Fehlercode von Firebase sicher aus.
- */

@@ -1,10 +1,15 @@
 import { Unsubscribe } from 'firebase/firestore';
 
-// Keeps exactly one live listener per key (e.g. one per channel) and closes the ones no longer needed.
+/** Keeps exactly one live listener per key (e.g. one per channel) and closes the ones no longer needed. */
 export class ListenerSet {
   private readonly listeners = new Map<string, Unsubscribe>();
 
-  // Opens listeners for new keys and closes listeners for keys that disappeared.
+  /**
+   * Opens listeners for new keys and closes listeners for keys that disappeared.
+   *
+   * @param keys - Keys that need a listener
+   * @param open - Opens the listener for one key
+   */
   sync(keys: string[], open: (key: string) => Unsubscribe): void {
     for (const [key, close] of this.listeners) {
       if (!keys.includes(key)) {
@@ -17,7 +22,12 @@ export class ListenerSet {
     }
   }
 
-  // Opens the listener for a key again, e.g. after an error. Does nothing if the key is no longer needed.
+  /**
+   * Opens the listener for a key again, e.g. after an error. Does nothing if the key is no longer needed.
+   *
+   * @param key - Key of the listener
+   * @param open - Opens the listener again
+   */
   reopen(key: string, open: (key: string) => Unsubscribe): void {
     const close = this.listeners.get(key);
     if (!close) return;
@@ -29,18 +39,3 @@ export class ListenerSet {
     this.sync([], () => () => undefined);
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Verwaltet Echtzeit-Verbindungen zu Firestore (Listener).
- * - Pro Schlüssel (z. B. pro Channel) gibt es genau einen Listener.
- * - sync(): öffnet Listener für neue Channels und schliesst Listener für
- *   Channels, die weggefallen sind (z. B. nach "Channel verlassen").
- * - reopen(): öffnet einen Listener neu, z. B. nach einem Fehler. Ist der
- *   Channel inzwischen weg, passiert nichts.
- * - closeAll(): schliesst alles, z. B. beim Abmelden. Offene Listener
- *   würden sonst nach dem Logout an den Sicherheitsregeln scheitern und
- *   Speicher verbrauchen.
- */

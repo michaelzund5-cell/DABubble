@@ -3,10 +3,15 @@ import { confirmPasswordReset, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebase/firebase';
 import { reportError } from '../firebase/report-error';
 
-// "Passwort vergessen" with Firebase Authentication.
+/** "Passwort vergessen" with Firebase Authentication. */
 @Injectable({ providedIn: 'root' })
 export class PasswordResetService {
-  // Never reports whether the email has an account: the page shows the same message either way.
+  /**
+   * Never reports whether the email has an account: the page shows the same message either way.
+   * * @param email - Address the user typed in
+   *
+   * @param email - Address the user typed in
+   */
   async sendResetEmail(email: string): Promise<void> {
     try {
       await sendPasswordResetEmail(auth, email);
@@ -15,7 +20,13 @@ export class PasswordResetService {
     }
   }
 
-  // The code comes from the link in the email (?oobCode=...). Returns false if it is invalid or expired.
+  /**
+   * The code comes from the link in the email (?oobCode=...). Returns false if it is invalid or expired.
+   *
+   * @param code - oobCode from the email link, null if missing
+   * @param password - The new password
+   * @returns true when saved, false when the code is invalid or expired
+   */
   async confirmNewPassword(code: string | null, password: string): Promise<boolean> {
     if (!code) return false;
     try {
@@ -26,19 +37,3 @@ export class PasswordResetService {
     }
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * "Passwort vergessen" mit Firebase.
- * - sendResetEmail(): Firebase schickt eine E-Mail mit Link. Die Seite
- *   zeigt immer dieselbe Bestätigung, auch wenn es zur E-Mail kein Konto
- *   gibt. So kann niemand testen, welche E-Mails registriert sind.
- * - confirmNewPassword(): Der Link führt auf /password-reset/new mit dem
- *   Code (oobCode). Ist er ungültig oder abgelaufen, kommt false zurück
- *   und die Seite zeigt einen Hinweis.
- * - Damit der Link auf unsere Seite führt, muss in der Firebase-Konsole
- *   unter Authentication > Vorlagen > Passwort zurücksetzen die
- *   Aktions-URL auf .../password-reset/new gesetzt sein.
- */

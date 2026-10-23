@@ -1,4 +1,4 @@
-// Shape of a channel (a group chat on one topic).
+/** Shape of a channel (a group chat on one topic). */
 export interface Channel {
   id: string;
   name: string;
@@ -8,19 +8,3 @@ export interface Channel {
   createdAt: number; // Timestamp in milliseconds
   isPublic?: boolean; // "Allgemein": every user may join
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Diese Datei beschreibt, wie ein Channel aussieht.
- *
- * - memberIds speichert nur die IDs der Mitglieder, nicht die ganzen
- *   Benutzer-Objekte. Das ist eine Referenz, wie in einer Datenbank:
- *   Ändert ein Benutzer seinen Namen, muss nur der Benutzer geändert
- *   werden, nicht jeder Channel.
- * - createdBy / createdAt: Wer den Channel wann erstellt hat. Wird in den
- *   Channel-Details ("Erstellt von") und im leeren Channel angezeigt.
- * - isPublic: Nur der Channel "Allgemein". Jeder Benutzer darf sich
- *   selbst hinzufügen, damit sich alle finden.
- */

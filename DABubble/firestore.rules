@@ -26,6 +26,21 @@ service cloud.firestore {
       return value in ['online', 'offline'];
     }
 
+    // Presence heartbeat: lastActive may only be the server time of this request, nobody can fake "online forever".
+    function validLastActive() {
+      return !('lastActive' in request.resource.data)
+        || request.resource.data.lastActive == resource.data.get('lastActive', null)
+        || request.resource.data.lastActive == request.time;
+    }
+
+    function channelPath(id) {
+      return /databases/$(database)/documents/channels/$(id);
+    }
+
+    function namePath(name) {
+      return /databases/$(database)/documents/channelNames/$(name.lower());
+    }
+
     // ---------- message checks (used by channels and direct chats) ----------
     // New message: own sender ID, server time, 1 to 4000 characters, no reactions yet.
     function validNewMessage() {
@@ -57,12 +72,13 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if signedIn();
       allow create: if signedIn() && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['name', 'email', 'avatar', 'status'])
+        && request.resource.data.keys().hasOnly(['name', 'email', 'avatar', 'status', 'lastActive'])
         && isText(request.resource.data.name, 60) && request.resource.data.name.size() > 0
         && request.resource.data.email == request.auth.token.get('email', '')
-        && validAvatar(request.resource.data.avatar) && validStatus(request.resource.data.status);
+        && validAvatar(request.resource.data.avatar) && validStatus(request.resource.data.status)
+        && (!('lastActive' in request.resource.data) || request.resource.data.lastActive == request.time);
       allow update: if signedIn() && request.auth.uid == uid
-        && changedOnly(['name', 'avatar', 'status'])
+        && changedOnly(['name', 'avatar', 'status', 'lastActive']) && validLastActive()
         && isText(request.resource.data.name, 60) && request.resource.data.name.size() > 0
         && validAvatar(request.resource.data.avatar) && validStatus(request.resource.data.status);
       allow delete: if signedIn() && request.auth.uid == uid;
@@ -95,11 +111,18 @@ service cloud.firestore {
           && !(request.auth.uid in request.resource.data.memberIds);
       }
 
+      // The name is reserved for exactly this channel in channelNames (same transaction).
+      function nameReserved(data) {
+        return getAfter(namePath(data.name)).data.channelId == channelId;
+      }
+
       // Members may rename, change the description and add people, but never remove others.
+      // A new name must be reserved in channelNames at the same time, so names stay unique.
       function memberEdit() {
         return changedOnly(['name', 'description', 'memberIds'])
           && request.resource.data.memberIds.hasAll(resource.data.memberIds)
-          && validChannel(request.resource.data);
+          && validChannel(request.resource.data)
+          && (request.resource.data.name == resource.data.name || nameReserved(request.resource.data));
       }
 
       allow read: if signedIn() && (resource == null || isMember() || resource.data.get('isPublic', false) == true);
@@ -108,7 +131,8 @@ service cloud.firestore {
         && request.resource.data.createdBy == request.auth.uid
         && request.auth.uid in request.resource.data.memberIds
         && request.resource.data.createdAt == request.time
-        && (channelId == 'allgemein' || !('isPublic' in request.resource.data));
+        && (channelId == 'allgemein' || !('isPublic' in request.resource.data))
+        && (channelId == 'allgemein' || nameReserved(request.resource.data));
       allow update: if signedIn() && (
         (isMember() && (memberEdit() || leavesHimself()))
         || (resource.data.get('isPublic', false) == true && joinsHimself()));
@@ -123,6 +147,22 @@ service cloud.firestore {
         allow create: if signedIn() && channelMember() && validNewMessage();
         allow update: if signedIn() && channelMember() && (validEdit() || validReaction());
       }
+    }
+
+    // ---------- channelNames/{name in lower case}: one entry per channel name ----------
+    // A document can only be created once and never overwritten: two channels can never share a name,
+    // even if the creator has left the old channel and no longer sees it.
+    match /channelNames/{key} {
+      allow read: if signedIn();
+      // Reserve: the channel (after this write) is called like the key and the user is a member.
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['channelId'])
+        && request.auth.uid in getAfter(channelPath(request.resource.data.channelId)).data.memberIds
+        && getAfter(channelPath(request.resource.data.channelId)).data.name.lower() == key;
+      // Release: only a member, and only when the channel no longer uses this name (rename).
+      allow delete: if signedIn()
+        && request.auth.uid in get(channelPath(resource.data.channelId)).data.memberIds
+        && getAfter(channelPath(resource.data.channelId)).data.name.lower() != key;
     }
 
     // ---------- directChats/{chatId}: "dm_<uidA>_<uidB>" (IDs sorted) ----------

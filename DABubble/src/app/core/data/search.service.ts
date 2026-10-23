@@ -7,6 +7,7 @@ import { ChannelService } from './channel.service';
 import { MessageService } from './message.service';
 import { UserService } from './user.service';
 
+/** One entry in the search results: a channel, a person or a message. */
 export interface SearchResult {
   kind: 'channel' | 'user' | 'message';
   key: string; // unique for @for track
@@ -18,7 +19,7 @@ export interface SearchResult {
   threadId?: string; // set when the hit is a thread reply
 }
 
-// Search over channels, people and messages (user story "Schreiben" 6).
+/** Search over channels, people and messages (user story "Schreiben" 6). */
 @Injectable({ providedIn: 'root' })
 export class SearchService {
   private readonly session = inject(SessionService);
@@ -29,7 +30,7 @@ export class SearchService {
 
   readonly term = signal('');
 
-  // "#" only channels, "@" only people, otherwise channels, people and messages.
+  /** "#" only channels, `@` only people, otherwise channels, people and messages. */
   readonly results = computed<SearchResult[]>(() => {
     const raw = this.term().trim();
     const query = raw.replace(/^[#@]/, '').toLowerCase();
@@ -43,6 +44,12 @@ export class SearchService {
     this.term.set('');
   }
 
+  /**
+   * Own channels that match.
+   *
+   * @param query - Search text in lower case
+   * @returns Matching channels
+   */
   private channelHits(query: string): SearchResult[] {
     return this.channelService.myChannels()
       .filter((channel) => channel.name.toLowerCase().includes(query))
@@ -52,6 +59,12 @@ export class SearchService {
       }));
   }
 
+  /**
+   * People that match.
+   *
+   * @param query - Search text in lower case
+   * @returns Matching people
+   */
   private userHits(query: string): SearchResult[] {
     return this.userService.users()
       .filter((user) => user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query))
@@ -61,7 +74,12 @@ export class SearchService {
       }));
   }
 
-  // Only messages the user may read: own channels and own direct chats.
+  /**
+   * Only messages the user may read: own channels and own direct chats.
+   *
+   * @param query - Search text in lower case
+   * @returns Matching messages
+   */
   private messageHits(query: string): SearchResult[] {
     return this.messageService.messages()
       .filter((message) => message.text.toLowerCase().includes(query) && this.canRead(message))
@@ -70,12 +88,24 @@ export class SearchService {
       .map((message) => this.toMessageResult(message));
   }
 
+  /**
+   * Checks if the user may see the message.
+   *
+   * @param message - A loaded message
+   * @returns true for own channels and own direct chats
+   */
   private canRead(message: Message): boolean {
     const userId = this.session.currentUserId() ?? '';
     if (message.channelId) return this.channelService.isMember(message.channelId);
     return !!message.directChatId?.split('_').includes(userId);
   }
 
+  /**
+   * Builds the result entry of a message.
+   *
+   * @param message - Matching message
+   * @returns Search result with context
+   */
   private toMessageResult(message: Message): SearchResult {
     const sender = this.userService.getById(message.senderId);
     return {
@@ -84,6 +114,12 @@ export class SearchService {
     };
   }
 
+  /**
+   * Where a message is shown.
+   *
+   * @param message - A message
+   * @returns The channel or direct chat view
+   */
   private viewOf(message: Message): ActiveView {
     if (message.channelId) return { type: 'channel', id: message.channelId };
     const userId = this.session.currentUserId() ?? '';
@@ -91,25 +127,14 @@ export class SearchService {
     return { type: 'direct', id: partnerId };
   }
 
+  /**
+   * Short label of the place.
+   *
+   * @param message - A message
+   * @returns e.g. "#Allgemein" or the name of the person
+   */
   private placeOf(message: Message): string {
     if (message.channelId) return `# ${this.channelService.getById(message.channelId)?.name ?? ''}`;
     return this.userService.getById(this.viewOf(message).id)?.name ?? 'Direktnachricht';
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Suche im Header (User Story "Nachrichten suchen").
- * - term: der eingegebene Text. results wird bei jeder Änderung neu
- *   berechnet (computed), die Liste ist also in Echtzeit aktuell.
- * - "#..." zeigt nur Channels, "@..." nur Personen (Dropdown wie in der
- *   Checkliste verlangt). Ohne Zeichen: Channels, Personen, Nachrichten.
- * - Nachrichten-Treffer zeigen den Kontext: Ort (# Channel oder Person)
- *   und Absender. Klick öffnet den Chat, bei Thread-Antworten auch den
- *   Thread.
- * - canRead(): Nur Nachrichten aus eigenen Channels und eigenen
- *   Direktnachrichten. Mit Firebase sichern das die Firestore-Regeln.
- * - directChatId hat die Form "dm_u1_u2", deshalb split('_').
- */

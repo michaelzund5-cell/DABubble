@@ -3,20 +3,10 @@ import { CanActivateFn, Router } from '@angular/router';
 import { RegistrationService } from './registration.service';
 import { SessionService } from './session.service';
 
-// The avatar step only opens right after the account was created in step 1.
+/** The avatar step only opens right after the account was created in step 1. */
 export const registrationGuard: CanActivateFn = () => {
   const registration = inject(RegistrationService);
   const session = inject(SessionService);
   const router = inject(Router);
   return registration.draft() && session.isLoggedIn() ? true : router.createUrlTree(['/register']);
 };
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Türsteher für die Avatar-Seite.
- * - Sie öffnet sich nur direkt nach Schritt 1: Das Konto muss angelegt
- *   und der Benutzer angemeldet sein.
- * - Sonst geht es zurück zu "Konto erstellen".
- */
