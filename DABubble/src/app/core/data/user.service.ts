@@ -98,7 +98,6 @@ export class UserService {
 
   /**
    * Starts the live list after login, stops it after logout.
-   * * @param userId - Current user, null after logout
    *
    * @param userId - Current user, null after logout
    */

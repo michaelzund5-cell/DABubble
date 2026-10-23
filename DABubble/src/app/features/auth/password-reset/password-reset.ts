@@ -24,7 +24,6 @@ export class PasswordResetPage {
 
   /**
    * Error of the email field.
-   * * @returns Error text, or an empty string
    *
    * @returns Error text, or an empty string
    */

@@ -61,7 +61,6 @@ export class LoginPage {
 
   /**
    * Checks the fields before Firebase is asked.
-   * * @returns true when both fields are fine
    *
    * @returns true when both fields are fine
    */

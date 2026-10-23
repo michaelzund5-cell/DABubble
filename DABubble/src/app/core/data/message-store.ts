@@ -45,7 +45,6 @@ export class MessageStore {
 
   /**
    * Every place the user may read: own channels and own direct chats.
-   * * @returns Paths of all own channels and direct chats
    *
    * @returns Paths of all own channels and direct chats
    */
@@ -56,7 +55,6 @@ export class MessageStore {
 
   /**
    * Opens and closes the message listeners.
-   * * @param paths - Places that should be listened to
    *
    * @param paths - Places that should be listened to
    */
@@ -99,7 +97,6 @@ export class MessageStore {
 
   /**
    * Listens to the direct chats of the user.
-   * * @param userId - Current user, null after logout
    *
    * @param userId - Current user, null after logout
    */

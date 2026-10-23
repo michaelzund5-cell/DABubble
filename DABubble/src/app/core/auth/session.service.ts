@@ -51,7 +51,6 @@ export class SessionService {
 
   /**
    * Guest login.
-   * * @returns ok, cancelled or failed
    *
    * @returns ok, cancelled or failed
    */
@@ -61,7 +60,6 @@ export class SessionService {
 
   /**
    * Google login.
-   * * @returns ok, cancelled (popup closed) or failed
    *
    * @returns ok, cancelled (popup closed) or failed
    */

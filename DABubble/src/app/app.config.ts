@@ -6,7 +6,7 @@ import { routes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(), // Reports uncaught errors in the browser
-    /** Hash URLs (/#/workspace): the server only ever loads index.html, so reloading never gives a 404. */
+    // Hash URLs (/#/workspace): the server only ever loads index.html, so reloading never gives a 404.
     provideRouter(routes, withHashLocation()),
   ],
 };

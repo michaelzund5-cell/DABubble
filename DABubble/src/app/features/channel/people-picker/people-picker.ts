@@ -31,7 +31,6 @@ export class PeoplePicker {
 
   /**
    * Updates the search text.
-   * * @param event - Input event of the field
    *
    * @param event - Input event of the field
    */
@@ -54,7 +53,6 @@ export class PeoplePicker {
 
   /**
    * Removes a person from the selection.
-   * * @param id - User ID
    *
    * @param id - User ID
    */

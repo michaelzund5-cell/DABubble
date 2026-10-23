@@ -43,7 +43,6 @@ export class ProfileDialog {
 
   /**
    * Opens the direct chat with this person and closes the card.
-   * * @param userId - User ID
    *
    * @param userId - User ID
    */

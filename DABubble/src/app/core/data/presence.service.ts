@@ -25,7 +25,6 @@ export class PresenceService {
 
   /**
    * Starts or stops the heartbeat.
-   * * @param userId - Current user, null after logout
    *
    * @param userId - Current user, null after logout
    */
@@ -43,7 +42,6 @@ export class PresenceService {
 
   /**
    * Saves the own status.
-   * * @param status - "online" (with server time) or "offline"
    *
    * @param status - "online" (with server time) or "offline"
    */

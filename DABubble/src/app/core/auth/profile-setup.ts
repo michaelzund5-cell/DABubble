@@ -26,7 +26,6 @@ export async function ensureUserProfile(user: AuthUser, pendingName: string): Pr
 
 /**
  * Random number so guests can be told apart, e.g. "Gast 4821".
- * * @returns e.g. "Gast 4821"
  *
  * @returns e.g. "Gast 4821"
  */
@@ -36,7 +35,6 @@ function guestName(): string {
 
 /**
  * Joins "Allgemein", or creates it if this is the very first user.
- * * @param uid - ID of the user who joins
  *
  * @param uid - ID of the user who joins
  */
@@ -53,7 +51,6 @@ export async function joinPublicChannel(uid: string): Promise<void> {
 
 /**
  * Sets the user offline.
- * * @param uid - ID of the user
  *
  * @param uid - ID of the user
  */

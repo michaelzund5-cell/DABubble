@@ -8,7 +8,6 @@ import { reportError } from '../firebase/report-error';
 export class PasswordResetService {
   /**
    * Never reports whether the email has an account: the page shows the same message either way.
-   * * @param email - Address the user typed in
    *
    * @param email - Address the user typed in
    */

@@ -24,7 +24,6 @@ export class NewPasswordPage {
 
   /**
    * Error of the password field.
-   * * @returns Error text, or an empty string
    *
    * @returns Error text, or an empty string
    */
@@ -34,7 +33,6 @@ export class NewPasswordPage {
 
   /**
    * Error of the repeat field.
-   * * @returns Error text, or an empty string
    *
    * @returns Error text, or an empty string
    */
@@ -44,7 +42,6 @@ export class NewPasswordPage {
 
   /**
    * Checks both fields.
-   * * @returns true when the new password can be saved
    *
    * @returns true when the new password can be saved
    */

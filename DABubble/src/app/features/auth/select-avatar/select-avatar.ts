@@ -27,7 +27,6 @@ export class SelectAvatarPage {
 
   /**
    * Chooses an avatar.
-   * * @param avatar - Path of the avatar
    *
    * @param avatar - Path of the avatar
    */

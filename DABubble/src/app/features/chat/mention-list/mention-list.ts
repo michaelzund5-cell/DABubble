@@ -34,7 +34,6 @@ export class MentionList {
 
   /**
    * Enter in the text field picks the first (highlighted) entry.
-   * * @returns true when there was an entry
    *
    * @returns true when there was an entry
    */

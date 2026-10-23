@@ -31,7 +31,6 @@ export class RegisterPage {
 
   /**
    * Error of the name field.
-   * * @returns Error text, or an empty string
    *
    * @returns Error text, or an empty string
    */
@@ -41,7 +40,6 @@ export class RegisterPage {
 
   /**
    * Error of the email field.
-   * * @returns Error text, or an empty string
    *
    * @returns Error text, or an empty string
    */
@@ -53,7 +51,6 @@ export class RegisterPage {
 
   /**
    * Error of the password field.
-   * * @returns Error text, or an empty string
    *
    * @returns Error text, or an empty string
    */
@@ -63,7 +60,6 @@ export class RegisterPage {
 
   /**
    * Checks the whole form.
-   * * @returns true when the account can be created
    *
    * @returns true when the account can be created
    */
@@ -83,7 +79,6 @@ export class RegisterPage {
 
   /**
    * Shows why the account was not created.
-   * * @param result - Result from Firebase
    *
    * @param result - Result from Firebase
    */

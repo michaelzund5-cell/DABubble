@@ -18,7 +18,6 @@ export abstract class MentionInput {
 
   /**
    * A click anywhere outside the field closes the `@`/`#` list.
-   * * @param event - Any click on the page
    *
    * @param event - Any click on the page
    */
@@ -28,7 +27,6 @@ export abstract class MentionInput {
 
   /**
    * Opens or closes the emoji picker.
-   * * @param button - Emoji button the picker is aligned to
    *
    * @param button - Emoji button the picker is aligned to
    */
@@ -45,7 +43,6 @@ export abstract class MentionInput {
 
   /**
    * Replaces the started word with the chosen name, e.g. `@no` to `@Noah Braun `.
-   * * @param label - Name of the chosen person or channel
    *
    * @param label - Name of the chosen person or channel
    */
@@ -63,7 +60,6 @@ export abstract class MentionInput {
   /**
    * Enter sends, Shift+Enter creates a new line. Escape closes the list.
    * With an open list, Enter picks the first entry instead of sending.
-   * * @param event - Key pressed in the text field
    *
    * @param event - Key pressed in the text field
    */

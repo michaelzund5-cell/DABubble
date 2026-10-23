@@ -57,7 +57,6 @@ export class CreateChannelDialog {
 
   /**
    * The server refused (name taken, no connection): show the error in step 1 again.
-   * * @param error - Text shown below the name field
    *
    * @param error - Text shown below the name field
    */

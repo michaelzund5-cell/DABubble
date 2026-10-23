@@ -53,7 +53,6 @@ export class WorkspaceStateService {
 
   /**
    * Opens the thread of a message.
-   * * @param messageId - ID of the message that started the thread
    *
    * @param messageId - ID of the message that started the thread
    */
@@ -73,7 +72,6 @@ export class WorkspaceStateService {
 
   /**
    * Opens a dialog.
-   * * @param type - Which dialog
    *
    * @param type - Which dialog
    */
@@ -83,7 +81,6 @@ export class WorkspaceStateService {
 
   /**
    * Own profile opens the version with "Bearbeiten" (Figma page 10).
-   * * @param userId - User ID
    *
    * @param userId - User ID
    */
@@ -107,7 +104,6 @@ export class WorkspaceStateService {
 
   /**
    * Search hit: highlight the message and scroll it into view once it is rendered.
-   * * @param messageId - Message to scroll to and highlight
    *
    * @param messageId - Message to scroll to and highlight
    */

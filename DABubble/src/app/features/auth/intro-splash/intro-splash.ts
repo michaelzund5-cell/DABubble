@@ -15,7 +15,6 @@ export class IntroSplash {
   /**
    * Called when the last animation (fade-out of the background) has ended.
    * Only the event of the background itself counts, not the bubbled ones of the logo.
-   * * @param event - Animation event, only the own animation counts
    *
    * @param event - Animation event, only the own animation counts
    */
@@ -29,7 +28,6 @@ export class IntroSplash {
 
 /**
  * Plays once per browser tab and never for users who prefer less motion.
- * * @returns true once per tab, false with "reduced motion"
  *
  * @returns true once per tab, false with "reduced motion"
  */

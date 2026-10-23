@@ -62,7 +62,6 @@ export class MessageInput extends MentionInput {
 
   /**
    * Adds the emoji to the text.
-   * * @param emoji - Chosen emoji
    *
    * @param emoji - Chosen emoji
    */
@@ -73,7 +72,6 @@ export class MessageInput extends MentionInput {
 
   /**
    * Figma: "Nachricht an #Entwicklerteam" / "Nachricht an Sofia Müller" / "Antworten..." / "Starte eine neue Nachricht"
-   * * @returns Placeholder for the open chat or thread
    *
    * @returns Placeholder for the open chat or thread
    */

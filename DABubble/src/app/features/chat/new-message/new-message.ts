@@ -46,7 +46,6 @@ export class NewMessage extends MentionInput {
 
   /**
    * Takes a recipient from the list.
-   * * @param label - Name of the person or channel
    *
    * @param label - Name of the person or channel
    */
@@ -62,7 +61,6 @@ export class NewMessage extends MentionInput {
 
   /**
    * Opens the chat after sending.
-   * * @param view - Where the message went
    *
    * @param view - Where the message went
    */

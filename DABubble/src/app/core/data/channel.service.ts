@@ -144,7 +144,6 @@ export class ChannelService {
 
   /**
    * Removes the current user from the channel.
-   * * @param id - Channel ID
    *
    * @param id - Channel ID
    */
@@ -196,7 +195,6 @@ export class ChannelService {
 
   /**
    * Channels from before the name list get their entry once. Taken or offline: nothing to do.
-   * * @param channels - The channels from the latest snapshot
    *
    * @param channels - The channels from the latest snapshot
    */
@@ -239,7 +237,6 @@ export class ChannelService {
 
   /**
    * Live list of the user's channels: only channels whose memberIds contain the user.
-   * * @param userId - Current user, null after logout
    *
    * @param userId - Current user, null after logout
    */

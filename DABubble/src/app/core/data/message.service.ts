@@ -134,7 +134,7 @@ export class MessageService {
     this.rememberEmoji(emoji);
     this.showReactionNow(id, toggledReactions(message.reactions, emoji, userId));
     const ref = doc(db, locationPath(message), 'messages', id);
-    /** Transaction: two people reacting at the same moment do not overwrite each other. */
+    // Transaction: two people reacting at the same moment do not overwrite each other.
     runTransaction(db, async (transaction) => {
       const current = ((await transaction.get(ref)).data()?.['reactions'] ?? []) as Reaction[];
       transaction.update(ref, { reactions: toggledReactions(current, emoji, userId) });
@@ -188,7 +188,6 @@ export class MessageService {
 
   /**
    * Drops the shown guess, the real data counts again.
-   * * @param id - Message ID
    *
    * @param id - Message ID
    */
@@ -197,13 +196,15 @@ export class MessageService {
   }
 
   /**
-   * Remembers the two most recent emojis for the quick bar.
-   * * @param emoji - Emoji ID
+   * Remembers the emoji for the quick bar. An emoji that is already in the bar keeps its place,
+   * so the two buttons never swap when you click one of them. A new emoji takes the first place.
    *
    * @param emoji - Emoji ID
    */
   private rememberEmoji(emoji: string): void {
-    this.recentEmojis.update((list) => [emoji, ...list.filter((id) => id !== emoji)].slice(0, 2));
+    const shown = this.quickEmojis();
+    if (shown.includes(emoji)) return;
+    this.recentEmojis.set([emoji, shown[0]]);
   }
 
   /**

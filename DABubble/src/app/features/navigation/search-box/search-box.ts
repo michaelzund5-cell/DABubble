@@ -25,7 +25,6 @@ export class SearchBox {
 
   /**
    * Updates the search text.
-   * * @param event - Input event of the field
    *
    * @param event - Input event of the field
    */
@@ -36,7 +35,6 @@ export class SearchBox {
   /**
    * A click next to the results closes them. Only the visible search box reacts
    * (header and mobile menu share one search, offsetParent is null while hidden).
-   * * @param event - Any click on the page
    *
    * @param event - Any click on the page
    */
@@ -48,7 +46,6 @@ export class SearchBox {
 
   /**
    * Opens the chat of the hit, for a thread reply also the thread, and scrolls to the message.
-   * * @param result - Clicked search result
    *
    * @param result - Clicked search result
    */

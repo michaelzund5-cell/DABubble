@@ -74,7 +74,6 @@ export class MessageItem {
 
   /**
    * Adds or removes the own reaction.
-   * * @param emoji - Emoji ID
    *
    * @param emoji - Emoji ID
    */
@@ -97,7 +96,6 @@ export class MessageItem {
 
   /**
    * Opens or closes the emoji picker.
-   * * @param button - Button the picker is aligned to
    *
    * @param button - Button the picker is aligned to
    */
@@ -107,7 +105,6 @@ export class MessageItem {
 
   /**
    * Opens or closes the message menu.
-   * * @param button - Button the menu is aligned to
    *
    * @param button - Button the menu is aligned to
    */
@@ -117,7 +114,6 @@ export class MessageItem {
 
   /**
    * Reacts with the chosen emoji.
-   * * @param emoji - Chosen emoji
    *
    * @param emoji - Chosen emoji
    */
@@ -148,7 +144,6 @@ export class MessageItem {
 
   /**
    * Adds the emoji to the edited text.
-   * * @param emoji - Chosen emoji
    *
    * @param emoji - Chosen emoji
    */
