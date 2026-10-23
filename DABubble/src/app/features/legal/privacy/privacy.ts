@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Location } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 interface PrivacySection {
@@ -73,5 +74,11 @@ const SECTIONS: readonly PrivacySection[] = [
   styleUrl: './privacy.scss',
 })
 export class PrivacyPage {
+  private readonly location = inject(Location);
   readonly sections = SECTIONS;
+
+  /** Back to the page the user came from (login, register, imprint, ...). */
+  goBack(): void {
+    this.location.back();
+  }
 }

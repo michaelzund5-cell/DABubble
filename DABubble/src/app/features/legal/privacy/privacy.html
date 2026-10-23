@@ -7,7 +7,12 @@
   </a>
 
   <article class="content" aria-labelledby="privacy-title">
-    <h1 id="privacy-title">Datenschutz</h1>
+    <div class="title-row">
+      <button class="back-btn" type="button" (click)="goBack()" aria-label="Zurück">
+        <img src="img/icons/arrow-back.svg" alt="">
+      </button>
+      <h1 id="privacy-title">Datenschutz</h1>
+    </div>
     @for (section of sections; track $index) {
       <section>
         <h2>{{ section.title }}</h2>

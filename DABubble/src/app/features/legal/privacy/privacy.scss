@@ -10,6 +10,18 @@
   padding: 185px 0 60px; // starts below the logo (75 + 70 px) like the cards of the other pages
 }
 
+// Back arrow in front of the title, like the arrow on the imprint card.
+.title-row { display: flex; align-items: center; gap: 16px; margin-left: -56px; }
+
+.back-btn {
+  display: flex;
+  padding: 4px;
+  border-radius: 50%;
+  background: none;
+}
+
+.back-btn:hover { background: var(--bg); }
+
 section { margin-top: 20px; }
 section + section { margin-top: 35px; }
 
@@ -25,6 +37,7 @@ p { margin-top: 11px; line-height: 27px; }
 
 @media #{$mobile} {
   .content { left: 0; padding: 38px 15px 40px; }
+  .title-row { gap: 8px; margin-left: -6px; }
   section { margin-top: 20px; }
   section + section { margin-top: 35px; }
   p { overflow-wrap: anywhere; }
