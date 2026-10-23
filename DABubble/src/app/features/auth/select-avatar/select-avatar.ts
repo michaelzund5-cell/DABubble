@@ -6,6 +6,7 @@ import { Toast } from '../../../shared/components/toast/toast';
 
 const TOAST_DURATION_MS = 2000;
 
+/** Second sign-up step (Figma page 4): choose an avatar. */
 @Component({
   selector: 'app-select-avatar-page',
   imports: [RouterLink, Toast],
@@ -24,6 +25,12 @@ export class SelectAvatarPage {
   readonly busy = signal(false);
   readonly error = signal('');
 
+  /**
+   * Chooses an avatar.
+   * * @param avatar - Path of the avatar
+   *
+   * @param avatar - Path of the avatar
+   */
   select(avatar: string): void {
     this.selected.set(avatar);
   }
@@ -41,26 +48,10 @@ export class SelectAvatarPage {
     this.error.set('Speichern hat nicht geklappt. Bitte versuche es nochmals.');
   }
 
-  // Back to step 1: the half-created account is deleted first.
+  /** Back to step 1: the half-created account is deleted first. */
   async back(): Promise<void> {
     this.busy.set(true);
     await this.registration.cancel();
     void this.router.navigate(['/register']);
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Logik der Avatar-Auswahl, Schritt 2 der Registrierung.
- * - userName: Name aus Schritt 1, angezeigt unter dem Avatar.
- * - selected: Signal mit dem gewählten Avatar. null = noch keiner.
- * - finished: Signal. true nach dem Abschließen, dann erscheint die Bubble.
- * - finish(): speichert den Avatar (RegistrationService), zeigt die
- *   Bubble und wechselt nach 2 Sekunden zur Anmeldung. Klappt das
- *   Speichern nicht, erscheint eine Meldung.
- * - back(): Zurück-Pfeil. Das halb angelegte Konto wird gelöscht, dann
- *   geht es zurück zu "Konto erstellen".
- * - busy: sperrt die Buttons, solange Firebase arbeitet.
- */

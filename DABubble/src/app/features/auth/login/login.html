@@ -41,7 +41,7 @@
       <div class="google-wrap">
         <button class="btn-google" type="button" (click)="loginWithGoogle()" [disabled]="busy()">
           <img src="img/icons/google.svg" alt="">
-          Anmelden mit Google
+          {{ pending() === 'google' ? 'Bitte warten …' : 'Anmelden mit Google' }}
         </button>
         @if (googleHint()) {
           <p class="google-hint" role="status">{{ googleHint() }}</p>
@@ -49,8 +49,12 @@
       </div>
 
       <div class="actions">
-        <button class="btn-primary" type="submit" [disabled]="busy()">Anmelden</button>
-        <button class="btn-secondary" type="button" (click)="loginAsGuest()" [disabled]="busy()">Gäste-Login</button>
+        <button class="btn-primary" type="submit" [disabled]="busy()">
+          {{ pending() === 'email' ? 'Bitte warten …' : 'Anmelden' }}
+        </button>
+        <button class="btn-secondary" type="button" (click)="loginAsGuest()" [disabled]="busy()">
+          {{ pending() === 'guest' ? 'Bitte warten …' : 'Gäste-Login' }}
+        </button>
       </div>
     </form>
   </section>
@@ -60,19 +64,3 @@
     <a class="link" routerLink="/privacy">Datenschutz</a>
   </nav>
 </main>
-
-<!--
-  =====================================================================
-  ZUSAMMENFASSUNG (Deutsch)
-  =====================================================================
-  - Google-Button: öffnet das Google-Anmeldefenster. Darunter erscheinen
-    Meldungen zu Google- und Gäste-Login (z. B. keine Verbindung).
-  - Alle Buttons sind gesperrt, solange eine Anmeldung läuft.
-  - <app-intro-splash>: Start-Animation beim ersten Aufruf (Figma 1, 34).
-  Login-Seite (Figma Seite 2).
-  - Oben rechts: Link zur Registrierung.
-  - Zwei Felder mit Icon, Fehlertext direkt unter dem betroffenen Feld.
-  - novalidate: keine Browser-Fehlerblasen, eigene Texte (Checkliste).
-  - Google-Login und Gäste-Login: Funktion folgt mit Firebase.
-  - Footer: Impressum und Datenschutz.
--->

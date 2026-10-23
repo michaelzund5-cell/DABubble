@@ -7,6 +7,7 @@ import { validateEmail } from '../../../shared/utils/validators';
 
 const TOAST_DURATION_MS = 2000;
 
+/** Page "Passwort zurücksetzen" (Figma page 5): sends the reset email. */
 @Component({
   selector: 'app-password-reset-page',
   imports: [FormsModule, RouterLink, Toast],
@@ -21,6 +22,12 @@ export class PasswordResetPage {
   emailTouched = false;
   readonly sent = signal(false);
 
+  /**
+   * Error of the email field.
+   * * @returns Error text, or an empty string
+   *
+   * @returns Error text, or an empty string
+   */
   getEmailError(): string {
     return validateEmail(this.email);
   }
@@ -32,20 +39,3 @@ export class PasswordResetPage {
     setTimeout(() => void this.router.navigate(['/login']), TOAST_DURATION_MS);
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Logik der Seite "Passwort zurücksetzen", Schritt 1.
- * - email: über [(ngModel)] mit dem Eingabefeld verbunden.
- * - getEmailError(): nutzt die gemeinsame Prüfung aus validators.ts.
- * - sent: Signal. true nach dem Senden. Dann erscheint die Bubble und
- *   der Button wird gesperrt.
- * - send():
- *   1. Abbruch, wenn die E-Mail ungültig ist oder schon gesendet wurde.
- *   2. Mit await auf den Service warten (später Firebase).
- *   3. Bubble zeigen, nach 2 Sekunden zurück zur Anmeldung.
- * - TOAST_DURATION_MS: feste Zahl als Konstante mit Namen statt einer
- *   "magischen" 2000 mitten im Code.
- */

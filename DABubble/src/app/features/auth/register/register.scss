@@ -29,7 +29,7 @@ form {
   cursor: pointer;
 }
 
-.consent span { text-align: left; } // feedback: the text sat far away from the checkbox
+.consent span { text-align: left; } // text directly next to the checkbox
 
 .consent input {
   position: absolute;
@@ -41,14 +41,14 @@ form {
 
 .consent .link { font-size: 18px; }
 
-.next { align-self: flex-end; width: 107px; margin-top: 44px; padding: 0; }
+.next { align-self: flex-end; min-width: 107px; margin-top: 44px; padding: 0 20px; } // wider while "Bitte warten …"
 
 // Error from Firebase (weak password, no connection). Negative margin: the button does not move.
 .form-error { margin: 16px 0 -36px; font-size: 14px; color: var(--error); }
 
 @media #{$mobile} {
   .logo { margin-top: 199px; }
-  .card { height: auto; margin-top: 32px; padding: 18px 20px 26px; }
+  .card { height: auto; margin-top: 32px; padding: 18px 14px 26px; } // more room for the fields
   h1, .intro { padding-left: 0; }
   .intro { margin-top: 13px; }
   form { margin-top: 19px; }
@@ -57,20 +57,3 @@ form {
   .consent .link { font-size: 18px; }
   .next { margin-top: 19px; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Registrierung (Figma Seite 3).
- * - Titel und Text sitzen in Figma 7-8 px rechts der Kartenmitte, daher
- *   padding-left.
- * - .consent: Zeile mit Checkbox. Die Schrift ist Open Sans, nur hier im
- *   Design verwendet. Der Text steht linksbündig direkt neben der
- *   Checkbox (Feedback: vorher war er zentriert und weit weg).
- * - .consent input: Das echte Kontrollkästchen ist unsichtbar, sichtbar ist
- *   das Figma-Icon. Mit Tastatur bleibt es bedienbar, :focus-visible zeigt
- *   dann einen Rahmen.
- * - .next: Weiter-Button rechtsbündig, Breite 107 px aus Figma.
- * - .form-error: Meldung von Firebase über dem Weiter-Button.
- */

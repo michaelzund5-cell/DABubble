@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { RegistrationService } from '../../../core/auth/registration.service';
 import { validateEmail, validateName, validatePassword } from '../../../shared/utils/validators';
 
+/** Sign-up page (Figma page 3): name, email, password and privacy consent. */
 @Component({
   selector: 'app-register-page',
   imports: [FormsModule, RouterLink],
@@ -18,7 +19,7 @@ export class RegisterPage {
   email = '';
   password = '';
   privacyAccepted = false;
-  // Errors only show after the user has left a field once.
+  /** Errors only show after the user has left a field once. */
   readonly touched = { name: false, email: false, password: false };
   readonly busy = signal(false);
   readonly formError = signal('');
@@ -28,20 +29,44 @@ export class RegisterPage {
     this.restoreDraft();
   }
 
+  /**
+   * Error of the name field.
+   * * @returns Error text, or an empty string
+   *
+   * @returns Error text, or an empty string
+   */
   getNameError(): string {
     return validateName(this.name);
   }
 
+  /**
+   * Error of the email field.
+   * * @returns Error text, or an empty string
+   *
+   * @returns Error text, or an empty string
+   */
   getEmailError(): string {
     const error = validateEmail(this.email);
     if (error) return error;
     return this.email.trim() === this.takenEmail ? 'Diese E-Mail-Adresse wird bereits verwendet.' : '';
   }
 
+  /**
+   * Error of the password field.
+   * * @returns Error text, or an empty string
+   *
+   * @returns Error text, or an empty string
+   */
   getPasswordError(): string {
     return validatePassword(this.password);
   }
 
+  /**
+   * Checks the whole form.
+   * * @returns true when the account can be created
+   *
+   * @returns true when the account can be created
+   */
   isValid(): boolean {
     return !this.getNameError() && !this.getEmailError() && !this.getPasswordError() && this.privacyAccepted;
   }
@@ -56,6 +81,12 @@ export class RegisterPage {
     else this.showError(result);
   }
 
+  /**
+   * Shows why the account was not created.
+   * * @param result - Result from Firebase
+   *
+   * @param result - Result from Firebase
+   */
   private showError(result: 'email-in-use' | 'weak-password' | 'failed'): void {
     if (result === 'email-in-use') this.takenEmail = this.email.trim();
     this.touched.email = true;
@@ -63,7 +94,7 @@ export class RegisterPage {
     if (result === 'failed') this.formError.set('Das hat nicht geklappt. Bitte prüfe deine Internetverbindung.');
   }
 
-  // Coming back from the avatar step: fill in what was already typed.
+  /** Coming back from the avatar step: fill in what was already typed. */
   private restoreDraft(): void {
     const draft = this.registration.draft();
     if (!draft) return;
@@ -72,23 +103,3 @@ export class RegisterPage {
     this.privacyAccepted = true;
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Logik der Registrierung, Schritt 1.
- * - touched: Fehler erscheinen erst, nachdem ein Feld verlassen wurde.
- * - getNameError() usw.: gemeinsame Prüfungen aus validators.ts.
- * - isValid(): Alle Felder gültig und Datenschutz akzeptiert. Steuert, ob
- *   der Weiter-Button aktiv ist.
- * - next(): legt das Konto bei Firebase an (RegistrationService). busy
- *   sperrt den Button, damit ein Doppelklick kein zweites Konto versucht.
- * - showError(): E-Mail schon vergeben (Meldung unter dem Feld),
- *   Passwort zu schwach oder keine Verbindung (Meldung über dem Button).
- * - takenEmail: merkt sich die vergebene E-Mail. Ändert man sie, ist die
- *   Meldung weg.
- * - restoreDraft(): Kommt man mit dem Zurück-Pfeil von der Avatar-Seite,
- *   sind Name und E-Mail wieder da. Das Passwort muss neu eingegeben
- *   werden, es wird nirgends gespeichert.
- */

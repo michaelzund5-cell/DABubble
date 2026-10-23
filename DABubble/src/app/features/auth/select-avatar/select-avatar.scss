@@ -52,7 +52,7 @@ h1 { padding-left: 14px; }
 .avatar-option:hover { outline-color: var(--purple-3); }
 .avatar-option.selected { outline-color: var(--purple-1); }
 
-.next { align-self: flex-end; width: 107px; margin: auto 0 40px; padding: 0; }
+.next { align-self: flex-end; min-width: 107px; margin: auto 0 40px; padding: 0 20px; } // wider while "Bitte warten …"
 .form-error { align-self: flex-end; margin: auto 0 8px; font-size: 14px; color: var(--error); }
 .form-error + .next { margin-top: 0; }
 
@@ -68,20 +68,3 @@ h1 { padding-left: 14px; }
   .avatar-option { flex: 0 1 48px; width: auto; height: auto; aspect-ratio: 1; }
   .next { margin: 28px 1px 0 0; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Avatar-Auswahl (Figma Seite 4).
- * - .card als Flex-Spalte: Elemente untereinander, mittig.
- * - .preview: großer runder Avatar, 168 px.
- * - .avatar-option: 64 px rund. outline zeigt hover (hell) und Auswahl
- *   (dunkel). Figma gibt diese Zustände nicht vor, Annahme.
- * - .next: margin-top auto schiebt den Button ans untere Ende der Karte.
- * - .form-error: Meldung, wenn das Speichern nicht geklappt hat.
- * - Handy: alle 6 Avatare in einer Reihe wie Figma Seite 37 (Feedback:
- *   war nicht responsive). flex: 0 1 48px heisst höchstens 48 px, auf
- *   schmalen Handys werden sie kleiner statt umzubrechen. aspect-ratio
- *   hält sie rund.
- */

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PasswordResetService } from '../../../core/auth/password-reset.service';
 import { validatePassword, validatePasswordRepeat } from '../../../shared/utils/validators';
 
+/** Page "Neues Passwort" (Figma page 6), opened from the reset email. */
 @Component({
   selector: 'app-new-password-page',
   imports: [FormsModule, RouterLink],
@@ -13,7 +14,7 @@ import { validatePassword, validatePasswordRepeat } from '../../../shared/utils/
 export class NewPasswordPage {
   private readonly passwordReset = inject(PasswordResetService);
   private readonly router = inject(Router);
-  // Code from the email link: /password-reset/new?oobCode=...
+  /** Code from the email link: /password-reset/new?oobCode=... */
   private readonly resetCode = inject(ActivatedRoute).snapshot.queryParamMap.get('oobCode');
 
   password = '';
@@ -21,14 +22,32 @@ export class NewPasswordPage {
   readonly touched = { password: false, repeat: false };
   readonly saving = signal(false);
 
+  /**
+   * Error of the password field.
+   * * @returns Error text, or an empty string
+   *
+   * @returns Error text, or an empty string
+   */
   getPasswordError(): string {
     return validatePassword(this.password);
   }
 
+  /**
+   * Error of the repeat field.
+   * * @returns Error text, or an empty string
+   *
+   * @returns Error text, or an empty string
+   */
   getRepeatError(): string {
     return validatePasswordRepeat(this.password, this.repeat);
   }
 
+  /**
+   * Checks both fields.
+   * * @returns true when the new password can be saved
+   *
+   * @returns true when the new password can be saved
+   */
   isValid(): boolean {
     return !this.getPasswordError() && !this.getRepeatError();
   }
@@ -46,20 +65,3 @@ export class NewPasswordPage {
     this.linkError.set('Der Link ist ungültig oder abgelaufen. Bitte fordere eine neue E-Mail an.');
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Logik der Seite "Passwort zurücksetzen", Schritt 2 (neues Passwort).
- * - resetCode: Firebase hängt an den Link in der E-Mail einen Code an
- *   (?oobCode=...). ActivatedRoute liest ihn aus der URL. snapshot heißt:
- *   einmal beim Öffnen lesen.
- * - getPasswordError(), getRepeatError(): gemeinsame Prüfungen aus
- *   validators.ts. Gleiche Regeln wie bei der Registrierung.
- * - saving: Signal. Sperrt den Button während des Speicherns.
- * - save(): prüft, speichert über den Service (später Firebase) und
- *   leitet zur Anmeldung weiter.
- * - linkError: Ist der Link aus der E-Mail ungültig oder abgelaufen,
- *   erscheint eine Meldung statt der Weiterleitung.
- */

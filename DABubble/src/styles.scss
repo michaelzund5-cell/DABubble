@@ -54,30 +54,11 @@ a { text-decoration: none; cursor: pointer; }
   padding: 0 25px;
 }
 
-.btn-secondary:hover { background: var(--purple-1); color: var(--white); }
+.btn-secondary:hover:not(:disabled) { background: var(--purple-1); color: var(--white); }
+.btn-secondary:disabled { border-color: var(--text-grey); color: var(--text-grey); }
 
-// Feedback: scrollbars were visible on small phones (iPhone SE). Lists still scroll by swiping, only the bar is hidden.
+// No visible scrollbars on phones. Lists still scroll by swiping, only the bar is hidden.
 @media (max-width: 999px) {
   * { scrollbar-width: none; }
   *::-webkit-scrollbar { display: none; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Globale Styles für die ganze App.
- * - Schriften kommen lokal über @fontsource (angular.json), nicht von
- *   Google. Kein Datenabfluss an Google-Server (DSG / DSGVO).
- * - :root: Farben und Schriften als CSS-Variablen (Design Tokens) aus
- *   Figma. Eine Farbe ändern = überall geändert. Aufruf: var(--purple-1).
- * - --error ist nicht in Figma definiert, bitte mit dem Design klären.
- * - box-sizing: border-box: Rahmen und Innenabstand zählen zur Breite.
- *  - button { cursor: pointer; border: 0 }: Vorgabe der Checkliste.
- * - .btn-primary / .btn-secondary: die Buttons aus Figma, mit hover
- *   und disabled. Global, damit Login und Chat dieselben nutzen.
- * - Handy (unter 1000 px): keine sichtbaren Scrollbalken (Feedback,
- *   Checkliste "Kein Scrollbalken bei kleineren Auflösungen"). Scrollen
- *   per Wischen geht weiter. scrollbar-width für Firefox,
- *   ::-webkit-scrollbar für Chrome und Safari.
- */

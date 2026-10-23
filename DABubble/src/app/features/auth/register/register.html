@@ -48,7 +48,9 @@
       @if (formError()) {
         <p class="form-error" role="alert">{{ formError() }}</p>
       }
-      <button class="btn-primary next" type="submit" [disabled]="!isValid() || busy()">Weiter</button>
+      <button class="btn-primary next" type="submit" [disabled]="!isValid() || busy()">
+        {{ busy() ? 'Bitte warten …' : 'Weiter' }}
+      </button>
     </form>
   </section>
 
@@ -57,15 +59,3 @@
     <a class="link" routerLink="/privacy">Datenschutz</a>
   </nav>
 </main>
-
-<!--
-  =====================================================================
-  ZUSAMMENFASSUNG (Deutsch)
-  =====================================================================
-  Registrierung, Schritt 1 (Figma Seite 3).
-  - Drei Felder mit Icon: Name, E-Mail, Passwort.
-  - (blur): markiert das Feld als berührt, erst dann erscheint ein Fehler.
-  - label.consent: Klick auf die ganze Zeile hakt die Checkbox an. Das Bild
-    wechselt zwischen leerem und angehaktem Icon.
-  - [disabled]="!isValid()": Weiter erst, wenn alles stimmt.
--->

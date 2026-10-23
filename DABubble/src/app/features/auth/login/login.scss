@@ -111,14 +111,3 @@ form {
   .actions { gap: 10px; }
   .actions button { padding: 0 14px; white-space: nowrap; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Login-Seite. Alle Abstände sind gegen Figma gemessen.
- * - .forgot und .divider span: In Figma nicht exakt zentriert, daher
- *   kleine Verschiebungen (1:1 übernommen).
- * - .divider::before: eine durchgehende Linie, das Wort ODER liegt mit
- *   weißem Hintergrund darüber.
- */

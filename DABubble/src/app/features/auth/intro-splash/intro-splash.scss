@@ -67,20 +67,3 @@
 @media (max-width: 999px) {
   .splash { --start-scale: 1.01; --end-x: calc(50vw - 102px); --end-y: 72px; --end-scale: 0.843; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Start-Animation.
- * - Hintergrund: Verlauf von #777CF2 nach #303AE5 (aus Figma gemessen).
- * - Ablauf: 0,5 s Schriftzug aufdecken (clip-path), ab 1,5 s wandert
- *   das Logo an seinen Platz und der Schriftzug wird schwarz
- *   (filter: brightness(0)), ab 2,1 s blendet der Hintergrund aus.
- * - CSS-Variablen (--start-scale, --end-x ...): gleiche Animation für
- *   Desktop und Handy, nur die Werte sind anders.
- * - logo-move in drei Schritten: Symbol mittig (Startbild Figma), dann
- *   das ganze Logo mittig, während der Schriftzug erscheint, dann an den
- *   Platz. Figma zeigt nur das Startbild, der Ablauf ist eine Annahme.
- * - pointer-events: none: Man kann schon während der Animation klicken.
- */

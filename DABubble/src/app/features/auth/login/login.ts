@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { LoginResult, SessionService } from '../../../core/auth/session.service';
@@ -11,6 +11,10 @@ const MESSAGES: Record<Exclude<LoginResult, 'ok' | 'cancelled'>, string> = {
   failed: 'Anmeldung nicht möglich. Bitte prüfe deine Internetverbindung.',
 };
 
+/** Which button is waiting for Firebase. That button shows "Bitte warten …" (instant reaction on click). */
+type LoginKind = 'email' | 'guest' | 'google';
+
+/** Login page (Figma page 2): email, Google and guest login. */
 @Component({
   selector: 'app-login-page',
   imports: [FormsModule, IntroSplash, RouterLink],
@@ -25,53 +29,45 @@ export class LoginPage {
   password = '';
   emailError = '';
   passwordError = '';
-  readonly busy = signal(false);
+  readonly pending = signal<LoginKind | null>(null);
+  readonly busy = computed(() => this.pending() !== null);
   readonly googleHint = signal('');
 
   async login(): Promise<void> {
     if (!this.validateInputs()) return;
-    await this.handle(() => this.session.login(this.email, this.password), (text) => this.passwordError = text);
+    await this.handle('email', () => this.session.login(this.email, this.password), (text) => this.passwordError = text);
   }
 
   async loginAsGuest(): Promise<void> {
-    await this.handle(() => this.session.loginAsGuest(), (text) => this.googleHint.set(text));
+    await this.handle('guest', () => this.session.loginAsGuest(), (text) => this.googleHint.set(text));
   }
 
   async loginWithGoogle(): Promise<void> {
-    await this.handle(() => this.session.loginWithGoogle(), (text) => this.googleHint.set(text));
+    await this.handle('google', () => this.session.loginWithGoogle(), (text) => this.googleHint.set(text));
   }
 
-  // Runs one login method: blocks double clicks, opens the workspace or shows the message.
-  private async handle(attempt: () => Promise<LoginResult>, showError: (text: string) => void): Promise<void> {
+  /** Runs one login method: blocks double clicks, opens the workspace or shows the message. */
+  private async handle(
+    kind: LoginKind, attempt: () => Promise<LoginResult>, showError: (text: string) => void,
+  ): Promise<void> {
     if (this.busy()) return;
-    this.busy.set(true);
+    this.pending.set(kind);
     this.googleHint.set('');
     const result = await attempt();
-    this.busy.set(false);
+    this.pending.set(null);
     if (result === 'ok') void this.router.navigate(['/workspace']);
     else if (result !== 'cancelled') showError(MESSAGES[result]);
   }
 
+  /**
+   * Checks the fields before Firebase is asked.
+   * * @returns true when both fields are fine
+   *
+   * @returns true when both fields are fine
+   */
   private validateInputs(): boolean {
     this.emailError = validateEmail(this.email);
     this.passwordError = this.password ? '' : 'Bitte gib dein Passwort ein.';
     return !this.emailError && !this.passwordError;
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Logik der Login-Seite, jetzt mit Firebase.
- * - login(): prüft die Eingaben, dann Anmeldung mit E-Mail und Passwort.
- * - Bewusst dieselbe Meldung für falsche E-Mail und falsches Passwort.
- *   So kann niemand herausfinden, welche E-Mails ein Konto haben.
- * - loginAsGuest(): anonymes Gastkonto bei Firebase.
- * - loginWithGoogle(): Google-Fenster. Wird es geschlossen, passiert
- *   nichts (kein Fehler).
- * - handle(): gemeinsamer Ablauf aller drei Wege. busy verhindert
- *   Doppelklicks, danach Workspace öffnen oder Meldung zeigen.
- * - MESSAGES: kurze, verständliche Texte. Technische Details von
- *   Firebase sieht der Benutzer nie.
- */
