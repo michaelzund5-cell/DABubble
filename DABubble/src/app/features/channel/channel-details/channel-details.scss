@@ -92,18 +92,3 @@ hr { margin: 29px 14px 30px 0; border: 0; border-top: 1px solid var(--purple-3);
   .mobile-members { display: block; margin-top: 23px; }
   .leave { margin: 24px 1px 0 0; padding: 0 25px; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * - Handy (Figma 60, 61): ganzer Bildschirm, Kopf 90 px bleibt beim
- *   Scrollen oben (sticky), Icons statt "Bearbeiten" / "Speichern".
- * Styles der Channel-Details, Werte aus Figma Seiten 11 und 14.
- * - Karte 872 px breit, Blöcke mit lila-grauem Rahmen, Radius 20 px.
- * - .open: Im Bearbeiten-Modus hat der Block keinen Rahmen mehr, dafür
- *   ein rundes Eingabefeld (Figma Seite 14).
- * - Fehlertext rosa unter dem Feld, Rahmen wird ebenfalls rosa.
- * - hr: Trennlinie vor "Erstellt von".
- * - Unter 1000 px: volle Breite und Mitgliederliste (Figma Handy 60, 61).
- */

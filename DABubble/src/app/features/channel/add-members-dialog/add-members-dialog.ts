@@ -4,7 +4,7 @@ import { WorkspaceStateService } from '../../../core/data/workspace-state.servic
 import { Dialog } from '../../../shared/components/dialog/dialog';
 import { PeoplePicker } from '../people-picker/people-picker';
 
-// "Leute hinzufügen": every member can invite more people (channel user story 2).
+/** "Leute hinzufügen": every member can invite more people (channel user story 2). */
 @Component({
   selector: 'app-add-members-dialog',
   imports: [Dialog, PeoplePicker],
@@ -29,15 +29,3 @@ export class AddMembersDialog {
     this.state.closeDialog();
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Fenster "Leute hinzufügen" (Button mit Personen-Icon im Channel-Kopf
- * oder "Mitglieder hinzufügen" in der Liste).
- * - selectedIds: die gewählten Personen aus dem PeoplePicker.
- * - Wer schon Mitglied ist, wird nicht angeboten (excludeIds).
- * - add(): fügt alle gewählten Personen hinzu und schliesst das Fenster.
- * - Design ist eine Annahme, Figma zeigt dieses Fenster nicht.
- */

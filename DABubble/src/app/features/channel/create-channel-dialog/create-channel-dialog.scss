@@ -52,16 +52,3 @@ h2 { margin: 0; font-size: 24px; font-weight: 700; }
   .field { gap: 13px; }
   .error:empty { display: none; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles "Channel erstellen", Werte aus Figma Seite 59 (Handy).
- * - Felder 60 bzw. 67 px hoch, Radius 30 px, #-Icon grau.
- * - "(optional)" grau und nicht fett.
- * - Button "Erstellen" rechts unten.
- * - Desktop: gleiche Inhalte in einer 872 px breiten Karte wie die
- *   Channel-Details (Figma zeigt den Dialog nur auf dem Handy).
- * - Radiobuttons in Lila über accent-color.
- */

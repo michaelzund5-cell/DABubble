@@ -59,14 +59,3 @@ input::placeholder { color: var(--text-grey); }
 .suggestions button:hover { background: var(--bg); color: var(--purple-1); }
 .suggestions li + li { margin-top: 13px; }
 .empty { margin: 8px 0 0 20px; font-size: 14px; color: var(--text-grey); }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Personen-Auswahl. Figma hat diese Auswahl nicht, sie
- * übernimmt das Design der @-Liste (Handy Seiten 46, 52): runde Zeilen
- * mit Avatar, Karte mit Schatten. Gewählte Personen als helle Pille.
- * Die Trefferliste steht im normalen Fluss (nicht absolut), damit sie
- * im Fenster nie abgeschnitten wird.
- */

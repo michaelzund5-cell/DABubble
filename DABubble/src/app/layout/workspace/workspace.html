@@ -39,24 +39,3 @@
     <span>{{ sidebarOpen() ? 'Workspace-Menü schließen' : 'Workspace-Menu öffnen' }}</span>
   </button>
 </div>
-
-<!--
-  =====================================================================
-  ZUSAMMENFASSUNG (Deutsch)
-  =====================================================================
-  Seitenrahmen nach dem Login (Figma Seiten 17 und 18).
-  - Header oben, darunter drei Spalten: Sidebar, Chat, optional Thread.
-  - Mittlere Spalte: Chat oder "Neue Nachricht" (Figma Seite 20).
-  - [class.collapsed]: Sidebar ist eingeklappt, der Chat wird breiter.
-  - Button am linken Rand: klappt die Sidebar ein und aus (User Story 5).
-    Der Text lautet in Figma "Workspace-Menü schließen" bzw.
-    "Workspace-Menu öffnen" (ohne ü, 1:1 übernommen).
-  - @switch (state.dialog()): zeigt das offene Fenster (Profil, Channel-
-    Details, Mitglieder, Leute hinzufügen, Channel erstellen). Das Menü
-    oben rechts liegt im Header.
-  - mobile-chat: Auf dem Handy ist immer nur eine Ansicht sichtbar: Menü,
-    Chat oder Thread (CSS in workspace.scss, User Story 5).
-  - aria-hidden: Eingeklappte Sidebar wird von Screenreadern ignoriert.
-  - .save-error: Hinweis unten in der Mitte, wenn eine Channel-Änderung
-    nicht gespeichert werden konnte. role="alert" liest ihn sofort vor.
--->

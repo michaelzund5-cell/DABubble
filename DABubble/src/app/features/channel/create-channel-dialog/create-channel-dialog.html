@@ -42,20 +42,10 @@
           <app-people-picker class="picker" [(selectedIds)]="selectedIds" />
         }
         <button class="btn-primary submit" type="button" (click)="create()"
-          [disabled]="addMode() === 'some' && !selectedIds().length">Erstellen</button>
+          [disabled]="busy() || (addMode() === 'some' && !selectedIds().length)">
+          {{ busy() ? 'Bitte warten …' : 'Erstellen' }}
+        </button>
       </div>
     }
   </div>
 </app-dialog>
-
-<!--
-  =====================================================================
-  ZUSAMMENFASSUNG (Deutsch)
-  =====================================================================
-  Vorlage "Channel erstellen".
-  - Schritt 1: Text aus Figma, Feld "Channel-Name" mit #-Icon, Feld
-    "Beschreibung (optional)", Button "Erstellen". novalidate schaltet
-    die Browser-Meldungen aus, unsere eigenen Fehlertexte stehen unter
-    dem Feld (Checkliste: keine HTML5-Meldungen).
-  - Schritt 2: Auswahl alle / bestimmte Personen, dann "Erstellen".
--->

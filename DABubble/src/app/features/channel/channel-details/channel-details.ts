@@ -6,7 +6,7 @@ import { WorkspaceStateService } from '../../../core/data/workspace-state.servic
 import { Dialog } from '../../../shared/components/dialog/dialog';
 import { MemberList } from '../member-list/member-list';
 
-// Channel settings (Figma pages 11 and 14, mobile 60 and 61): rename, describe, leave.
+/** Channel settings (Figma pages 11 and 14, mobile 60 and 61): rename, describe, leave. */
 @Component({
   selector: 'app-channel-details',
   imports: [Dialog, FormsModule, MemberList],
@@ -25,7 +25,7 @@ export class ChannelDetails {
 
   readonly creator = computed(() => this.userService.getById(this.channel()?.createdBy));
 
-  // Name and description can be edited at the same time (Figma page 14).
+  /** Name and description can be edited at the same time (Figma page 14). */
   readonly editingName = signal(false);
   readonly editingDescription = signal(false);
   readonly nameError = signal('');
@@ -38,11 +38,11 @@ export class ChannelDetails {
     this.editingName.set(true);
   }
 
-  // The error text stays visible until the name is valid.
-  saveName(): void {
+  /** The error text stays visible until the name is valid. The server checks again that the name is free. */
+  async saveName(): Promise<void> {
     const channel = this.channel();
     if (!channel) return;
-    this.nameError.set(this.channelService.rename(channel.id, this.nameDraft));
+    this.nameError.set(await this.channelService.rename(channel.id, this.nameDraft));
     if (!this.nameError()) this.editingName.set(false);
   }
 
@@ -66,21 +66,3 @@ export class ChannelDetails {
     this.state.openFirstChannel();
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Channel-Details (Figma Seiten 11 und 14, Handy 60 und 61).
- * - editingName / editingDescription: welches Feld gerade bearbeitet
- *   wird. Beide gleichzeitig sind möglich (Figma Seite 14).
- * - nameDraft / descriptionDraft: Text im Eingabefeld, wird erst beim
- *   Speichern übernommen.
- * - saveName(): Der ChannelService prüft den Namen (leer, zu lang, doppelt)
- *   und gibt einen Fehlertext zurück. Er erscheint unter dem Feld
- *   (Checkliste: Warnung, wenn die Änderung nicht erfolgreich war).
- * - Änderungen sind sofort für alle sichtbar, weil alle Ansichten das
- *   gleiche Signal im Service lesen.
- * - leave(): Channel verlassen, danach öffnet der erste eigene Channel.
- * - Auf dem Handy zeigt die Karte auch die Mitglieder (Figma 60, 61).
- */

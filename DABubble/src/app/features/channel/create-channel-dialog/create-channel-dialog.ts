@@ -8,7 +8,7 @@ import { PeoplePicker } from '../people-picker/people-picker';
 
 type AddMode = 'all' | 'some';
 
-// "Channel erstellen" (Figma mobile page 59), then step 2: choose the members.
+/** "Channel erstellen" (Figma mobile page 59), then step 2: choose the members. */
 @Component({
   selector: 'app-create-channel-dialog',
   imports: [Dialog, FormsModule, PeoplePicker],
@@ -24,47 +24,45 @@ export class CreateChannelDialog {
   readonly nameError = signal('');
   readonly addMode = signal<AddMode>('all');
   readonly selectedIds = signal<string[]>([]);
+  readonly busy = signal(false); // waiting for the server, the button shows "Bitte warten …"
   name = '';
   description = '';
 
-  // Step 1: check the name before going on, so a duplicate shows up at once.
+  /** Step 1: check the name before going on, so a duplicate shows up at once. */
   next(): void {
     const error = this.channelService.validateName(this.name);
     this.nameError.set(error);
     if (!error) this.step.set(2);
   }
 
-  // Step 2: create the channel, add the chosen people and open it.
-  create(): void {
-    const channel = this.channelService.create(this.name, this.description, this.memberIds());
-    if (!channel) return this.backToName();
+  /** Step 2: create the channel, add the chosen people and open it. */
+  async create(): Promise<void> {
+    if (this.busy()) return;
+    this.busy.set(true);
+    const result = await this.channelService.create(this.name, this.description, this.memberIds());
+    this.busy.set(false);
+    if (!result.id) return this.backToName(result.error);
     this.state.closeDialog();
-    this.state.openView('channel', channel.id);
+    this.state.openView('channel', result.id);
   }
 
+  /**
+   * People the channel is created with.
+   *
+   * @returns Everyone in Devspace or the chosen people
+   */
   private memberIds(): string[] {
     return this.addMode() === 'all' ? this.userService.users().map((user) => user.id) : this.selectedIds();
   }
 
-  // The name was taken in the meantime: show the error in step 1 again.
-  private backToName(): void {
-    this.nameError.set(this.channelService.validateName(this.name));
+  /**
+   * The server refused (name taken, no connection): show the error in step 1 again.
+   * * @param error - Text shown below the name field
+   *
+   * @param error - Text shown below the name field
+   */
+  private backToName(error: string): void {
+    this.nameError.set(error);
     this.step.set(1);
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Fenster "Channel erstellen" in zwei Schritten.
- * - Schritt 1 (Figma Seite 59): Name und Beschreibung (optional).
- *   next() prüft den Namen sofort (leer, zu lang, gibt es schon) und
- *   zeigt den Fehler unter dem Feld.
- * - Schritt 2 "Leute hinzufügen": Alle Mitglieder von Devspace oder
- *   bestimmte Personen (PeoplePicker). Figma zeigt diesen Schritt nicht,
- *   er erfüllt die Checkliste "Der Ersteller kann andere Benutzer
- *   einladen".
- * - create(): legt den Channel an, du bist Ersteller und Mitglied, dann
- *   öffnet der neue Channel (leer, mit Begrüssung wie Figma Seite 19).
- */

@@ -3,7 +3,7 @@ import { UserService } from '../../../core/data/user.service';
 import { Avatar } from '../../../shared/components/avatar/avatar';
 import { User } from '../../../shared/models/user.model';
 
-// Search field to choose one or more people (add members, create channel).
+/** Search field to choose one or more people (add members, create channel). */
 @Component({
   selector: 'app-people-picker',
   imports: [Avatar],
@@ -29,10 +29,22 @@ export class PeoplePicker {
       !hidden.includes(user.id) && (user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query)));
   });
 
+  /**
+   * Updates the search text.
+   * * @param event - Input event of the field
+   *
+   * @param event - Input event of the field
+   */
   onInput(event: Event): void {
     this.query.set((event.target as HTMLInputElement).value);
   }
 
+  /**
+   * Adds a person to the selection.
+   *
+   * @param user - The chosen person
+   * @param field - Search field, it is cleared and keeps the focus
+   */
   add(user: User, field: HTMLInputElement): void {
     this.selectedIds.update((ids) => [...ids, user.id]);
     this.query.set('');
@@ -40,21 +52,13 @@ export class PeoplePicker {
     field.focus();
   }
 
+  /**
+   * Removes a person from the selection.
+   * * @param id - User ID
+   *
+   * @param id - User ID
+   */
   remove(id: string): void {
     this.selectedIds.update((ids) => ids.filter((selectedId) => selectedId !== id));
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Personen-Auswahl mit Suchfeld (Checkliste: "einen oder mehrere
- * Benutzer aus einer Liste auswählen").
- * - excludeIds: Personen, die nicht angeboten werden (schon Mitglied).
- * - selectedIds ist ein model(): Die Eltern-Komponente liest und setzt
- *   die Auswahl mit [(selectedIds)] (Zwei-Wege-Bindung).
- * - suggestions: Treffer nach Name oder E-Mail, in Echtzeit.
- * - add(): Person auswählen, Feld leeren, Fokus bleibt im Feld.
- * - remove(): Person wieder entfernen (Kreuz an der Pille).
- */

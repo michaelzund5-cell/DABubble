@@ -3,7 +3,7 @@ import { WorkspaceStateService } from '../../../core/data/workspace-state.servic
 import { Dialog } from '../../../shared/components/dialog/dialog';
 import { MemberList } from '../member-list/member-list';
 
-// Desktop popup below the member avatars in the channel header.
+/** Desktop popup below the member avatars in the channel header. */
 @Component({
   selector: 'app-members-dialog',
   imports: [Dialog, MemberList],
@@ -18,13 +18,3 @@ export class MembersDialog {
     return view.type === 'channel' ? view.id : null;
   });
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Fenster "Mitglieder" (Klick auf die Avatare im Channel-Kopf).
- * Zeigt die Mitgliederliste des offenen Channels. Figma zeigt dieses
- * Fenster nur auf dem Handy (Seite 61), Desktop-Design ist eine Annahme
- * im gleichen Stil.
- */

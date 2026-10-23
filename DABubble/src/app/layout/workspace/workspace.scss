@@ -97,27 +97,3 @@
   font-weight: 700;
   text-align: center;
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles des Seitenrahmens.
- * - height: 100vh + overflow: hidden: Die Seite selbst scrollt nicht,
- *   nur die Nachrichtenliste und die Sidebar.
- * - .content: CSS Grid mit festen Spalten aus Figma: Sidebar 366 px,
- *   Chat nimmt den Rest (minmax(0, 1fr)).
- * - transition: Ein- und Ausklappen ist animiert.
- * - .menu-toggle: Button am linken Rand, Position und Höhe aus Figma
- *   (offen: y 585, 339 px hoch; eingeklappt: y 599, 310 px).
- *   writing-mode: vertical-rl stellt den Text senkrecht, rotate: 180deg
- *   dreht ihn, sodass er von unten nach oben gelesen wird (wie Figma).
- *   Bei niedrigen Fenstern rutscht er mit nach oben.
- * - Thread-Spalte 485 px (Figma Seite 15). Zwischen 1000 und 1500 px
- *   Breite liegt der Thread über dem Chat, sonst wäre der Chat zu schmal.
- * - Handy (unter 1000 px): immer nur eine Ansicht (Menü, Chat oder
- *   Thread), gesteuert über die Klasse mobile-chat. 100dvh passt sich
- *   der echten Höhe im Handy-Browser an (Adressleiste).
- * - .save-error: weisse Karte unten in der Mitte, Text in Fehlerfarbe.
- *   max-width: passt auch auf 320 px breite Bildschirme.
- */
