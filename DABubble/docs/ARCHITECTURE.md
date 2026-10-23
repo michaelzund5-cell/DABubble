@@ -29,9 +29,10 @@ Component  ->  Service (core/data, core/auth)  ->  Firebase (Authentication + Fi
 ## Data model in Firestore
 
 ```
-users/{uid}                              name, email, avatar, status
+users/{uid}                              name, email, avatar, status, lastActive
 channels/{channelId}                     name, description, memberIds[], createdBy, createdAt, isPublic (only "allgemein")
 channels/{channelId}/messages/{id}       senderId, text, createdAt, reactions[], threadId?, edited?
+channelNames/{name in lower case}        channelId   (one entry per name, keeps channel names unique)
 directChats/dm_{uidA}_{uidB}             participants[]   (IDs sorted, so both find the same chat)
 directChats/dm_{uidA}_{uidB}/messages/{id}   same as in channels
 ```
@@ -41,6 +42,8 @@ directChats/dm_{uidA}_{uidB}/messages/{id}   same as in channels
 - Live with `onSnapshot`: changes appear for everyone at once, without reloading.
 - Timestamps are set by the server (`serverTimestamp`).
 - A brand-new channel may not be on the server yet when its messages are first requested. The message listener then retries after 1 second (up to 5 times).
+- Channel names are unique on the server: creating or renaming a channel reserves the name in `channelNames` in the same transaction (`core/data/channel-names.ts`).
+- Online status: an open, visible tab sends a heartbeat (`lastActive`) every minute (`core/data/presence.service.ts`). Without a heartbeat for 2.5 minutes a user counts as offline.
 - The security rules are in `firestore.rules`.
 
 ## State
@@ -82,6 +85,6 @@ Flow:
 - Functions at most 14 lines, files at most 400 lines, camelCase, strict mode
 - `button { cursor: pointer; border: 0 }` globally
 - Mobile breakpoint: 999 px (same in SCSS and `viewport.service`)
-- Comments in English, every file ends with a summary in German ("ZUSAMMENFASSUNG")
+- Comments in English, functions and classes documented with TSDoc (`/** ... */`, `@param`, `@returns`)
 
 Security has its own document: `docs/SECURITY.md`.

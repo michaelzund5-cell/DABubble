@@ -47,7 +47,7 @@ public/img/     images, icons, avatars, emojis (cut out of Figma)
 docs/           architecture, security, Firebase, Figma notes
 ```
 
-Every file has comments in English and ends with a German "ZUSAMMENFASSUNG".
+Code comments are in English and follow the TSDoc standard (https://tsdoc.org/).
 
 ## Documentation
 

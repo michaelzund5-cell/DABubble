@@ -9,7 +9,7 @@ These values are not secret: every browser receives them. Protection comes from 
 |---|---|
 | Authentication | Email/password, Google, anonymous (automatic cleanup after 30 days) |
 | Firestore | Location `europe-west6` (Zurich), production mode |
-| Rules | Paste the content of `firestore.rules` under Firestore > Rules and publish |
+| Rules | Paste the content of `firestore.rules` under Firestore > Rules and publish (again after every change, e.g. `channelNames` and `lastActive`) |
 | Authorized domains | `localhost` and `michael-zuend.developerakademie.net` |
 | Password email | Action URL stays on the default. The link opens the Firebase page, the new password is set there. |
 
@@ -22,6 +22,8 @@ These values are not secret: every browser receives them. Protection comes from 
 | `password-reset.service` | `sendPasswordResetEmail`, `confirmPasswordReset` |
 | `user.service` | `users` live |
 | `channel.service` | `channels` live (own channels only), shows a notice when saving fails |
+| `channel-names.ts` | `channelNames`: reserves channel names in a transaction (unique names) |
+| `presence.service` | Online heartbeat (`status`, `lastActive`) |
 | `message-store` / `message.service` | Load messages live / write them |
 
 ## Changing the rules

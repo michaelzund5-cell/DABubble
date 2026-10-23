@@ -40,6 +40,8 @@ Principle: the user can change everything in the browser. Checks in the browser 
 | Input lengths | Name 60, channel name 40, description 500, message 4000 characters. In the field (`maxlength`) and again in the service (`shared/utils/limits.ts`). |
 | Rights | Only the sender edits their message, only members change a channel, only the own profile can be changed. Checked in the services and on the server in `firestore.rules`. |
 | Firestore rules | Everything is forbidden unless explicitly allowed. Reading only for members or chat participants. The server checks sender and time of a message, faking is not possible. Lengths as above. Avatar only from the list. Removing others from a channel is not possible, only yourself. Deleting messages and channels is blocked. |
+| Unique channel names | Enforced on the server: `channelNames/{name}` can only be created once and never overwritten. Creating or renaming a channel must reserve the name in the same transaction, the rules check it with `getAfter()`. |
+| Online status | `lastActive` may only be set to the server time (`request.time`), nobody can fake being online. |
 | Search | Only finds channels you are a member of and only your own direct messages. Foreign data never reaches the browser. |
 | Data location | Firestore in Zurich (`europe-west6`), the data stays in Switzerland. |
 | Guest accounts | Deleted automatically after 30 days (no old accounts, no mass abuse). |
@@ -52,7 +54,7 @@ Principle: the user can change everything in the browser. Checks in the browser 
 - **App Check:** Protects the Firebase API against calls that do not come from the app. Not set up yet.
 - **Reactions:** The rules allow every reader to change the reaction list (otherwise nobody could react). They do not check whether someone only changes their own reaction. A stricter check would need a Cloud Function.
 - **Email addresses:** Logged-in users see the email of others (Figma shows it in the profile).
-- **Online status:** Set at login and logout. Whoever simply closes the browser stays "online". Exact status would need the Realtime Database (presence).
+- **Online status:** Heartbeat every minute, a closed tab turns offline after 2.5 minutes. Exact to the second would need the Realtime Database (presence).
 - **Content Security Policy:** Would be set as a header on the server (only allows own scripts and Firebase).
 - **Sign up:** The message "E-Mail wird bereits verwendet" reveals that an account exists. Firebase reports this at sign up as well. Kept on purpose, otherwise the user does not know why it fails.
 
