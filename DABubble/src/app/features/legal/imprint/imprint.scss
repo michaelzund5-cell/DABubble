@@ -12,7 +12,7 @@
   position: relative;
   width: 676px;
   min-height: 469px;
-  margin: 306px 0 56px;
+  margin: 156px 0 56px; // same distance from the top as the login card, no scrolling needed
   padding: 115px 56px 56px;
   background: var(--white);
   border-radius: 30px;
@@ -54,21 +54,3 @@ h2 {
   .card { padding-inline: 24px; }
   .back-btn { left: 24px; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles des Impressums.
- * - .legal-page als Flex-Spalte: Karte waagrecht in der Mitte.
- * - .card: weisse Karte 676 px breit, mindestens 469 px hoch (Figma).
- *   min-height statt height: Die Karte wächst mit, wenn mehr Text
- *   drinsteht (Hinweis, Haftung). Unten 56 px Abstand zum Rand.
- * - .back-btn: echter <button>, weil er eine Aktion auslöst (zurück)
- *   und keine feste Adresse hat. background: none entfernt den
- *   grauen Standard-Hintergrund (Checkliste: keine Standard-Styles).
- * - h2 "Kontakt:", "Hinweis:", "Haftung:": 32 px, gleiche Farbe wie
- *   die Überschrift.
- * - .text: Fliesstext von Hinweis und Haftung, gleicher Abstand wie
- *   Adresse und Kontakt.
- */

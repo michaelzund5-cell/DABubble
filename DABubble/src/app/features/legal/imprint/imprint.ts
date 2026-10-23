@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+/** Imprint page (Figma page 32). */
 @Component({
   selector: 'app-imprint-page',
   imports: [RouterLink],
@@ -11,18 +12,8 @@ import { RouterLink } from '@angular/router';
 export class ImprintPage {
   private readonly location = inject(Location);
 
-  // Back to the page the user came from (login, register, ...).
+  /** Back to the page the user came from (login, register, ...). */
   goBack(): void {
     this.location.back();
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Logik des Impressums.
- * - Location: Angular-Dienst für den Browser-Verlauf.
- * - goBack(): wie der Zurück-Button im Browser. Das Impressum ist von
- *   mehreren Seiten aus erreichbar, deshalb kein fester Link.
- */

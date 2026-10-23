@@ -1,50 +1,37 @@
 <main class="legal-page">
-  <a class="legal-logo" routerLink="/login" aria-label="DABubble, back to login">
+  <a class="legal-logo" routerLink="/login" aria-label="DABubble, zur Anmeldung">
     <picture>
       <source media="(max-width: 999px)" srcset="img/logo-mobile.svg">
-      <img src="img/logo-wide.svg" alt="DABubble">
+      <img src="img/logo.svg" alt="DABubble">
     </picture>
   </a>
 
   <section class="card" aria-labelledby="imprint-title">
-    <button class="back-btn" type="button" (click)="goBack()" aria-label="Back">
+    <button class="back-btn" type="button" (click)="goBack()" aria-label="Zurück">
       <img src="img/icons/arrow-back.svg" alt="">
     </button>
 
-    <h1 id="imprint-title">Imprint</h1>
+    <h1 id="imprint-title">Impressum</h1>
     <p class="address">
       Michael Zünd<br>
       Alvirstrasse 11a<br>
       9463 Oberriet<br>
-      Switzerland
+      Schweiz
     </p>
 
-    <h2>Contact:</h2>
-    <p class="contact">Email: michi.zuend99@hotmail.com</p>
+    <h2>Kontakt:</h2>
+    <p class="contact">E-Mail: michi.zuend99@hotmail.com</p>
 
-    <h2>Note:</h2>
+    <h2>Hinweis:</h2>
     <p class="text">
-      DABubble is a learning project created as part of the training program at Developer Akademie.
-      It is not a commercial service.
+      DABubble ist ein Lernprojekt, entstanden im Rahmen der Weiterbildung bei der Developer Akademie.
+      Es ist kein kommerzielles Angebot.
     </p>
 
-    <h2>Liability:</h2>
+    <h2>Haftung:</h2>
     <p class="text">
-      The content has been created with care. However, no guarantee is given for its accuracy, completeness
-      or timeliness. Users are responsible for the messages they write in the app.
+      Die Inhalte wurden mit Sorgfalt erstellt. Für Richtigkeit, Vollständigkeit und Aktualität wird jedoch
+      keine Gewähr übernommen. Für die Nachrichten in der App sind die Benutzer selbst verantwortlich.
     </p>
   </section>
 </main>
-
-<!--
-  =====================================================================
-  ZUSAMMENFASSUNG (Deutsch)
-  =====================================================================
-  Impressum (Figma Seite 32), Text auf Englisch.
-  - Adresse und Kontakt wie in Figma, dazu "Note" (Lernprojekt) und
-    "Liability" (Haftung). Diese zwei Abschnitte zeigt Figma nicht, sie
-    gehören aber zu einem vollständigen Impressum.
-  - Zurück-Pfeil: geht zur vorherigen Seite (z. B. Login oder
-    Registrierung), nicht fest zu einer Seite.
-  - <br>: Zeilenumbruch innerhalb eines Absatzes, wie in Figma.
--->
