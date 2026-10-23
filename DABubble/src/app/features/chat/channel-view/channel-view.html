@@ -43,22 +43,3 @@
 
   <app-message-input [narrow]="!!state.openThreadId()" />
 </section>
-
-<!--
-  =====================================================================
-  ZUSAMMENFASSUNG (Deutsch)
-  =====================================================================
-  Chat-Ansicht (Figma Seiten 17, 19, 21 bis 26).
-  - Kopfzeile Channel: # Name mit Pfeil (öffnet die Channel-Details),
-    drei Mitglieder-Avatare mit Anzahl (öffnet die Mitgliederliste),
-    Button "Mitglieder hinzufügen".
-  - Kopfzeile Direktnachricht: Avatar und Name, Klick öffnet das Profil.
-    Bei dir selbst steht "(Du)" hinter dem Namen.
-  - @else if: Entweder Channel oder Person, nie beides.
-  - Nachrichten: pro Tag eine Trennlinie (Pipe chatDate), darunter die
-    Nachrichten als <app-message-item>.
-  - @empty: Noch keine Nachricht, dann kommt der Begrüssungstext.
-  - #list: Name für die Nachrichtenliste. Damit scrollt channel-view.ts
-    automatisch zur neuesten Nachricht.
-  - [narrow]: Bei offenem Thread hat das Eingabefeld weniger Rand (Figma).
--->

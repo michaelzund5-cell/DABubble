@@ -75,17 +75,3 @@ h4 { display: flex; align-items: center; gap: 20px; margin: 0; font-size: 20px; 
   h4 { margin-left: 2px; }
   .mail a { margin: 18px 0 0 51px; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Profil-Karte, Werte aus Figma Seite 10 (Desktop) und
- * Seite 43 (Handy).
- * - Karte 500 x 600 px, 40 px Innenabstand.
- * - Avatar 200 px in der Mitte, Name 32 px fett, "Bearbeiten" lila.
- * - Status: grüner Punkt und grüner Text bei online, sonst grau.
- * - E-Mail in Blau #1380FF (nur hier in Figma verwendet).
- * - Bearbeiten-Modus: Annahme, gleiche Felder wie im Login.
- * - Unter 1000 px: Karte so breit wie der Bildschirm, kleinere Werte.
- */

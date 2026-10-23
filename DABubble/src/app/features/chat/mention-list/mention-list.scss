@@ -36,17 +36,3 @@ li:first-child button, button:hover { background: var(--bg); }
 button:hover { color: var(--purple-1); }
 .channel { gap: 11px; min-height: 48px; }
 .empty { padding: 10px 15px; color: var(--text-grey); }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Auswahlliste.
- * - :host position: absolute: liegt über dem Chat, Position setzt das
- *   Eingabefeld (über dem Feld).
- * - max-height + overflow-y: Bei vielen Einträgen scrollt die Liste.
- * - Karte und Zeilen wie in Figma Seite 52: Rahmen, Ecken 20 px,
- *   Zeilen 58 px hoch, 15 px Abstand. Der erste Eintrag ist hell
- *   hinterlegt: Enter wählt ihn aus. Desktop nutzt dasselbe Design
- *   (Figma zeigt die Liste nur auf dem Handy).
- */

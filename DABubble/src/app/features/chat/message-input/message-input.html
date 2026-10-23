@@ -25,19 +25,3 @@
       (pickedChannel)="insertMention($event.name); field.focus()" />
   }
 </form>
-
-<!--
-  =====================================================================
-  ZUSAMMENFASSUNG (Deutsch)
-  =====================================================================
-  Eingabefeld für Nachrichten (Figma Seite 17) und Thread-Antworten.
-  - (ngModelChange): nach jeder Eingabe prüfen, ob @ oder # getippt wurde.
-  - Smiley: Emoji-Auswahl im Popover, das Zeichen kommt in den Text.
-    Klick daneben schliesst sie.
-  - @-Icon: fügt ein @ ein und öffnet die Personenliste.
-  - Bei @ oder # öffnet die Liste über dem Feld, Klick setzt den Namen ein.
-  - field.focus(): Nach einem Klick auf Emoji, @ oder einen Namen springt
-    der Cursor zurück ins Feld. Sonst hätte der Button den Fokus und
-    Enter würde nicht senden.
-  - Senden ist gesperrt, solange das Feld leer ist.
--->

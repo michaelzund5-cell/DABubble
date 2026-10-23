@@ -44,18 +44,3 @@ button.link:hover { text-decoration: underline; }
   .direct, .channel-intro { margin-bottom: 46px; }
   .direct .text { min-height: 0; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles des Begrüssungstexts, Werte aus Figma.
- * - margin-top: auto: Der Text steht unten über dem Eingabefeld.
- * - .person: Avatar und Name, Name unten bündig (align-items: flex-end).
- * - .direct: Platz für zwei Zeilen, damit der Avatar bei einer und bei
- *   zwei Zeilen Text auf derselben Höhe steht (Figma Seiten 21 und 26).
- * - Fliesstext 20 px grau, beim Channel schwarz (Figma Seite 19).
- * - Handy: 16 px Rand, Avatar 88 px (Figma Seiten 51, 53, 58). Hier
- *   endet der Text immer 49 px über dem Eingabefeld, egal wie lang.
- * - .link: Lila wie in Figma (#5259F0).
- */

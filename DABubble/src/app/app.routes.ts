@@ -10,7 +10,7 @@ import { ImprintPage } from './features/legal/imprint/imprint';
 import { PrivacyPage } from './features/legal/privacy/privacy';
 import { Workspace } from './layout/workspace/workspace';
 
-// Maps URLs to pages. The order matters: Angular uses the first matching route.
+/** Maps URLs to pages. The order matters: Angular uses the first matching route. */
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginPage },
@@ -25,25 +25,3 @@ export const routes: Routes = [
   // Wildcard: every unknown URL goes back to the login page.
   { path: '**', redirectTo: 'login' },
 ];
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Die Routen legen fest, welche URL welche Seite anzeigt.
- *
- * - '' (leere URL): leitet auf /login weiter. pathMatch: 'full' heißt,
- *   nur wenn die URL wirklich komplett leer ist.
- * - /login, /register, /password-reset: die Seiten vor dem Login.
- * - /register/avatar: Schritt 2 der Registrierung. Der registrationGuard
- *   öffnet sie nur, wenn Schritt 1 ausgefüllt ist.
- * - /imprint, /privacy: Impressum und Datenschutz, ohne Login erreichbar.
- * - /password-reset/new: neues Passwort setzen. Hierhin führt der Link
- *   aus der E-Mail (später von Firebase).
- * - /workspace: der Arbeitsbereich. canActivate: [authGuard] heißt,
- *   der Guard prüft vorher, ob man eingeloggt ist.
- * - '**' ist eine Wildcard: Jede unbekannte URL führt zu /login.
- *   Sie muss am Ende stehen, weil Angular die erste passende Route
- *   nimmt.
- * Die URLs sind jetzt englisch, wie der restliche Code.
- */

@@ -12,10 +12,10 @@ import { ChatIntro } from '../chat-intro/chat-intro';
 import { MessageInput } from '../message-input/message-input';
 import { MessageItem } from '../message-item/message-item';
 
-// Closer than this to the bottom counts as "reading the newest messages".
+/** Closer than this to the bottom counts as "reading the newest messages". */
 const NEAR_BOTTOM_PX = 300;
 
-// Chat of a channel or a direct conversation (Figma pages 17, 19, 21-26).
+/** Chat of a channel or a direct conversation (Figma pages 17, 19, 21-26). */
 @Component({
   selector: 'app-channel-view',
   imports: [Avatar, ChatDatePipe, ChatIntro, MessageInput, MessageItem],
@@ -60,7 +60,12 @@ export class ChannelView {
     afterRenderEffect(() => this.scrollToNewest(this.state.activeView(), this.messages().length));
   }
 
-  // Runs after the new messages are on screen, so scrollHeight already includes them.
+  /**
+   * Runs after the new messages are on screen, so scrollHeight already includes them.
+   *
+   * @param view - Open chat
+   * @param count - Number of messages
+   */
   private scrollToNewest(view: ActiveView, count: number): void {
     const list = this.list()?.nativeElement;
     if (list && this.shouldScroll(list, view, count)) list.scrollTop = list.scrollHeight;
@@ -68,7 +73,14 @@ export class ChannelView {
     this.lastCount = count;
   }
 
-  // Other chat opened or first messages loaded: always. New message: if it is your own or you were already at the bottom.
+  /**
+   * Other chat opened or first messages loaded: always. New message: if it is your own or you were already at the bottom.
+   *
+   * @param list - Scrolling message list
+   * @param view - Open chat
+   * @param count - Number of messages
+   * @returns true when the view should jump to the newest message
+   */
   private shouldScroll(list: HTMLElement, view: ActiveView, count: number): boolean {
     if (view !== this.lastView || this.lastCount === 0) return true;
     if (count <= this.lastCount) return false;
@@ -76,27 +88,3 @@ export class ChannelView {
     return ownMessage || list.scrollHeight - list.scrollTop - list.clientHeight < NEAR_BOTTOM_PX;
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Logik der Chat-Ansicht (Channel oder Direktnachricht).
- * - channel / partner: Was ist offen? Ein Channel oder eine Person.
- *   Eines davon ist immer undefined.
- * - isSelf: Direktnachricht an dich selbst, Figma zeigt dann "(Du)".
- * - days: Nachrichten des offenen Chats, nach Tagen gruppiert, für die
- *   Datums-Trennlinien ("Dienstag, 14 Januar", "Heute"). Ist die Liste
- *   leer, zeigt <app-chat-intro> den Begrüssungstext (Figma 19, 21-26).
- * - members / visibleMembers: Mitglieder für die Avatare in der
- *   Kopfzeile, höchstens 3 sichtbar (Figma). Die Zahl daneben zeigt
- *   alle Mitglieder.
- * - scrollToNewest(): springt ans Ende der Nachrichten, damit man neue
- *   Nachrichten sieht, ohne selbst zu scrollen. afterRenderEffect läuft
- *   erst, wenn die neuen Nachrichten schon angezeigt sind.
- * - shouldScroll(): Neuer Chat geöffnet oder erste Nachrichten geladen:
- *   immer nach unten. Neue
- *   Nachricht: nur wenn sie von dir ist oder du schon unten warst
- *   (näher als 300 px). Liest du gerade ältere Nachrichten, springt die
- *   Ansicht nicht weg. Reaktionen oder Bearbeiten lösen nichts aus.
- */

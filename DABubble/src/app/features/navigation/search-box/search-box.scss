@@ -118,19 +118,3 @@ input::-webkit-search-cancel-button { display: none; }
   :host(.mobile.open) .results button.channel { gap: 10px; min-height: 27px; margin-left: 25px; font-size: 18px; }
   :host(.mobile.open) .results button:hover { background: none; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * - Handy mit Eingabe (Klasse open): Die Suche liegt als eigener
- *   Bildschirm unter dem Header, Titel "Search" mit Kreuz, die Treffer in
- *   einer weissen Karte (Figma Seiten 46 und 47, Werte 1:1).
- * Styles der Suche.
- * - Desktop: weisses Feld 70 px hoch, Platzhalter 24 px grau. Die
- *   Trefferliste liegt als Karte unter dem Feld (absolute).
- * - ::-webkit-search-cancel-button: blendet das graue "x" von Chrome aus.
- * - :host(.mobile): Handy-Menü, Feld 50 px mit Rahmen, Schrift 17 px.
- *   Die Treffer stehen direkt unter dem Feld und ersetzen optisch das
- *   Menü darunter nicht, sie schieben es nach unten.
- */

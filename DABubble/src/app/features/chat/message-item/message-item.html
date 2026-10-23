@@ -97,26 +97,3 @@
     }
   }
 }
-
-<!--
-  =====================================================================
-  ZUSAMMENFASSUNG (Deutsch)
-  =====================================================================
-  Aufbau einer Nachricht.
-  - Bearbeiten-Modus (Figma Seite 27): weißes Feld mit dem Text, Emoji,
-    "Abbrechen" und "Speichern". Name und Uhrzeit sind dann ausgeblendet.
-  - Normaler Modus: Name, Uhrzeit, Sprechblase, Reaktionen, Thread-Link.
-  - .toolbar: erscheint beim Hover (CSS). Schnell-Emojis, Emoji-Auswahl,
-    Thread, bei eigenen Nachrichten das Menü "Nachricht bearbeiten".
-    Figma hat dafür kein Desktop-Design: Icons aus demselben
-    Material-Set wie Figma, Aussehen ist eine Annahme.
-  - Im Thread (showThreadInfo = false) entfällt der Thread-Button.
-  - Sprechblase: Der Text ist in Teile zerlegt (parts). @Name und #Channel
-    sind Buttons und öffnen die Direktnachricht bzw. den Channel
-    (Feedback: Erwähnungen als Link). Die Zeile steht absichtlich am
-    Stück, sonst kämen Zeilenumbrüche aus dem HTML in den Text.
-  - Emoji-Auswahl und Menü "Nachricht bearbeiten" stehen in
-    <app-popover>: Sie werden nicht mehr abgeschnitten und schliessen
-    sich beim Klick daneben. #toolbarBtn usw. sind die Buttons, an denen
-    das Popup ausgerichtet wird.
--->

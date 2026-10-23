@@ -48,19 +48,3 @@ app-mention-list.popup { bottom: calc(100% - 18px); left: 19px; } // Figma page 
 @media (max-width: 999px) {
   :host, :host(.narrow), :host(.thread) { padding: 0 15px 29px; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles des Eingabefelds, Werte aus Figma.
- * - Rand außen: 44 px normal, 34 px bei offenem Thread, 19 px im Thread
- *   selbst (Figma Seite 15 und 17).
- * - :focus-within: Rahmen wird lila, wenn man in das Feld klickt.
- * - resize: none: Die Textarea lässt sich nicht von Hand vergrößern.
- * - .send:disabled: halb durchsichtig, solange nichts eingegeben ist.
- *   Figma zeigt nur den aktiven Zustand, Annahme.
- * - Handy: 15 px Rand links und rechts, 29 px unten (Figma 48 bis 53).
- * - .popup: Die @/#-Liste erscheint über dem Feld. Die Emoji-Auswahl
- *   steht im Popover (eigene Position).
- */

@@ -8,7 +8,7 @@ import { Avatar } from '../../../shared/components/avatar/avatar';
 import { Dialog } from '../../../shared/components/dialog/dialog';
 import { SearchBox } from '../search-box/search-box';
 
-// Top bar: logo (or back arrow on mobile), search, profile with menu.
+/** Top bar: logo (or back arrow on mobile), search, profile with menu. */
 @Component({
   selector: 'app-header',
   imports: [Avatar, Dialog, SearchBox],
@@ -22,7 +22,7 @@ export class Header {
   readonly userService = inject(UserService);
   readonly viewport = inject(ViewportService);
 
-  // Mobile chat or thread view: back arrow instead of the logo (Figma page 48).
+  /** Mobile chat or thread view: back arrow instead of the logo (Figma page 48). */
   readonly showBack = computed(() => this.viewport.isMobile() && this.state.mobileChatOpen());
 
   async logout(): Promise<void> {
@@ -32,15 +32,3 @@ export class Header {
     void this.router.navigate(['/login']);
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Logik der Kopfzeile.
- * - showBack: Auf dem Handy im Chat zeigt der Header den Zurück-Pfeil.
- * - Die Suche steckt in der Komponente SearchBox.
- * - logout(): meldet ab und geht zur Anmeldung.
- * - Das Menü (Profil / Log out) ist ein Dialog im WorkspaceStateService,
- *   damit immer nur ein Fenster offen ist.
- */

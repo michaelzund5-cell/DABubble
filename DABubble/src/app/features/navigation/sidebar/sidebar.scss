@@ -103,24 +103,3 @@ h2 { margin: 0 0 0 15px; font-size: 24px; font-weight: 700; }
 
   .new-message-fab:hover { background: var(--purple-2); }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Sidebar, alle Abstände aus Figma Seiten 17, 19 und 21.
- * - :host { height: 100% }: Die Sidebar füllt die Höhe der Spalte.
- * - overflow-y: auto: Bei vielen Channels scrollt nur die Sidebar.
- * - .caret: Der Pfeil dreht sich beim Einklappen um -90 Grad.
- * - .channel.active / .person.active: helle Pille, Text fett und lila
- *   (Figma: Text #5259F0, Icon #535AF1).
- * - Channels: 13 px Abstand untereinander, 25 px vor "Channel hinzufügen".
- * - .person: 4 px / 20 px Innenabstand, damit die Pille beim aktiven
- *   Eintrag den Avatar umschliesst (Figma Seite 21).
- * - Handy (unter 1000 px, Figma Seiten 44 und 45): Karte mit Schatten,
- *   Suchfeld oben, Schrift 17 px, runder Button "Neue Nachricht" unten
- *   rechts (position: fixed). padding-bottom 100 px, damit der Button
- *   den letzten Namen nicht verdeckt.
- * - Hover-Zustände sind in Figma nicht definiert: Annahme helle Pille
- *   bzw. lila Text.
- */

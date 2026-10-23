@@ -70,21 +70,3 @@
   .menu button { display: flex; align-items: center; gap: 20px; padding: 10px 16px; font-size: 20px; font-weight: 400; }
   .menu-icon { display: block; width: 30px; height: 30px; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Kopfzeile, Werte aus Figma.
- * - Desktop: Logo 242 x 70 px, Suchfeld bis 989 px breit, Profil mit
- *   Name 32 px fett, Avatar 70 px und Pfeil.
- * - flex: 0 1 989px: Das Suchfeld ist 989 px breit, darf aber kleiner
- *   werden. So passt der Header auch auf kleinere Bildschirme.
- * - Unter 1500 px: weniger Abstand, Name ausgeblendet (Avatar reicht).
- * - Handy (unter 1000 px, Figma Seiten 44 und 48): Leiste 80 px, Logo
- *   160 px, Avatar 50 px, keine Suche (sie steht im Menü). Im Chat
- *   Zurück-Pfeil, Devspace-Logo und "Devspace".
- * - .menu: Menü "Profil / Log out" im Dialog-Rahmen (Annahme).
- * - .handle / .menu-icon: Griff und Icons gibt es nur im Handy-Menü,
- *   das von unten hochkommt. Auf dem Desktop sind sie ausgeblendet.
- */

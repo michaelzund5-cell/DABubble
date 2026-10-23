@@ -55,17 +55,3 @@ app-message-input.new { padding: 0 70px 39px; }
   input { height: 53px; }
   app-message-input.new { padding: 0 15px 29px; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles "Neue Nachricht", Werte aus Figma Seite 20.
- * - Kopf 160 px hoch mit Schatten, Titel 24 px fett.
- * - Empfänger-Feld 57 px hoch, runde Enden, Rahmen lila-grau, beim
- *   Klicken lila (Annahme, Figma zeigt nur den leeren Zustand).
- * - .popup: Auswahlliste unter dem Feld.
- * - Handy (Figma Seite 50): Kopf 125 px, Feld 53 px, 15 px Rand.
- * - Das Eingabefeld unten hat hier 70 px Rand statt 44 px. So steht es
- *   in Figma (Abweichung zu den anderen Seiten, 1:1 übernommen).
- */

@@ -12,6 +12,7 @@ import { MAX_MESSAGE_LENGTH } from '../../../shared/utils/limits';
 import { MentionList } from '../mention-list/mention-list';
 import { MentionInput } from './mention-input';
 
+/** Text field for messages and thread replies, with emojis and mentions. */
 @Component({
   selector: 'app-message-input',
   imports: [FormsModule, EmojiPicker, MentionList, Popover],
@@ -31,14 +32,14 @@ export class MessageInput extends MentionInput {
   readonly targetView = input<ActiveView | null>(null); // "Neue Nachricht": recipient chosen above
   readonly sent = output<ActiveView>();
 
-  // In "Neue Nachricht" sending is only possible once a valid recipient is entered.
+  /** In "Neue Nachricht" sending is only possible once a valid recipient is entered. */
   readonly hasTarget = computed(() => this.state.activeView().type !== 'new' || !!this.targetView());
 
   readonly placeholder = computed(() => this.placeholderText());
 
   private readonly field = viewChild<ElementRef<HTMLTextAreaElement>>('field');
 
-  // A new chat or thread: put the cursor into the field ("Schreiben" user story 1).
+  /** A new chat or thread: put the cursor into the field ("Schreiben" user story 1). */
   private readonly focusTarget = computed(() => this.threadId() ?? this.state.activeView());
 
   constructor() {
@@ -59,12 +60,23 @@ export class MessageInput extends MentionInput {
     this.sent.emit(view);
   }
 
+  /**
+   * Adds the emoji to the text.
+   * * @param emoji - Chosen emoji
+   *
+   * @param emoji - Chosen emoji
+   */
   insertEmoji(emoji: Emoji): void {
     this.text += emoji.char;
     this.pickerAnchor.set(null);
   }
 
-  // Figma: "Nachricht an #Entwicklerteam" / "Nachricht an Sofia Müller" / "Antworten..." / "Starte eine neue Nachricht"
+  /**
+   * Figma: "Nachricht an #Entwicklerteam" / "Nachricht an Sofia Müller" / "Antworten..." / "Starte eine neue Nachricht"
+   * * @returns Placeholder for the open chat or thread
+   *
+   * @returns Placeholder for the open chat or thread
+   */
   private placeholderText(): string {
     const view = this.state.activeView();
     if (this.threadId()) return 'Antworten...';
@@ -73,25 +85,3 @@ export class MessageInput extends MentionInput {
     return `Nachricht an ${this.userService.getById(view.id)?.name ?? ''}`;
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Eingabefeld für Nachrichten und Thread-Antworten.
- * - extends MentionInput: übernimmt die Logik für @ und # (Liste mit
- *   Personen bzw. Channels beim Tippen). Steht in mention-input.ts,
- *   weil auch "Neue Nachricht" sie nutzt.
- * - threadId: Ist sie gesetzt, antwortet das Feld im Thread.
- * - narrow: kleinerer Rand bei offenem Thread (Figma Seite 15).
- * - targetView: Empfänger aus "Neue Nachricht". Ohne gültigen Empfänger
- *   ist Senden gesperrt (hasTarget).
- * - sent: meldet nach dem Senden, wohin die Nachricht ging. "Neue
- *   Nachricht" öffnet dann diesen Chat.
- * - placeholder: Text im leeren Feld, je nach Ort (Figma).
- * - effect() mit focusTarget: Wechselt der Chat oder öffnet ein Thread,
- *   springt der Cursor ins Feld (Checkliste: Fokus beim Wechsel). Bei
- *   "Neue Nachricht" bekommt zuerst das Empfänger-Feld den Fokus.
- * - insertEmoji(): hängt das Emoji-Zeichen an den Text an.
- * - maxLength: höchstens 4000 Zeichen pro Nachricht (shared/utils/limits.ts).
- */

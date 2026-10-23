@@ -6,6 +6,7 @@ import { Avatar } from '../../../shared/components/avatar/avatar';
 import { ViewType } from '../../../shared/models/view.model';
 import { SearchBox } from '../search-box/search-box';
 
+/** Workspace menu: channels and direct messages, can be collapsed. */
 @Component({
   selector: 'app-sidebar',
   imports: [Avatar, SearchBox],
@@ -17,33 +18,32 @@ export class Sidebar {
   readonly userService = inject(UserService);
   readonly state = inject(WorkspaceStateService);
 
-  // Event to the workspace: a chat was chosen (mobile switches to the chat view).
+  /** Event to the workspace: a chat was chosen (mobile switches to the chat view). */
   readonly navigationSelected = output<void>();
 
   readonly channelsOpen = signal(true);
   readonly directOpen = signal(true);
 
+  /**
+   * Checks if an entry is open.
+   *
+   * @param type - channel or direct
+   * @param id - Channel or user ID
+   * @returns true for the open chat
+   */
   isActive(type: ViewType, id: string): boolean {
     const view = this.state.activeView();
     return view.type === type && view.id === id;
   }
 
+  /**
+   * Opens a channel or direct chat.
+   *
+   * @param type - channel or direct
+   * @param id - Channel or user ID
+   */
   open(type: ViewType, id: string): void {
     this.state.openView(type, id);
     this.navigationSelected.emit();
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Logik der Sidebar.
- * - output<void>(): Ereignis an die Elternkomponente (Workspace).
- *   navigationSelected: ein Chat wurde gewählt. Auf dem Handy wechselt
- *   der Workspace dann vom Menü zum Chat (User Story 5).
- * - "Channel erstellen" öffnet den Dialog über state.openDialog().
- * - channelsOpen / directOpen: Signale für das Ein- und Ausklappen.
- * - isActive(): Ist dieser Channel oder diese Person gerade offen?
- * - open(): öffnet den Chat über den WorkspaceStateService.
- */

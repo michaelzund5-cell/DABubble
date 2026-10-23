@@ -15,7 +15,7 @@ import { EmojiSrcPipe } from '../../../shared/pipes/emoji-src.pipe';
 import { MAX_MESSAGE_LENGTH } from '../../../shared/utils/limits';
 import { MentionTarget, splitMentions, TextPart } from '../../../shared/utils/mention-parts';
 
-// One chat message: avatar, name, time, bubble, reactions, thread link, hover menu, edit mode.
+/** One chat message: avatar, name, time, bubble, reactions, thread link, hover menu, edit mode. */
 @Component({
   selector: 'app-message-item',
   imports: [Avatar, DatePipe, EmojiPicker, EmojiSrcPipe, FormsModule, Popover],
@@ -47,14 +47,14 @@ export class MessageItem {
   readonly replies = computed(() => this.messageService.repliesOf(this.message().id));
   readonly lastReplyAt = computed(() => this.replies().at(-1)?.createdAt ?? null);
 
-  // People and own channels that can be mentioned. Text with @Name or #Channel becomes a link.
+  /** People and own channels that can be mentioned. Mentions of them become links. */
   private readonly mentionTargets = computed<MentionTarget[]>(() => [
     ...this.userService.users().map((user) => ({ name: user.name, kind: 'user' as const, id: user.id })),
     ...this.channelService.channels().map((channel) => ({ name: channel.name, kind: 'channel' as const, id: channel.id })),
   ]);
   readonly parts = computed(() => splitMentions(this.message().text, this.mentionTargets()));
 
-  // User story 2: 20 reactions visible on desktop, 7 on mobile and in the thread, then "x weitere".
+  /** User story 2: 20 reactions visible on desktop, 7 on mobile and in the thread, then "x weitere". */
   readonly reactionLimit = computed(() => this.compact() || this.viewport.isMobile() ? 7 : 20);
   readonly showAllReactions = signal(false);
   readonly visibleReactions = computed(() => {
@@ -66,17 +66,28 @@ export class MessageItem {
 
   readonly avatarSize = computed(() => this.viewport.isMobile() ? 50 : 70); // Figma: 70 desktop, 50 mobile
 
-  // The button an open popup belongs to, null when it is closed.
+  /** The button an open popup belongs to, null when it is closed. */
   readonly pickerAnchor = signal<HTMLElement | null>(null);
   readonly menuAnchor = signal<HTMLElement | null>(null);
   readonly editing = signal(false);
   editText = '';
 
+  /**
+   * Adds or removes the own reaction.
+   * * @param emoji - Emoji ID
+   *
+   * @param emoji - Emoji ID
+   */
   toggleReaction(emoji: string): void {
     this.messageService.toggleReaction(this.message().id, emoji);
   }
 
-  // Tooltip text: who reacted, "Du" for yourself (user story 2).
+  /**
+   * Tooltip text: who reacted, "Du" for yourself (user story 2).
+   *
+   * @param reaction - One emoji with its users
+   * @returns e.g. "Sofia Müller und Du haben reagiert"
+   */
   reactedBy(reaction: Reaction): string {
     const names = reaction.userIds.map((id) => id === this.userService.currentUser()?.id
       ? 'Du' : this.userService.getById(id)?.name ?? 'Unbekannt');
@@ -84,20 +95,42 @@ export class MessageItem {
     return `${names.slice(0, -1).join(', ')} und ${names.at(-1)} haben reagiert`;
   }
 
+  /**
+   * Opens or closes the emoji picker.
+   * * @param button - Button the picker is aligned to
+   *
+   * @param button - Button the picker is aligned to
+   */
   togglePicker(button: HTMLElement): void {
     this.pickerAnchor.set(this.pickerAnchor() ? null : button);
   }
 
+  /**
+   * Opens or closes the message menu.
+   * * @param button - Button the menu is aligned to
+   *
+   * @param button - Button the menu is aligned to
+   */
   toggleMenu(button: HTMLElement): void {
     this.menuAnchor.set(this.menuAnchor() ? null : button);
   }
 
+  /**
+   * Reacts with the chosen emoji.
+   * * @param emoji - Chosen emoji
+   *
+   * @param emoji - Chosen emoji
+   */
   pickReaction(emoji: Emoji): void {
     this.toggleReaction(emoji.id);
     this.pickerAnchor.set(null);
   }
 
-  // @Name opens the direct message with that person, #Channel opens the channel.
+  /**
+   * A mention of a person opens the direct message, a mention of a channel opens the channel.
+   *
+   * @param part - Clicked mention
+   */
   openMention(part: TextPart): void {
     if (!part.id) return;
     this.state.openView(part.kind === 'user' ? 'direct' : 'channel', part.id);
@@ -113,38 +146,14 @@ export class MessageItem {
     if (this.messageService.edit(this.message().id, this.editText)) this.editing.set(false);
   }
 
+  /**
+   * Adds the emoji to the edited text.
+   * * @param emoji - Chosen emoji
+   *
+   * @param emoji - Chosen emoji
+   */
   insertEmoji(emoji: Emoji): void {
     this.editText += emoji.char;
     this.pickerAnchor.set(null);
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Eine einzelne Nachricht (Figma Seiten 15, 17, 27).
- * - host: setzt Klassen am Element. "own" spiegelt die eigene Nachricht
- *   nach rechts, "compact" ist der Thread-Modus, "editing" der
- *   Bearbeiten-Modus (hellgrauer Hintergrund, Figma Seite 27).
- * - computed(): sender, isOwn, replies, lastReplyAt rechnen sich neu,
- *   sobald sich Daten ändern. replies().at(-1) = neueste Antwort.
- * - Hover-Leiste: zwei zuletzt genutzte Emojis, Emoji-Auswahl, Thread,
- *   und bei eigenen Nachrichten "Nachricht bearbeiten".
- * - pickReaction(): Reaktion aus der Auswahl. insertEmoji(): Emoji beim
- *   Bearbeiten in den Text einfügen. Dieselbe Auswahl-Komponente.
- * - saveEdit(): Der Service prüft selbst, ob die Nachricht dir gehört.
- * - Reaktionen (User Story 2): Desktop zeigt bis 20, Handy und Thread
- *   bis 7 (reactionLimit). Der Rest versteckt sich hinter "x weitere",
- *   aufgeklappt gibt es "Weniger anzeigen" (Figma Seiten 12, 13).
- * - reactedBy(): Text für das Hover-Feld, z. B. "Sofia Müller und Du
- *   haben reagiert".
- * - maxLength: höchstens 4000 Zeichen pro Nachricht (shared/utils/limits.ts).
- * - pickerAnchor / menuAnchor: der Button, an dem das offene Popup hängt,
- *   null = zu. togglePicker() / toggleMenu() öffnen oder schliessen es.
- *   Das Popup selbst ist <app-popover> (schliesst beim Klick daneben).
- * - mentionTargets / parts: Personen und eigene Channels, die erwähnt
- *   werden können. splitMentions() zerlegt den Text, @Name und #Channel
- *   werden zu Buttons. openMention() öffnet die Direktnachricht bzw.
- *   den Channel.
- */

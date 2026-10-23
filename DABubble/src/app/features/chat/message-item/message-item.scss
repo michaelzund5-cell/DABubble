@@ -132,7 +132,7 @@
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
 }
 
-// Feedback: the menu was far too big. Same size as the other texts in the chat.
+// Same text size as the rest of the chat.
 .more-menu button {
   padding: 8px 16px;
   border-radius: 100px;
@@ -200,27 +200,3 @@
   .toolbar { right: 16px; }
   :host(.own) .toolbar { left: 16px; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles einer Nachricht, Werte aus Figma.
- * - :host(.own): eigene Nachricht, gespiegelt (row-reverse), lila Blase,
- *   Ecke oben rechts eckig. Fremde Nachricht: Ecke oben links eckig.
- * - :host(:hover) / .editing: hellgrauer Hintergrund über die ganze
- *   Breite (Figma Seite 27). Die fremde Blase wird dann weiß, damit sie
- *   sich vom Hintergrund abhebt.
- * - :host(.compact): Thread-Ansicht, 20 px statt 30 px Abstand.
- * - white-space: pre-line: Zeilenumbrüche aus Shift+Enter bleiben.
- * - .toolbar: nur beim Hover sichtbar (display: flex). Eigenes Design,
- *   da Figma keines vorgibt.
- * - .more-menu: Menü "Nachricht bearbeiten" im Popover, 16 px Schrift
- *   (Feedback: war viel zu gross und wurde abgeschnitten).
- * - .mention: @Name und #Channel im Text, fett und in Lila (bei eigenen
- *   Nachrichten weiss). Unterstrichen beim Hover.
- * - .edit-box: Bearbeiten-Feld mit Rahmen, 20 px Innenabstand.
- *   field-sizing: content lässt die Textarea mit dem Text wachsen.
- * - Name, Uhrzeit und "2 Antworten" brechen nicht um. Ein sehr langer
- *   Name wird mit ... gekürzt (wichtig für 320 px Breite).
- */

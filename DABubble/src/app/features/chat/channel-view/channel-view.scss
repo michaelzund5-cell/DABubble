@@ -115,27 +115,3 @@ button { padding: 0; background: none; color: inherit; }
   .messages { padding-bottom: 0; }
   .day-divider { margin: 4px 16px -1px; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Chat-Ansicht, Werte aus Figma Seite 17.
- * - .chat: weiße Karte, Spalte aus Kopfzeile, Nachrichten, Eingabe.
- * - .chat-header: 96 px hoch mit Schatten nach unten. Bei einer
- *   Direktnachricht 110 px (Figma Seiten 21 bis 26, 1:1 übernommen).
- * - .avatars: Mitglieder überlappen sich um 14 px, weißer Rand 2 px.
- * - .messages: Abstand 10 px, dazu kommen 10 px Innenabstand jeder
- *   Nachricht (Hover-Fläche), zusammen 30 px wie in Figma.
- * - flex: 1 nimmt den restlichen Platz, overflow-y: auto
- *   scrollt nur die Nachrichten.
- * - .with-thread: Bei offenem Thread endet die Liste 25 px tiefer
- *   (Figma Seite 15 gegenüber Seite 17, 1:1 übernommen).
- * - :first-child margin-top: auto: Nachrichten stehen unten, wie in
- *   Figma. justify-content: flex-end würde das Scrollen nach oben
- *   verhindern, deshalb dieser Weg.
- * - Handy: keine Karte, Leiste 60 px (bei Personen 78 px), nur der
- *   Button "Mitglieder hinzufügen" statt der Avatare (Figma Seite 48).
- * - .day-divider: Linie über die ganze Breite (::before), das Datum
- *   in der Pille liegt mit weißem Hintergrund darüber.
- */

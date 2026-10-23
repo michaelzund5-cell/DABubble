@@ -5,9 +5,10 @@ import { Avatar } from '../../../shared/components/avatar/avatar';
 import { Channel } from '../../../shared/models/channel.model';
 import { User } from '../../../shared/models/user.model';
 
+/** Character that opened the list: `@` for people, `#` for channels. */
 export type MentionTrigger = '@' | '#';
 
-// Dropdown with people (@) or channels (#), filtered while typing (Figma pages 46, 47).
+/** Dropdown with people (`@`) or channels (`#`), filtered while typing (Figma pages 46, 47). */
 @Component({
   selector: 'app-mention-list',
   imports: [Avatar],
@@ -31,7 +32,12 @@ export class MentionList {
 
   readonly currentUserId = computed(() => this.userService.currentUser()?.id);
 
-  // Enter in the text field picks the first (highlighted) entry.
+  /**
+   * Enter in the text field picks the first (highlighted) entry.
+   * * @returns true when there was an entry
+   *
+   * @returns true when there was an entry
+   */
   pickFirst(): boolean {
     const user = this.trigger() === '@' ? this.users()[0] : undefined;
     const channel = this.trigger() === '#' ? this.channels()[0] : undefined;
@@ -40,22 +46,13 @@ export class MentionList {
     return !!user || !!channel;
   }
 
+  /**
+   * Checks a name against the typed text.
+   *
+   * @param value - Name or email
+   * @returns true when it contains the query
+   */
   private matches(value: string): boolean {
     return value.toLowerCase().includes(this.query().trim().toLowerCase());
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Auswahlliste für @ (Personen) und # (Channels).
- * - trigger: '@' oder '#', bestimmt was angezeigt wird.
- * - query: der Text nach dem Zeichen, z. B. "no" bei "@no".
- * - users / channels: computed, filtern bei jedem Tastendruck neu
- *   (Echtzeit, User Story 6). Personen auch über die E-Mail findbar,
- *   wie das Feld "An:" in Figma verspricht.
- * - pickedUser / pickedChannel: melden die Auswahl an das Eingabefeld.
- * - pickFirst(): Enter wählt den ersten Treffer (hell hinterlegt).
- * - "(Du)" hinter dem eigenen Namen.
- */

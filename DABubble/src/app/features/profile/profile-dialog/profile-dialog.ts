@@ -5,7 +5,7 @@ import { WorkspaceStateService } from '../../../core/data/workspace-state.servic
 import { Dialog } from '../../../shared/components/dialog/dialog';
 import { AVATARS, DEFAULT_AVATAR } from '../../../shared/models/avatars';
 
-// Profile card (Figma page 10). Own profile can be edited (user story 4), others get a "Nachricht" button.
+/** Profile card (Figma page 10). Own profile can be edited (user story 4), others get a "Nachricht" button. */
 @Component({
   selector: 'app-profile-dialog',
   imports: [Dialog, FormsModule],
@@ -41,24 +41,14 @@ export class ProfileDialog {
     if (!error) this.editing.set(false);
   }
 
-  // Opens the direct chat with this person and closes the card.
+  /**
+   * Opens the direct chat with this person and closes the card.
+   * * @param userId - User ID
+   *
+   * @param userId - User ID
+   */
   writeMessage(userId: string): void {
     this.state.openView('direct', userId);
     this.state.closeDialog();
   }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Profil-Karte (Figma Seite 10).
- * - user: die Person, deren Profil offen ist (state.profileUserId).
- * - isOwn: eigenes Profil. Nur dann gibt es "Bearbeiten".
- * - Bearbeiten (User Story 4): Name ändern und einen Avatar aus der
- *   vorgegebenen Liste wählen. save() prüft den Namen im UserService
- *   (Vor- und Nachname) und zeigt sonst den Fehler unter dem Feld.
- * - Fremdes Profil: Button "Nachricht" öffnet die Direktnachricht.
- * - Der Bearbeiten-Modus ist in Figma (Desktop) nicht gezeichnet. Er nutzt
- *   dieselben Felder und Buttons wie die übrigen Seiten (Annahme).
- */
