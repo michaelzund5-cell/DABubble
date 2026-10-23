@@ -1,8 +1,14 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-// Date label between messages: "Heute" or e.g. "Dienstag, 14 Januar" (Figma format).
+/** Date label between messages: "Heute" or e.g. "Dienstag, 14 Januar" (Figma format). */
 @Pipe({ name: 'chatDate' })
 export class ChatDatePipe implements PipeTransform {
+  /**
+   * Date label of the day divider.
+   *
+   * @param timestamp - Time in milliseconds
+   * @returns "Heute" or e.g. "Dienstag, 14 Januar"
+   */
   transform(timestamp: number): string {
     const date = new Date(timestamp);
     if (isSameDay(date, new Date())) return 'Heute';
@@ -12,19 +18,13 @@ export class ChatDatePipe implements PipeTransform {
   }
 }
 
+/**
+ * Compares two calendar days.
+ *
+ * @param a - First date
+ * @param b - Second date
+ * @returns true when both are on the same calendar day
+ */
 export function isSameDay(a: Date, b: Date): boolean {
   return a.toDateString() === b.toDateString();
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Pipe für die Datums-Trennlinie im Chat.
- * - Heute -> "Heute", sonst "Dienstag, 14 Januar" wie in Figma
- *   (ohne Punkt nach der Zahl, das ist die Figma-Schreibweise).
- * - toLocaleDateString('de-DE', ...): liefert Wochentag und Monat auf
- *   Deutsch, unabhängig von der Spracheinstellung des Browsers.
- * - isSameDay(): vergleicht nur das Datum, nicht die Uhrzeit. Wird auch
- *   in der Nachrichtenliste genutzt, um Trennlinien zu setzen.
- */

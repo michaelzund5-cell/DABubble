@@ -25,14 +25,3 @@ button {
 
 button:hover { background: var(--bg); }
 img { width: 28px; height: 28px; }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Emoji-Auswahl.
- * - :host display: block: Die Auswahl steht in <app-popover>. Das
- *   Popover legt die Position fest und schliesst beim Klick daneben.
- * - Raster mit 5 Spalten (20 Emojis = 4 Zeilen).
- * - Weißer Hintergrund, runde Ecken und Schatten wie die Popups aus Figma.
- */

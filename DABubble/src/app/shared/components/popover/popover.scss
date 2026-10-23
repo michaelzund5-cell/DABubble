@@ -6,15 +6,3 @@
 
 .card { position: absolute; visibility: hidden; }
 .card.ready { visibility: visible; }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles des Popups.
- * - :host fixed mit inset 0: deckt die ganze Seite ab, damit ein Klick
- *   daneben beim backdrop landet.
- * - .card: unsichtbar, bis place() die Position kennt (.ready).
- * - Aussehen (weiss, runde Ecken, Schatten) bringt der Inhalt selbst mit,
- *   zum Beispiel die Emoji-Auswahl.
- */

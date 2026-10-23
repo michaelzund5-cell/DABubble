@@ -3,15 +3,3 @@
   [style.top.px]="position()?.top" [style.left.px]="position()?.left">
   <ng-content />
 </div>
-
-<!--
-  =====================================================================
-  ZUSAMMENFASSUNG (Deutsch)
-  =====================================================================
-  Popup-Rahmen.
-  - .backdrop: unsichtbarer Button über der ganzen Seite. Ein Klick
-    daneben trifft ihn und schliesst das Popup. tabindex="-1": Mit der
-    Tab-Taste springt man nicht auf ihn.
-  - .card: der Inhalt (ng-content), zum Beispiel die Emoji-Auswahl.
-    top und left kommen aus place() in popover.ts.
--->

@@ -1,18 +1,24 @@
-// A piece of a message text: normal text, or a mention that links to a person or a channel.
+/** A piece of a message text: normal text, or a mention that links to a person or a channel. */
 export interface TextPart {
   text: string;
   kind: 'text' | 'user' | 'channel';
   id?: string; // user ID or channel ID, only for mentions
 }
 
-// Something that can be mentioned: "@Sofia Müller" (user) or "#Entwicklerteam" (channel).
+/** Something that can be mentioned: `@Sofia Müller` (user) or "#Entwicklerteam" (channel). */
 export interface MentionTarget {
   name: string;
   kind: 'user' | 'channel';
   id: string;
 }
 
-// Splits a message into text and mentions. Only known names become mentions, the rest stays text.
+/**
+ * Splits a message into text and mentions. Only known names become mentions, the rest stays text.
+ *
+ * @param text - Message text
+ * @param targets - Known people and channels
+ * @returns Text parts and mentions in order
+ */
 export function splitMentions(text: string, targets: MentionTarget[]): TextPart[] {
   const pattern = mentionPattern(targets);
   if (!pattern) return [{ text, kind: 'text' }];
@@ -27,7 +33,12 @@ export function splitMentions(text: string, targets: MentionTarget[]): TextPart[
   return parts;
 }
 
-// "@" followed by a user name or "#" followed by a channel name, not inside a word.
+/**
+ * `@` followed by a user name or "#" followed by a channel name, not inside a word.
+ *
+ * @param targets - Known people and channels
+ * @returns Regular expression, or null when nothing can be mentioned
+ */
 function mentionPattern(targets: MentionTarget[]): RegExp | null {
   const users = namesOf(targets, 'user');
   const channels = namesOf(targets, 'channel');
@@ -38,7 +49,13 @@ function mentionPattern(targets: MentionTarget[]): RegExp | null {
   return new RegExp(`(?:${alternatives.join('|')})(?![\\p{L}\\p{N}])`, 'giu');
 }
 
-// Longest names first, so "@Noah Braun" wins over a user called "Noah". Empty names are skipped.
+/**
+ * Longest names first, so `@Noah Braun` wins over a user called "Noah". Empty names are skipped.
+ *
+ * @param targets - Known people and channels
+ * @param kind - user or channel
+ * @returns Escaped names, longest first
+ */
 function namesOf(targets: MentionTarget[], kind: MentionTarget['kind']): string[] {
   return targets
     .filter((target) => target.kind === kind && target.name.trim())
@@ -46,6 +63,13 @@ function namesOf(targets: MentionTarget[], kind: MentionTarget['kind']): string[
     .sort((a, b) => b.length - a.length);
 }
 
+/**
+ * Turns a match into a mention.
+ *
+ * @param found - Matched text, e.g. `@Sofia Müller`
+ * @param targets - Known people and channels
+ * @returns Mention with ID, or plain text when nobody matches
+ */
 function toMention(found: string, targets: MentionTarget[]): TextPart {
   const kind = found.startsWith('@') ? 'user' : 'channel';
   const name = found.slice(1).toLowerCase();
@@ -53,31 +77,12 @@ function toMention(found: string, targets: MentionTarget[]): TextPart {
   return target ? { text: found, kind, id: target.id } : { text: found, kind: 'text' };
 }
 
-// Names may contain characters with a special meaning in regular expressions, e.g. "C++".
+/**
+ * Names may contain characters with a special meaning in regular expressions, e.g. "C++".
+ *
+ * @param value - Any name
+ * @returns The name with special characters escaped
+ */
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Zerlegt den Text einer Nachricht in Teile, damit @Name und #Channel
- * als Link angezeigt werden können (Feedback der Akademie).
- * - splitMentions(): sucht alle Erwähnungen und gibt eine Liste zurück:
- *   normaler Text und Erwähnungen abwechselnd. Der Text selbst wird nie
- *   als HTML behandelt, nur aufgeteilt (Sicherheit: kein innerHTML).
- * - mentionPattern(): baut aus den bekannten Namen einen regulären
- *   Ausdruck, zum Beispiel @(Sofia Müller|Noah Braun)|#(Allgemein).
- * - namesOf(): Namen einer Art (Personen oder Channels), längere zuerst,
- *   damit "@Noah Braun" nicht nur "@Noah" trifft. Leere Namen fallen weg.
- *   (?![\p{L}\p{N}]): Direkt nach dem Namen darf kein Buchstabe und keine
- *   Zahl kommen, sonst wäre "#Allgemeines" ein Treffer für "#Allgemein".
- *   Flag i: Gross- und Kleinschreibung egal, u: Umlaute zählen als
- *   Buchstaben.
- * - toMention(): sucht zum Treffer die passende Person bzw. den Channel.
- * - escapeRegExp(): Sonderzeichen in Namen (z. B. "C++") werden
- *   maskiert, damit der Ausdruck nicht kaputtgeht.
- * - Nur Channels, in denen man Mitglied ist, werden zum Link. Die
- *   anderen kennt die App gar nicht, sie bleiben normaler Text.
- */

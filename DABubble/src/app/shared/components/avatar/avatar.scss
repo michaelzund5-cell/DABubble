@@ -28,15 +28,3 @@ img {
 }
 
 .status.online { background: var(--online); }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles des Avatars.
- * - var(--size): kommt aus avatar.ts. Alle Maße sind Anteile davon,
- *   so passt der Punkt bei 40, 50 oder 70 px.
- * - Figma (50 px): Punkt 18 px inkl. 2 px weißem Rand bei 34/34 px.
- *   34 / 50 = 0.68, 18 / 50 = 0.36, 2 / 50 = 0.04.
- * - flex-shrink: 0: Der Avatar wird in Flex-Zeilen nicht gequetscht.
- */

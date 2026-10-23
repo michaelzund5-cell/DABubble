@@ -8,19 +8,24 @@
 .card {
   position: relative;
   max-width: calc(100vw - 32px);
-  max-height: calc(100dvh - 32px);
+  max-height: calc(100% - 16px); // in low windows the card scrolls instead of leaving the screen
   overflow-y: auto;
   border-radius: 30px;
   background: var(--white);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
 }
 
+// Slim scrollbar inside the card, kept away from the rounded corners.
+.card::-webkit-scrollbar { width: 10px; }
+.card::-webkit-scrollbar-track { margin-block: 30px; background: transparent; }
+.card::-webkit-scrollbar-thumb { border: 3px solid var(--white); border-radius: 5px; background: var(--purple-3); }
+
 :host(.center), :host(.sheet) { align-items: center; justify-content: center; }
 :host(.top-right) { align-items: flex-start; justify-content: flex-end; padding: 108px 34px 0 0; }
 :host(.top-right) .card { border-radius: 30px 0 30px 30px; }
-:host(.channel) { align-items: flex-start; justify-content: center; padding-top: 200px; }
+:host(.channel) { align-items: flex-start; justify-content: center; padding-top: min(200px, 20vh); } // less in low windows
 :host(.channel) .card { border-radius: 0 30px 30px 30px; }
-:host(.members) { align-items: flex-start; justify-content: flex-end; padding: 200px 65px 0 0; }
+:host(.members) { align-items: flex-start; justify-content: flex-end; padding: min(200px, 20vh) 65px 0 0; }
 :host(.members) .card { border-radius: 30px 0 30px 30px; }
 :host(.bottom) { align-items: flex-end; }
 :host(.bottom) .card { width: 100%; max-width: 100%; border-radius: 30px 30px 0 0; }
@@ -36,20 +41,3 @@
   :host(.channel) { padding: 0; }
   :host(.channel) .card { width: 100%; height: 100dvh; max-width: 100%; max-height: 100dvh; border-radius: 0; box-shadow: none; }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles des Fensterrahmens.
- * - position: fixed; inset: 0: liegt über der ganzen Seite.
- * - Ecken: Bei Fenstern, die an einem Element "hängen", ist die Ecke zum
- *   Element hin eckig (wie das Menü in Figma).
- * - max-height mit dvh: Auf dem Handy passt das Fenster immer in den
- *   Bildschirm, der Inhalt scrollt bei Bedarf.
- * - Positionen sind Annahmen, Figma zeigt die Fenster nur einzeln.
- * - bottom: Menü, das auf dem Handy von unten hochkommt (Profilmenü),
- *   volle Breite, oben runde Ecken.
- * - Handy: "sheet" (Channel erstellen) hängt oben am Rand, "channel"
- *   (Channel-Details) füllt den ganzen Bildschirm (Figma 59 bis 61).
- */

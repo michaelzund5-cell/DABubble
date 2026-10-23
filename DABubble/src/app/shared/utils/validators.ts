@@ -7,6 +7,12 @@ import { MAX_NAME_LENGTH } from './limits';
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const MIN_PASSWORD_LENGTH = 8;
 
+/**
+ * Checks an email address.
+ *
+ * @param value - Email as typed
+ * @returns Error text, or an empty string
+ */
 export function validateEmail(value: string): string {
   const email = value.trim();
   if (!email) return 'Bitte gib deine E-Mail-Adresse ein.';
@@ -14,6 +20,12 @@ export function validateEmail(value: string): string {
   return '';
 }
 
+/**
+ * Checks a first and last name.
+ *
+ * @param value - Name as typed
+ * @returns Error text, or an empty string
+ */
 export function validateName(value: string): string {
   const parts = value.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return 'Bitte gib deinen Namen ein.';
@@ -22,6 +34,12 @@ export function validateName(value: string): string {
   return '';
 }
 
+/**
+ * Checks the password rules.
+ *
+ * @param value - Password as typed
+ * @returns Error text, or an empty string
+ */
 export function validatePassword(value: string): string {
   if (!value) return 'Bitte gib ein Passwort ein.';
   if (value.length < MIN_PASSWORD_LENGTH) return `Mindestens ${MIN_PASSWORD_LENGTH} Zeichen.`;
@@ -29,27 +47,15 @@ export function validatePassword(value: string): string {
   return '';
 }
 
+/**
+ * Checks the repeated password.
+ *
+ * @param password - First password
+ * @param repeat - Repeated password
+ * @returns Error text, or an empty string
+ */
 export function validatePasswordRepeat(password: string, repeat: string): string {
   if (!repeat) return 'Bitte bestätige dein Passwort.';
   if (repeat !== password) return 'Die Passwörter stimmen nicht überein.';
   return '';
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Prüfungen für Formulare, gemeinsam genutzt von Login, Registrierung
- * und Passwort zurücksetzen.
- * - Jede Funktion gibt einen Fehlertext zurück, oder '' wenn alles
- *   stimmt. So kann die Seite den Text direkt unter dem Feld anzeigen.
- * - EMAIL_PATTERN: regulärer Ausdruck. Prüft "etwas@etwas.xx".
- * - validateName: mindestens zwei Wörter (Vor- und Nachname), höchstens
- *   60 Zeichen (MAX_NAME_LENGTH).
- * - validatePassword: mindestens 8 Zeichen, ein Buchstabe, eine Zahl.
- * - validatePasswordRepeat: Bestätigung muss gleich sein.
- *
- * Sicherheit: Diese Prüfungen laufen im Browser und können umgangen
- * werden. Sie sind nur Komfort für den Benutzer. Firebase prüft auf
- * dem Server noch einmal.
- */

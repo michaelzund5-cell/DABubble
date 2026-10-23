@@ -25,7 +25,7 @@
 }
 
 // Mobile (Figma components 40, 41): 70 px high, 22 px text, centered at the bottom.
-// Feedback: the desktop size (531 px, no line break) was cut off on the iPhone SE.
+// Long texts wrap instead of being cut off on small phones.
 @media (max-width: 999px) {
   :host { right: 16px; bottom: 40px; left: 16px; display: flex; justify-content: center; }
   .toast { height: auto; min-height: 70px; gap: 19px; padding: 12px 30px; font-size: 22px; white-space: normal; text-align: center; }
@@ -35,20 +35,3 @@
   from { transform: translateX(120%); }
   to { transform: translateX(0); }
 }
-
-/*
- * =====================================================================
- * ZUSAMMENFASSUNG (Deutsch)
- * =====================================================================
- * Styles der Bubble, Werte aus Figma (Seiten 7 und 8).
- * - border-radius 30px 30px 0 30px: unten rechts eckig, wie eine
- *   Sprechblase.
- * - :host: das Element <app-toast> selbst. position: fixed hält es an
- *   derselben Stelle im Fenster, auch beim Scrollen.
- * - Position unten rechts ist eine Annahme, Figma gibt sie nicht vor.
- * - gap 30px: Abstand Icon zu Text, aus Figma Seite 8.
- * - @keyframes slide-in: gleitet beim Erscheinen von rechts herein.
- * - Handy (Figma 40, 41): 70 px hoch, 22 px Schrift, unten in der Mitte,
- *   je 16 px Abstand zum Rand. Langer Text bricht um statt abgeschnitten
- *   zu werden (Feedback: Meldung war auf dem iPhone SE abgeschnitten).
- */
