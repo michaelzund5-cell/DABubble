@@ -1,4 +1,4 @@
-# DABubble
+﻿# DABubble
 
 A Slack-like team chat with channels, direct messages, threads and reactions in real time.
 Solo project built during the training program at [Developer Akademie](https://developerakademie.com).
@@ -53,7 +53,7 @@ DABubble/
 ```
 
 Code rules: functions up to 14 lines, files up to 400 lines, camelCase.
-Comments in the code are in English, every file ends with a summary in German.
+Code comments are in English and follow the [TSDoc](https://tsdoc.org/) standard.
 
 ## Documentation
 
